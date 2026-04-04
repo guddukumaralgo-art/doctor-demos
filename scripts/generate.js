@@ -2,289 +2,232 @@ const fs = require("fs");
 const path = require("path");
 
 const rootDir = path.resolve(__dirname, "..");
-const dataFile = path.join(rootDir, "data", "doctors.json");
+const doctorsFile = path.join(rootDir, "data", "doctors.json");
 const templateFile = path.join(rootDir, "template", "clinic-template.html");
-const outputDir = path.join(rootDir, "dist");
+const docsDir = path.join(rootDir, "docs");
 
-function slugify(value) {
-  return String(value)
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+function ensureDir(dirPath) {
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+
+function cleanDocs() {
+  if (fs.existsSync(docsDir)) {
+    fs.rmSync(docsDir, { recursive: true, force: true });
+  }
+  ensureDir(docsDir);
 }
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (char) => {
-    const replacements = {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => {
+    const map = {
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
       '"': "&quot;",
       "'": "&#39;",
     };
-    return replacements[char];
+    return map[char];
   });
 }
 
+function slugify(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function readDoctors() {
-  const raw = fs.readFileSync(dataFile, "utf8").trim();
+  const raw = fs.readFileSync(doctorsFile, "utf8").trim();
 
   if (!raw) {
-    throw new Error(
-      "data/doctors.json is empty. Add one or more doctor records before generating."
-    );
+    throw new Error("data/doctors.json is empty.");
   }
 
   const parsed = JSON.parse(raw);
-  const doctors = Array.isArray(parsed) ? parsed : parsed.doctors;
-
-  if (!Array.isArray(doctors) || doctors.length === 0) {
-    throw new Error(
-      "data/doctors.json must contain a non-empty array or an object with a doctors array."
-    );
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error("data/doctors.json must contain a non-empty array.");
   }
 
-  return doctors;
+  return parsed;
 }
 
-function getTemplate() {
-  const rawTemplate = fs.existsSync(templateFile)
+function readTemplate() {
+  const template = fs.existsSync(templateFile)
     ? fs.readFileSync(templateFile, "utf8")
     : "";
 
-  if (rawTemplate.trim()) {
-    return rawTemplate;
+  if (template.trim()) {
+    return template;
   }
 
-  return `<!DOCTYPE html>
+  return `<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{doctor_name}} | {{clinic_name}}</title>
-    <style>
-      :root {
-        color-scheme: light;
-        --bg: #f4efe6;
-        --card: #fffdf8;
-        --ink: #1d2a33;
-        --muted: #60707b;
-        --accent: #0d7a6f;
-        --accent-soft: #dff4f0;
-        --border: #d9e2e8;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
-        color: var(--ink);
-        background:
-          radial-gradient(circle at top right, rgba(13, 122, 111, 0.12), transparent 28%),
-          linear-gradient(180deg, #f7f2ea 0%, var(--bg) 100%);
-      }
-      .page {
-        width: min(960px, calc(100% - 32px));
-        margin: 40px auto;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: 0 24px 60px rgba(29, 42, 51, 0.08);
-      }
-      .hero {
-        display: grid;
-        grid-template-columns: 220px 1fr;
-        gap: 24px;
-        padding: 32px;
-        background: linear-gradient(135deg, rgba(13, 122, 111, 0.08), rgba(255, 255, 255, 0));
-      }
-      .hero img {
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        object-fit: cover;
-        border-radius: 18px;
-        border: 1px solid var(--border);
-      }
-      .eyebrow {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: var(--accent-soft);
-        color: var(--accent);
-        font: 600 12px/1.2 Arial, sans-serif;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-      h1 {
-        margin: 16px 0 10px;
-        font-size: clamp(34px, 5vw, 52px);
-        line-height: 0.95;
-      }
-      .subtitle,
-      .meta,
-      .contact li,
-      .services li {
-        font-family: Arial, sans-serif;
-      }
-      .subtitle {
-        color: var(--muted);
-        font-size: 18px;
-      }
-      .content {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 24px;
-        padding: 0 32px 32px;
-      }
-      .panel {
-        padding: 24px;
-        border: 1px solid var(--border);
-        border-radius: 18px;
-      }
-      .panel h2 {
-        margin-top: 0;
-      }
-      .meta {
-        display: grid;
-        gap: 14px;
-      }
-      .meta strong {
-        display: block;
-        margin-bottom: 4px;
-      }
-      .services,
-      .contact {
-        margin: 0;
-        padding-left: 18px;
-      }
-      .services li,
-      .contact li {
-        margin: 8px 0;
-        color: var(--muted);
-      }
-      @media (max-width: 720px) {
-        .hero,
-        .content {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="page">
-      <section class="hero">
-        <img src="{{image}}" alt="{{doctor_name}}" />
-        <div>
-          <span class="eyebrow">{{specialty}}</span>
-          <h1>{{doctor_name}}</h1>
-          <p class="subtitle">{{clinic_name}}</p>
-          <p class="subtitle">{{location}}</p>
-        </div>
-      </section>
-      <section class="content">
-        <article class="panel">
-          <h2>About</h2>
-          <p>{{bio}}</p>
-          <h2>Services</h2>
-          <ul class="services">
-            {{services}}
-          </ul>
-        </article>
-        <aside class="panel">
-          <h2>Details</h2>
-          <div class="meta">
-            <div>
-              <strong>Experience</strong>
-              <span>{{experience}}</span>
-            </div>
-            <div>
-              <strong>Availability</strong>
-              <span>{{availability}}</span>
-            </div>
-            <div>
-              <strong>Contact</strong>
-              <ul class="contact">
-                <li>{{phone}}</li>
-                <li>{{email}}</li>
-                <li>{{address}}</li>
-              </ul>
-            </div>
-          </div>
-        </aside>
-      </section>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{name}} | {{clinic}}</title>
+</head>
+<body>
+  <h1>{{name}}</h1>
+  <p>{{clinic}}</p>
+  <p>{{specialty}}</p>
+  <p>{{address}}</p>
+  <p>{{city}}</p>
+  <img src="{{imagePath}}" alt="{{name}}" />
+</body>
 </html>`;
 }
 
-function renderDoctor(template, doctor) {
-  const requiredFields = [
-    "doctor_name",
-    "clinic_name",
-    "specialty",
-    "location",
-    "bio",
-    "experience",
-    "availability",
-    "phone",
-    "email",
-    "address",
-    "image",
-  ];
+function normalizeDoctor(doctor) {
+  const name = doctor.doctor_name || doctor.name;
+  const clinic = doctor.clinic_name || doctor.clinic;
+  const city = doctor.location || doctor.city;
+  const slug = doctor.slug || slugify(name || clinic);
 
-  for (const field of requiredFields) {
-    if (!doctor[field]) {
-      throw new Error(`Missing required field "${field}" for a doctor entry.`);
-    }
+  if (!name || !clinic || !city || !slug) {
+    throw new Error("Each doctor needs doctor_name or name, clinic_name or clinic, location or city, and a valid slug.");
   }
 
-  const services = Array.isArray(doctor.services) ? doctor.services : [];
-  const servicesMarkup = services.length
-    ? services.map((item) => `<li>${escapeHtml(item)}</li>`).join("\n            ")
-    : "<li>Consultation</li>";
+  return {
+    ...doctor,
+    slug,
+    name,
+    clinic,
+    city,
+    address: doctor.address || city,
+    imagePath: doctor.image || "",
+  };
+}
 
-  return template
-    .replaceAll("{{doctor_name}}", escapeHtml(doctor.doctor_name))
-    .replaceAll("{{clinic_name}}", escapeHtml(doctor.clinic_name))
-    .replaceAll("{{specialty}}", escapeHtml(doctor.specialty))
-    .replaceAll("{{location}}", escapeHtml(doctor.location))
-    .replaceAll("{{bio}}", escapeHtml(doctor.bio))
-    .replaceAll("{{experience}}", escapeHtml(doctor.experience))
-    .replaceAll("{{availability}}", escapeHtml(doctor.availability))
-    .replaceAll("{{phone}}", escapeHtml(doctor.phone))
-    .replaceAll("{{email}}", escapeHtml(doctor.email))
-    .replaceAll("{{address}}", escapeHtml(doctor.address))
-    .replaceAll("{{image}}", escapeHtml(doctor.image))
-    .replaceAll("{{services}}", servicesMarkup);
+function fillTemplate(template, doctor) {
+  return template.replace(/{{(\w+)}}/g, (_, key) => escapeHtml(doctor[key] ?? ""));
+}
+
+function renderIndex(doctors) {
+  const cards = doctors
+    .map((doctor) => {
+      return `
+        <article class="card">
+          <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
+          <div class="content">
+            <p class="eyebrow">${escapeHtml(doctor.specialty || "")}</p>
+            <h2>${escapeHtml(doctor.name)}</h2>
+            <p>${escapeHtml(doctor.clinic)}</p>
+            <p>${escapeHtml(doctor.city)}</p>
+            <a href="./${escapeHtml(doctor.slug)}.html">View Profile</a>
+          </div>
+        </article>`;
+    })
+    .join("\n");
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Demo Websites</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 40px;
+    }
+    .sub {
+      margin: 0 0 28px;
+      color: #6b7280;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      overflow: hidden;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+    }
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      background: #e5e7eb;
+    }
+    .content {
+      padding: 18px;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #075985;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+    .content p {
+      margin: 0 0 8px;
+    }
+    a {
+      display: inline-block;
+      margin-top: 12px;
+      text-decoration: none;
+      color: white;
+      background: #2563eb;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Doctor Demo Websites</h1>
+    <p class="sub">Browse generated doctor profile pages.</p>
+    <section class="grid">
+      ${cards}
+    </section>
+  </main>
+</body>
+</html>`;
 }
 
 function main() {
-  const doctors = readDoctors();
-  const template = getTemplate();
+  cleanDocs();
 
-  fs.mkdirSync(outputDir, { recursive: true });
-
-  const generatedFiles = [];
+  const template = readTemplate();
+  const doctors = readDoctors().map(normalizeDoctor);
 
   for (const doctor of doctors) {
-    const slug = slugify(doctor.slug || doctor.doctor_name || doctor.clinic_name);
-    if (!slug) {
-      throw new Error("Unable to determine a file name for one of the doctor entries.");
-    }
-
-    const fileName = `${slug}.html`;
-    const html = renderDoctor(template, doctor);
-    const outputFile = path.join(outputDir, fileName);
-    fs.writeFileSync(outputFile, html);
-    generatedFiles.push(path.relative(rootDir, outputFile));
+    const html = fillTemplate(template, doctor);
+    const outputFile = path.join(docsDir, `${doctor.slug}.html`);
+    fs.writeFileSync(outputFile, html, "utf8");
   }
 
-  console.log(`Generated ${generatedFiles.length} page(s):`);
-  for (const file of generatedFiles) {
-    console.log(`- ${file}`);
+  const indexHtml = renderIndex(doctors);
+  fs.writeFileSync(path.join(docsDir, "index.html"), indexHtml, "utf8");
+
+  console.log(`Generated ${doctors.length} page(s):`);
+  console.log("- docs/index.html");
+  for (const doctor of doctors) {
+    console.log(`- docs/${doctor.slug}.html`);
   }
 }
 

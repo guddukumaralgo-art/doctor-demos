@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Demo Websites</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 40px;
+    }
+    .sub {
+      margin: 0 0 28px;
+      color: #6b7280;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      overflow: hidden;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+    }
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      background: #e5e7eb;
+    }
+    .content {
+      padding: 18px;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #075985;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+    .content p {
+      margin: 0 0 8px;
+    }
+    a {
+      display: inline-block;
+      margin-top: 12px;
+      text-decoration: none;
+      color: white;
+      background: #2563eb;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Doctor Demo Websites</h1>
+    <p class="sub">Browse generated doctor profile pages.</p>
+    <section class="grid">
+      
+        <article class="card">
+          <img src="../data/images/dr-ravi-kumar.jpg" alt="Dr. Ravi Kumar" />
+          <div class="content">
+            <p class="eyebrow">Cardiology</p>
+            <h2>Dr. Ravi Kumar</h2>
+            <p>Lotus Heart &amp; Wellness Clinic</p>
+            <p>Bengaluru, Karnataka</p>
+            <a href="./dr-ravi-kumar.html">View Profile</a>
+          </div>
+        </article>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dr. Ravi Kumar | Lotus Heart &amp; Wellness Clinic</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero {
+      margin-top: 24px;
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .hero img {
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 14px;
+      background: #e5e7eb;
+    }
+    .tag {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #075985;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+    }
+    .clinic {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+    .buttons {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      text-decoration: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: white;
+      background: #2563eb;
+      font-weight: bold;
+    }
+    .btn.dark {
+      background: #111827;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    footer {
+      text-align: center;
+      color: #6b7280;
+      padding: 28px 10px 40px;
+      font-size: 14px;
+    }
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero img { width: 100%; height: 320px; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <img src="../data/images/dr-ravi-kumar.jpg" alt="Dr. Ravi Kumar">
+      <div>
+        <div class="tag">Cardiology</div>
+        <h1>Dr. Ravi Kumar</h1>
+        <div class="clinic">Lotus Heart &amp; Wellness Clinic</div>
+        <p><strong>Address:</strong> 12 Residency Road, Ashok Nagar, Bengaluru</p>
+        <p><strong>City:</strong> Bengaluru, Karnataka</p>
+        <p><strong>Phone:</strong> +91 98765 43210</p>
+        <p><strong>Email:</strong> appointments@lotusheartclinic.example</p>
+
+        <div class="buttons">
+          <a class="btn" href="tel:+91 98765 43210">Call Now</a>
+          <a class="btn dark" href="mailto:appointments@lotusheartclinic.example">Book Appointment</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>About</h2>
+        <p>Dr. Ravi Kumar is a trusted Cardiology serving patients through Lotus Heart &amp; Wellness Clinic.</p>
+      </div>
+      <div class="card">
+        <h2>Clinic</h2>
+        <p>Lotus Heart &amp; Wellness Clinic is located at 12 Residency Road, Ashok Nagar, Bengaluru, Bengaluru, Karnataka.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    This is a concept demo website for outreach only. It is not an official clinic website.
+  </footer>
+</body>
+</html>
