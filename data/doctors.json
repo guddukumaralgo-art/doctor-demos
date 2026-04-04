@@ -18,5 +18,105 @@
       "Hypertension and cholesterol management",
       "Post-procedure follow-up care"
     ]
+  },
+  {
+    "slug": "dr-ananya-sharma",
+    "doctor_name": "Dr. Ananya Sharma",
+    "clinic_name": "Aster Women & Wellness Studio",
+    "specialty": "Gynecology",
+    "location": "Hyderabad, Telangana",
+    "bio": "Dr. Ananya Sharma combines evidence-based women’s health care with a calm, modern clinic experience designed for trust, privacy, and continuity.",
+    "experience": "11 years",
+    "availability": "Mon-Fri, 10:00 AM-7:00 PM",
+    "phone": "+91 98490 11332",
+    "email": "hello@asterwellness.example",
+    "address": "48 Jubilee Hills Road No. 36, Hyderabad",
+    "image": "dr-ananya-sharma.jpg",
+    "services": [
+      "Comprehensive gynecology consultation",
+      "PCOS and hormonal health plans",
+      "Pregnancy guidance and scans coordination",
+      "Preventive women’s wellness checkups"
+    ]
+  },
+  {
+    "slug": "dr-arjun-mehta",
+    "doctor_name": "Dr. Arjun Mehta",
+    "clinic_name": "The Urban Skin Atelier",
+    "specialty": "Dermatology",
+    "location": "Mumbai, Maharashtra",
+    "bio": "Dr. Arjun Mehta is known for refined aesthetic dermatology and long-term skin health programs tailored to busy urban professionals.",
+    "experience": "9 years",
+    "availability": "Tue-Sun, 11:00 AM-8:00 PM",
+    "phone": "+91 99201 66045",
+    "email": "appointments@urbanskinatelier.example",
+    "address": "22 Linking Road, Bandra West, Mumbai",
+    "image": "dr-arjun-mehta.jpg",
+    "services": [
+      "Acne and pigmentation treatment plans",
+      "Advanced anti-aging consultations",
+      "Laser and procedural dermatology",
+      "Medical-grade skin maintenance programs"
+    ]
+  },
+  {
+    "slug": "dr-meera-iyer",
+    "doctor_name": "Dr. Meera Iyer",
+    "clinic_name": "MindSpring Child Development Center",
+    "specialty": "Pediatrics",
+    "location": "Chennai, Tamil Nadu",
+    "bio": "Dr. Meera Iyer focuses on thoughtful pediatric care that supports both children and parents with clarity, warmth, and reliable follow-through.",
+    "experience": "13 years",
+    "availability": "Mon-Sat, 8:30 AM-5:30 PM",
+    "phone": "+91 98840 22418",
+    "email": "care@mindspringkids.example",
+    "address": "101 Cathedral Road, Gopalapuram, Chennai",
+    "image": "dr-meera-iyer.jpg",
+    "services": [
+      "Well-baby and vaccination visits",
+      "Growth and nutrition tracking",
+      "Asthma and allergy pediatric follow-up",
+      "Developmental milestone support"
+    ]
+  },
+  {
+    "slug": "dr-kabir-singh",
+    "doctor_name": "Dr. Kabir Singh",
+    "clinic_name": "Precision Ortho & Sports Lab",
+    "specialty": "Orthopedics",
+    "location": "Pune, Maharashtra",
+    "bio": "Dr. Kabir Singh leads a premium orthopedic and sports recovery practice built around precise diagnosis, rehabilitation planning, and durable outcomes.",
+    "experience": "16 years",
+    "availability": "Mon-Fri, 9:30 AM-6:30 PM",
+    "phone": "+91 97663 84552",
+    "email": "desk@precisionortho.example",
+    "address": "7 Senapati Bapat Road, Shivajinagar, Pune",
+    "image": "dr-kabir-singh.jpg",
+    "services": [
+      "Joint and mobility assessments",
+      "Sports injury care and rehab planning",
+      "Back and neck pain management",
+      "Post-surgery recovery consultations"
+    ]
+  },
+  {
+    "slug": "dr-sana-farooq",
+    "doctor_name": "Dr. Sana Farooq",
+    "clinic_name": "Serene Dental Lounge",
+    "specialty": "Cosmetic Dentistry",
+    "location": "New Delhi, Delhi",
+    "bio": "Dr. Sana Farooq’s practice blends cosmetic precision with a hospitality-first clinic atmosphere for patients seeking confidence and comfort.",
+    "experience": "10 years",
+    "availability": "Mon-Sat, 10:30 AM-7:30 PM",
+    "phone": "+91 98111 50764",
+    "email": "bookings@serenedental.example",
+    "address": "19 Greater Kailash II, New Delhi",
+    "image": "dr-sana-farooq.jpg",
+    "services": [
+      "Smile design consultations",
+      "Teeth whitening and veneers",
+      "Invisible aligner planning",
+      "Routine premium dental care"
+    ]
   }
 ]
