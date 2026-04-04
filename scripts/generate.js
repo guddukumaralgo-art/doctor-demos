@@ -104,6 +104,9 @@ function normalizeDoctor(doctor) {
     address: doctor.address || city,
     image: imageFileName,
     imagePath: imageFileName ? `./assets/images/${imageFileName}` : "",
+    accent: doctor.accent || "#0f766e",
+    accent2: doctor.accent2 || "#2563eb",
+    surface: doctor.surface || "#eff6ff",
     bio: doctor.bio || `${name} is a trusted ${doctor.specialty || "specialist"} serving patients through ${clinic}.`,
     experience: doctor.experience || "10+ years",
     availability: doctor.availability || "By appointment",
@@ -137,7 +140,7 @@ function renderIndex(doctors) {
   const cards = doctors
     .map((doctor) => {
       return `
-        <article class="card">
+        <article class="card" style="--accent:${escapeHtml(doctor.accent)};--accent2:${escapeHtml(doctor.accent2)};--surface:${escapeHtml(doctor.surface)};">
           <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
           <div class="content">
             <p class="eyebrow">${escapeHtml(doctor.specialty || "")}</p>
@@ -159,39 +162,37 @@ function renderIndex(doctors) {
   <title>Doctor Demo Websites</title>
   <style>
     :root {
-      --ink: #122033;
-      --muted: #64748b;
-      --accent: #0f766e;
-      --accent-2: #2563eb;
-      --card: rgba(255, 255, 255, 0.82);
-      --line: rgba(15, 23, 42, 0.08);
+      --ink: #1a1720;
+      --muted: #6d6677;
+      --paper: #fffaf2;
+      --line: rgba(42, 32, 57, 0.08);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: Georgia, "Times New Roman", serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 26%),
-        linear-gradient(180deg, #f7fbff 0%, #eef4fb 100%);
+        radial-gradient(circle at top left, rgba(236, 72, 153, 0.1), transparent 26%),
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 24%),
+        linear-gradient(180deg, #fffdf8 0%, #f7f0e7 100%);
     }
     .wrap {
       max-width: 1220px;
       margin: 0 auto;
-      padding: 42px 20px 60px;
+      padding: 42px 20px 68px;
     }
     .hero {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
-      gap: 20px;
+      gap: 24px;
       align-items: end;
-      margin-bottom: 28px;
+      margin-bottom: 34px;
     }
     h1 {
       margin: 0 0 10px;
-      font-size: clamp(42px, 6vw, 74px);
-      line-height: 0.95;
+      font-size: clamp(46px, 6vw, 82px);
+      line-height: 0.92;
       letter-spacing: -0.05em;
     }
     .sub {
@@ -202,12 +203,12 @@ function renderIndex(doctors) {
       line-height: 1.7;
     }
     .hero-card {
-      padding: 22px;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.72);
+      padding: 26px;
+      border-radius: 28px;
+      background: rgba(255, 250, 242, 0.78);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.8);
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(255,255,255,0.82);
+      box-shadow: 0 24px 60px rgba(33, 24, 48, 0.08);
     }
     .hero-card p {
       margin: 0 0 14px;
@@ -221,21 +222,31 @@ function renderIndex(doctors) {
     }
     .card {
       overflow: hidden;
-      border-radius: 28px;
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.75);
-      box-shadow: 0 18px 46px rgba(15, 23, 42, 0.1);
+      position: relative;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.82));
+      border: 1px solid rgba(255,255,255,0.76);
+      box-shadow: 0 20px 50px rgba(33, 24, 48, 0.1);
       backdrop-filter: blur(8px);
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 220px;
+      background: linear-gradient(135deg, var(--surface), rgba(255,255,255,0));
+      pointer-events: none;
     }
     .card img {
       width: 100%;
       height: 260px;
       object-fit: cover;
       display: block;
-      background: #d9e7f4;
+      background: linear-gradient(135deg, var(--surface), #ffffff);
     }
     .content {
-      padding: 22px;
+      position: relative;
+      padding: 24px;
     }
     .eyebrow {
       margin: 0 0 12px;
@@ -267,11 +278,11 @@ function renderIndex(doctors) {
       margin-top: 14px;
       text-decoration: none;
       color: white;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       padding: 12px 16px;
       border-radius: 14px;
       font-weight: 700;
-      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 16px 30px color-mix(in srgb, var(--accent2) 26%, transparent);
     }
     @media (max-width: 860px) {
       .hero {

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 760" role="img" aria-label="Doctor portrait illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#ecfeff"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="760" rx="44" fill="url(#bg)"/>
+  <circle cx="118" cy="142" r="90" fill="#ffffff" opacity=".4"/>
+  <circle cx="520" cy="640" r="120" fill="#93c5fd" opacity=".3"/>
+  <rect x="112" y="94" width="416" height="572" rx="34" fill="#ffffff" opacity=".52"/>
+  <ellipse cx="320" cy="648" rx="160" ry="42" fill="#94a3b8" opacity=".14"/>
+  <path d="M222 308c0-60 44-108 98-108s98 48 98 108v30H222z" fill="#312e81"/>
+  <ellipse cx="320" cy="346" rx="98" ry="116" fill="#dca986"/>
+  <path d="M230 314c18-56 50-108 90-108 56 0 126 44 126 122v22c-32-34-64-54-108-54-44 0-70 6-108 18z" fill="#1e1b4b"/>
+  <circle cx="286" cy="344" r="8" fill="#2b1b13"/>
+  <circle cx="354" cy="344" r="8" fill="#2b1b13"/>
+  <path d="M292 392c18 14 38 14 56 0" stroke="#9a3412" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M236 514c16-70 56-102 84-102s68 32 84 102v126H236z" fill="#eff6ff"/>
+  <path d="M214 688V556c0-68 48-120 106-120s106 52 106 120v132z" fill="#ffffff"/>
+  <path d="M292 442h56v22c0 28-16 48-28 62-12-14-28-34-28-62z" fill="#2563eb"/>
+  <circle cx="258" cy="560" r="18" fill="none" stroke="#2563eb" stroke-width="8"/>
+  <circle cx="382" cy="560" r="18" fill="none" stroke="#2563eb" stroke-width="8"/>
+  <path d="M276 560h88" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+</svg>
