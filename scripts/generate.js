@@ -7,6 +7,7 @@ const docsDir = path.join(rootDir, "docs");
 const sourceImagesDir = path.join(rootDir, "data", "images");
 const outputImagesDir = path.join(docsDir, "assets", "images");
 const siteBaseUrl = "https://guddukumaralgo-art.github.io/doctor-demos";
+const apolloInspiredDir = path.join(docsDir, "apollo-inspired");
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
@@ -18,6 +19,7 @@ function cleanDocs() {
   }
   ensureDir(docsDir);
   ensureDir(outputImagesDir);
+  ensureDir(apolloInspiredDir);
 }
 
 function escapeHtml(value) {
@@ -546,6 +548,9 @@ function renderIndex(doctors) {
     .hero-card{padding:26px;border-radius:28px;background:rgba(255,250,242,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.82);box-shadow:0 24px 60px rgba(33,24,48,.08)}
     .hero-card p{margin:0 0 14px;color:var(--muted);line-height:1.7;font-family:Arial,sans-serif}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+    .feature{margin-bottom:24px;padding:26px;border-radius:30px;background:linear-gradient(135deg,#0f172a,#1d4ed8 58%,#06b6d4);color:#fff;box-shadow:0 24px 60px rgba(29,78,216,.22)}
+    .feature p{margin:0 0 14px;font-family:Arial,sans-serif;line-height:1.7;color:rgba(255,255,255,.85)}
+    .feature a{background:#fff;color:#0f172a}
     .card{overflow:hidden;position:relative;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.82));border:1px solid rgba(255,255,255,.76);box-shadow:0 20px 50px rgba(33,24,48,.1)}
     .card::before{content:"";position:absolute;inset:0 0 auto 0;height:220px;background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));pointer-events:none}
     .card img{width:100%;height:260px;object-fit:cover;display:block;background:linear-gradient(135deg,var(--surface),#fff)}
@@ -571,8 +576,709 @@ function renderIndex(doctors) {
         <p>Distinct hero structures, different content flows, varied card systems, unique page proportions, and separate visual moods for every doctor profile.</p>
       </aside>
     </section>
+    <section class="feature">
+      <h2 style="margin:0 0 10px;font-size:34px;letter-spacing:-.03em">Hospital Network Landing Page</h2>
+      <p>An Apollo-inspired multispeciality hospital homepage is also available in a separate folder, with large-scale navigation, service discovery, quick actions, centres of excellence, city network highlights, and a premium healthcare landing-page feel.</p>
+      <a href="./apollo-inspired/">Open Hospital Demo</a>
+    </section>
     <section class="grid">${cards}</section>
   </main>
+</body>
+</html>`;
+}
+
+function renderApolloInspiredSite() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaCare Hospitals | Multispeciality Hospital Network Demo</title>
+  <style>
+    :root{
+      --navy:#0b1f45;
+      --blue:#165dff;
+      --sky:#07b6d5;
+      --teal:#0f766e;
+      --mint:#dff8f5;
+      --paper:#f5f9ff;
+      --ink:#0f172a;
+      --muted:#5b6b84;
+      --line:#dce6f5;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(22,93,255,.12), transparent 26%),
+        linear-gradient(180deg, #fbfdff 0%, #eef5ff 100%);
+    }
+    a{text-decoration:none}
+    .topbar{
+      background:linear-gradient(90deg,var(--navy),#123b85);
+      color:#fff;
+      padding:10px 18px;
+      font-size:14px;
+    }
+    .topbar-inner,.nav-inner,.hero-inner,.section,.footer-inner{
+      width:min(1220px,calc(100% - 28px));
+      margin:0 auto;
+    }
+    .topbar-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .top-links{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+      color:rgba(255,255,255,.86);
+    }
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(255,255,255,.9);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(220,230,245,.9);
+    }
+    .nav-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      padding:16px 0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+    .brand-mark{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      background:linear-gradient(135deg,var(--blue),var(--sky));
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font:700 20px/1 Georgia,serif;
+      box-shadow:0 18px 34px rgba(22,93,255,.22);
+    }
+    .brand-copy strong{
+      display:block;
+      font:700 20px/1.1 Georgia,serif;
+      letter-spacing:-.02em;
+    }
+    .brand-copy span{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .menu{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+      align-items:center;
+      color:#1e293b;
+      font-weight:600;
+      font-size:14px;
+    }
+    .menu a{color:inherit}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:13px 18px;
+      border-radius:14px;
+      font-weight:700;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,var(--blue),var(--sky));
+      color:#fff;
+      box-shadow:0 18px 34px rgba(22,93,255,.2);
+    }
+    .btn-light{
+      background:#fff;
+      color:var(--ink);
+      border:1px solid var(--line);
+    }
+    .hero{
+      padding:32px 0 20px;
+    }
+    .hero-inner{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:26px;
+      align-items:stretch;
+    }
+    .hero-copy{
+      padding:40px;
+      border-radius:34px;
+      background:
+        radial-gradient(circle at top right, rgba(7,182,213,.18), transparent 28%),
+        linear-gradient(135deg,#ffffff,#edf5ff);
+      box-shadow:0 28px 60px rgba(15,23,42,.08);
+    }
+    .eyebrow{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#e0f2fe;
+      color:#0c4a6e;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:18px 0 14px;
+      font:700 clamp(42px,7vw,78px)/.92 Georgia,serif;
+      letter-spacing:-.06em;
+      color:#091733;
+    }
+    .hero-copy p{
+      max-width:60ch;
+      color:var(--muted);
+      font-size:18px;
+      line-height:1.8;
+      margin:0 0 26px;
+    }
+    .hero-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:28px;
+    }
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+    }
+    .quick-card{
+      padding:16px;
+      border-radius:18px;
+      background:#fff;
+      border:1px solid var(--line);
+      box-shadow:0 10px 24px rgba(15,23,42,.04);
+    }
+    .quick-card strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+    .quick-card span{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+    .hero-panel{
+      display:grid;
+      gap:18px;
+    }
+    .search-card,.contact-card,.art-card{
+      border-radius:30px;
+      background:#fff;
+      box-shadow:0 24px 50px rgba(15,23,42,.08);
+      border:1px solid rgba(220,230,245,.88);
+    }
+    .search-card{
+      padding:24px;
+    }
+    .search-card h2,.contact-card h2,.section h2{
+      margin:0 0 14px;
+      font:700 30px/1.05 Georgia,serif;
+      letter-spacing:-.03em;
+    }
+    .search-row{
+      display:grid;
+      grid-template-columns:1fr 1fr auto;
+      gap:12px;
+      margin-top:14px;
+    }
+    .field{
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#f8fbff;
+      color:#1e293b;
+      font-size:14px;
+    }
+    .chip-list{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .chip{
+      padding:10px 12px;
+      border-radius:999px;
+      background:#eef6ff;
+      color:#244a7b;
+      font-size:13px;
+      font-weight:700;
+    }
+    .contact-card{
+      padding:24px;
+      background:linear-gradient(135deg,#0c1f47,#133b86 58%,#0d7490);
+      color:#fff;
+    }
+    .contact-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .contact-tile{
+      padding:16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.08);
+      min-height:120px;
+    }
+    .contact-tile strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:14px;
+    }
+    .contact-tile span{
+      display:block;
+      color:rgba(255,255,255,.8);
+      font-size:13px;
+      line-height:1.6;
+    }
+    .art-card{
+      overflow:hidden;
+      min-height:240px;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,.88), transparent 22%),
+        radial-gradient(circle at 78% 20%, rgba(7,182,213,.22), transparent 18%),
+        linear-gradient(135deg,#dff8f5,#dbeafe 45%,#eff6ff 100%);
+      position:relative;
+    }
+    .art-card::before,.art-card::after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      background:rgba(22,93,255,.12);
+    }
+    .art-card::before{
+      width:220px;
+      height:220px;
+      right:-40px;
+      bottom:-30px;
+    }
+    .art-card::after{
+      width:120px;
+      height:120px;
+      left:42px;
+      bottom:34px;
+    }
+    .art-overlay{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding:28px;
+    }
+    .network-card{
+      width:min(360px,100%);
+      padding:24px;
+      border-radius:28px;
+      background:rgba(255,255,255,.9);
+      box-shadow:0 18px 36px rgba(15,23,42,.08);
+    }
+    .network-card h3{
+      margin:0 0 10px;
+      font:700 24px/1.1 Georgia,serif;
+      letter-spacing:-.03em;
+    }
+    .network-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .section{
+      padding:24px 0;
+    }
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .section-header p{
+      max-width:58ch;
+      color:var(--muted);
+      line-height:1.7;
+      margin:0;
+    }
+    .card-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:18px;
+    }
+    .service-card,.city-card,.insight-card,.trust-card{
+      padding:22px;
+      border-radius:26px;
+      background:#fff;
+      border:1px solid rgba(220,230,245,.82);
+      box-shadow:0 18px 36px rgba(15,23,42,.05);
+    }
+    .service-card h3,.city-card h3,.insight-card h3,.trust-card h3{
+      margin:0 0 10px;
+      font:700 22px/1.08 Georgia,serif;
+      letter-spacing:-.03em;
+    }
+    .service-card p,.city-card p,.insight-card p,.trust-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+    }
+    .service-icon{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      margin-bottom:16px;
+      font:700 16px/1 Arial,sans-serif;
+      color:#fff;
+      background:linear-gradient(135deg,var(--blue),var(--sky));
+    }
+    .city-card{
+      background:linear-gradient(180deg,#fff,#f7fbff);
+    }
+    .city-badge{
+      display:inline-block;
+      margin-top:14px;
+      padding:9px 12px;
+      border-radius:999px;
+      background:#eef6ff;
+      color:#214e89;
+      font-size:12px;
+      font-weight:700;
+    }
+    .split{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:20px;
+    }
+    .trust-panel{
+      padding:28px;
+      border-radius:30px;
+      background:linear-gradient(135deg,#0f172a,#123b85);
+      color:#fff;
+    }
+    .trust-panel h2{
+      color:#fff;
+    }
+    .trust-panel p{
+      color:rgba(255,255,255,.82);
+      line-height:1.8;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-top:22px;
+    }
+    .stat{
+      padding:18px;
+      border-radius:20px;
+      background:rgba(255,255,255,.08);
+    }
+    .stat strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:26px;
+      font-family:Georgia,serif;
+    }
+    .stat span{
+      color:rgba(255,255,255,.76);
+      font-size:13px;
+      line-height:1.5;
+    }
+    .insight-grid{
+      display:grid;
+      gap:18px;
+    }
+    .cta{
+      padding:30px;
+      border-radius:34px;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.16), transparent 24%),
+        linear-gradient(135deg,var(--blue),#0f766e);
+      color:#fff;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:18px;
+      align-items:center;
+      box-shadow:0 26px 60px rgba(22,93,255,.18);
+    }
+    .cta h2{
+      color:#fff;
+      margin:0 0 10px;
+    }
+    .cta p{
+      margin:0;
+      color:rgba(255,255,255,.82);
+      line-height:1.75;
+      max-width:58ch;
+    }
+    .footer{
+      margin-top:18px;
+      background:#071427;
+      color:#d8e3f3;
+    }
+    .footer-inner{
+      padding:30px 0 36px;
+      display:grid;
+      gap:22px;
+    }
+    .footer-grid{
+      display:grid;
+      grid-template-columns:1.2fr .9fr .9fr .9fr;
+      gap:18px;
+    }
+    .footer h3{
+      margin:0 0 12px;
+      font:700 18px/1.1 Georgia,serif;
+    }
+    .footer p,.footer li{
+      color:#aac0dd;
+      line-height:1.7;
+      font-size:14px;
+    }
+    .footer ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap:8px;
+    }
+    .mini{
+      font-size:13px;
+      color:#8ba5c7;
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-top:18px;
+    }
+    @media (max-width:1080px){
+      .hero-inner,.split,.cta,.footer-grid{grid-template-columns:1fr}
+      .card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .search-row,.contact-grid,.stats-grid,.quick-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:640px){
+      .card-grid{grid-template-columns:1fr}
+      .nav-inner{flex-direction:column;align-items:flex-start}
+      .menu{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div>Emergency 1066 | Lifeline International +91 4043441066 | Health Helpline 1860-500-1066</div>
+      <div class="top-links">
+        <span>Book Appointment</span>
+        <span>Find Doctors</span>
+        <span>Contact Us</span>
+      </div>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="brand-mark">N</div>
+        <div class="brand-copy">
+          <strong>NovaCare Hospitals</strong>
+          <span>Multispeciality Hospital Network Demo</span>
+        </div>
+      </div>
+      <nav class="menu">
+        <a href="#services">Services</a>
+        <a href="#cities">Hospitals</a>
+        <a href="#programs">Programs</a>
+        <a href="#library">Health Library</a>
+        <a href="../index.html">Back to Main Showcase</a>
+        <a class="btn btn-primary" href="#appointment">Book Appointment</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow">Inspired by Large Hospital Networks</span>
+        <h1>Advanced care, specialist access, and hospital discovery in one premium homepage</h1>
+        <p>This separate demo is inspired by enterprise healthcare websites like Apollo Hospitals, with large-scale service navigation, quick hospital discovery, patient action shortcuts, centres of excellence, and a trust-led hospital network presentation.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#appointment">Book Appointment</a>
+          <a class="btn btn-light" href="#services">Explore Specialties</a>
+        </div>
+        <div class="quick-grid">
+          <div class="quick-card"><strong>Book Appointment</strong><span>Connect patients to doctors and hospital locations from the first screen.</span></div>
+          <div class="quick-card"><strong>Find Hospital</strong><span>Help users discover nearby hospitals by city, service line, or urgency.</span></div>
+          <div class="quick-card"><strong>Health Check</strong><span>Promote preventive packages, screening journeys, and executive checkups.</span></div>
+          <div class="quick-card"><strong>Expert Opinion</strong><span>Create a fast path for second opinions and complex case routing.</span></div>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="search-card" id="appointment">
+          <h2>Search hospitals, doctors, and specialties</h2>
+          <div class="search-row">
+            <div class="field">Select City</div>
+            <div class="field">Choose Specialty</div>
+            <a class="btn btn-primary" href="#cities">Search</a>
+          </div>
+          <div class="chip-list">
+            <span class="chip">Cardiology</span>
+            <span class="chip">Oncology</span>
+            <span class="chip">Neurosciences</span>
+            <span class="chip">Orthopaedics</span>
+            <span class="chip">Emergency</span>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <h2>Patient quick access</h2>
+          <div class="contact-grid">
+            <div class="contact-tile"><strong>Emergency</strong><span>24/7 command center and ambulance support across major locations.</span></div>
+            <div class="contact-tile"><strong>International Desk</strong><span>Dedicated coordination for travel, treatment planning, and admission support.</span></div>
+            <div class="contact-tile"><strong>Digital Health</strong><span>Second opinion, remote consultations, reports, and digital follow-up journeys.</span></div>
+          </div>
+        </div>
+
+        <div class="art-card">
+          <div class="art-overlay">
+            <div class="network-card">
+              <h3>Built for a national hospital brand</h3>
+              <p>Use this concept as a premium enterprise healthcare landing page for multispeciality groups, city hospital networks, or trust-led medical institutions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="services">
+    <div class="section-header">
+      <div>
+        <h2>Centres of Excellence</h2>
+        <p>Apollo’s site emphasizes broad specialty-led care. This inspired version mirrors that product structure with strong service discovery blocks and clear clinical positioning.</p>
+      </div>
+    </div>
+    <div class="card-grid">
+      <article class="service-card"><div class="service-icon">CV</div><h3>Cardiac Sciences</h3><p>Advanced intervention, surgery pathways, rehab coordination, and long-term heart health programs.</p></article>
+      <article class="service-card"><div class="service-icon">ON</div><h3>Oncology</h3><p>Integrated cancer care with diagnostics, precision treatment planning, and multidisciplinary coordination.</p></article>
+      <article class="service-card"><div class="service-icon">NS</div><h3>Neurosciences</h3><p>Stroke, spine, neuro intervention, recovery planning, and complex neurological case management.</p></article>
+      <article class="service-card"><div class="service-icon">OR</div><h3>Orthopaedics</h3><p>Joint care, trauma, sports rehabilitation, and post-operative recovery programs under one service line.</p></article>
+    </div>
+  </section>
+
+  <section class="section" id="cities">
+    <div class="section-header">
+      <div>
+        <h2>Hospital Network by City</h2>
+        <p>The live Apollo site highlights a broad city footprint. This concept turns that into a polished discovery grid for flagship hospital locations and regional presence.</p>
+      </div>
+    </div>
+    <div class="card-grid">
+      <article class="city-card"><h3>Chennai</h3><p>Flagship tertiary care campus with high-acuity services, surgical depth, and premium inpatient experiences.</p><span class="city-badge">8 hospital units</span></article>
+      <article class="city-card"><h3>Hyderabad</h3><p>Specialty-led hospital discovery for metro patients with emergency, oncology, and cardiac pathways.</p><span class="city-badge">5 major locations</span></article>
+      <article class="city-card"><h3>Bengaluru</h3><p>Fast access to specialists, digital appointment flow, and strong executive-health positioning.</p><span class="city-badge">4 urban campuses</span></article>
+      <article class="city-card"><h3>Delhi NCR</h3><p>High-visibility metro landing page model for premium tertiary and quaternary care presentation.</p><span class="city-badge">3 key hubs</span></article>
+    </div>
+  </section>
+
+  <section class="section" id="programs">
+    <div class="split">
+      <div class="trust-panel">
+        <h2>Why patients choose a hospital group like this</h2>
+        <p>Patients evaluate large hospital networks on trust, outcomes, specialist depth, emergency readiness, and ease of access. The Apollo homepage leans heavily into those signals, so this inspired page does the same with a polished enterprise presentation.</p>
+        <div class="stats-grid">
+          <div class="stat"><strong>70+</strong><span>Specialty programs and integrated centres of care</span></div>
+          <div class="stat"><strong>30+</strong><span>Urban and regional access points across major cities</span></div>
+          <div class="stat"><strong>24/7</strong><span>Emergency coordination, digital support, and triage pathways</span></div>
+          <div class="stat"><strong>1</strong><span>Unified hospital brand experience across patient journeys</span></div>
+        </div>
+      </div>
+
+      <div class="insight-grid" id="library">
+        <article class="insight-card">
+          <h3>Preventive Programs</h3>
+          <p>Feature executive checkups, women’s health, senior wellness, heart-risk screening, and corporate health programs as conversion drivers.</p>
+        </article>
+        <article class="insight-card">
+          <h3>Health Library</h3>
+          <p>Add a scalable content engine for diseases, treatments, symptoms, diagnostics, and medicine explainers to strengthen SEO and patient education.</p>
+        </article>
+        <article class="insight-card">
+          <h3>International Patient Services</h3>
+          <p>Provide clear global inquiry, travel support, and treatment coordination for a hospital group targeting international audiences.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta">
+      <div>
+        <h2>Want this adapted for your own hospital brand?</h2>
+        <p>This separate demo can be turned into a full hospital-group website with custom branding, city pages, doctor directories, specialty landing pages, and appointment flows.</p>
+      </div>
+      <a class="btn btn-light" href="../index.html">Back to Demo Showcase</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <h3>NovaCare Hospitals</h3>
+          <p>A concept-only multispeciality hospital network website built as a separate GitHub Pages demo, inspired by the information architecture and premium healthcare feel of enterprise hospital brands such as Apollo Hospitals.</p>
+        </div>
+        <div>
+          <h3>Core Sections</h3>
+          <ul>
+            <li>Book Appointment</li>
+            <li>Find Hospital</li>
+            <li>Centres of Excellence</li>
+            <li>Health Checks</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Programs</h3>
+          <ul>
+            <li>Preventive Care</li>
+            <li>Emergency Access</li>
+            <li>Second Opinion</li>
+            <li>International Patients</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Important</h3>
+          <ul>
+            <li>Demo content only</li>
+            <li>Not an official hospital website</li>
+            <li>No live booking backend</li>
+            <li>Built for showcase use</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mini">This page is an inspired original demo and is not affiliated with Apollo Hospitals.</div>
+    </div>
+  </footer>
 </body>
 </html>`;
 }
@@ -590,15 +1296,18 @@ function main() {
   }
 
   fs.writeFileSync(path.join(docsDir, "index.html"), renderIndex(doctors), "utf8");
+  fs.writeFileSync(path.join(apolloInspiredDir, "index.html"), renderApolloInspiredSite(), "utf8");
 
-  console.log(`Generated ${doctors.length} page(s):`);
+  console.log(`Generated ${doctors.length + 1} page(s):`);
   console.log("- docs/index.html");
+  console.log("- docs/apollo-inspired/index.html");
   for (const doctor of doctors) {
     console.log(`- docs/${doctor.slug}.html`);
   }
   console.log("");
   console.log("GitHub Pages URLs:");
   console.log(`- ${siteBaseUrl}/`);
+  console.log(`- ${siteBaseUrl}/apollo-inspired/`);
   for (const doctor of doctors) {
     console.log(`- ${siteBaseUrl}/${doctor.slug}.html`);
   }
