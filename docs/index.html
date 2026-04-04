@@ -5,134 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctor Demo Websites</title>
   <style>
-    :root {
-      --ink: #1a1720;
-      --muted: #6d6677;
-      --paper: #fffaf2;
-      --line: rgba(42, 32, 57, 0.08);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(236, 72, 153, 0.1), transparent 26%),
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 24%),
-        linear-gradient(180deg, #fffdf8 0%, #f7f0e7 100%);
-    }
-    .wrap {
-      max-width: 1220px;
-      margin: 0 auto;
-      padding: 42px 20px 68px;
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 24px;
-      align-items: end;
-      margin-bottom: 34px;
-    }
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(46px, 6vw, 82px);
-      line-height: 0.92;
-      letter-spacing: -0.05em;
-    }
-    .sub {
-      margin: 0;
-      color: var(--muted);
-      font-size: 18px;
-      max-width: 58ch;
-      line-height: 1.7;
-    }
-    .hero-card {
-      padding: 26px;
-      border-radius: 28px;
-      background: rgba(255, 250, 242, 0.78);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.82);
-      box-shadow: 0 24px 60px rgba(33, 24, 48, 0.08);
-    }
-    .hero-card p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 22px;
-    }
-    .card {
-      overflow: hidden;
-      position: relative;
-      border-radius: 30px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.82));
-      border: 1px solid rgba(255,255,255,0.76);
-      box-shadow: 0 20px 50px rgba(33, 24, 48, 0.1);
-      backdrop-filter: blur(8px);
-    }
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 220px;
-      background: linear-gradient(135deg, var(--surface), rgba(255,255,255,0));
-      pointer-events: none;
-    }
-    .card img {
-      width: 100%;
-      height: 260px;
-      object-fit: cover;
-      display: block;
-      background: linear-gradient(135deg, var(--surface), #ffffff);
-    }
-    .content {
-      position: relative;
-      padding: 24px;
-    }
-    .eyebrow {
-      margin: 0 0 12px;
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    h2 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      letter-spacing: -0.03em;
-    }
-    .content p {
-      margin: 0 0 10px;
-    }
-    .meta {
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .copy {
-      color: #334155;
-      line-height: 1.65;
-      min-height: 90px;
-    }
-    a {
-      display: inline-block;
-      margin-top: 14px;
-      text-decoration: none;
-      color: white;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      padding: 12px 16px;
-      border-radius: 14px;
-      font-weight: 700;
-      box-shadow: 0 16px 30px color-mix(in srgb, var(--accent2) 26%, transparent);
-    }
-    @media (max-width: 860px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-    }
+    :root{--ink:#1a1720;--muted:#6d6677}
+    *{box-sizing:border-box} body{margin:0;font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:radial-gradient(circle at top left,rgba(236,72,153,.1),transparent 26%),radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 24%),linear-gradient(180deg,#fffdf8 0%,#f7f0e7 100%)}
+    .wrap{max-width:1220px;margin:0 auto;padding:42px 20px 68px}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end;margin-bottom:34px}
+    h1{margin:0 0 10px;font-size:clamp(46px,6vw,82px);line-height:.92;letter-spacing:-.05em}
+    .sub{margin:0;color:var(--muted);font-size:18px;max-width:58ch;line-height:1.7;font-family:Arial,sans-serif}
+    .hero-card{padding:26px;border-radius:28px;background:rgba(255,250,242,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.82);box-shadow:0 24px 60px rgba(33,24,48,.08)}
+    .hero-card p{margin:0 0 14px;color:var(--muted);line-height:1.7;font-family:Arial,sans-serif}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+    .card{overflow:hidden;position:relative;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.82));border:1px solid rgba(255,255,255,.76);box-shadow:0 20px 50px rgba(33,24,48,.1)}
+    .card::before{content:"";position:absolute;inset:0 0 auto 0;height:220px;background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));pointer-events:none}
+    .card img{width:100%;height:260px;object-fit:cover;display:block;background:linear-gradient(135deg,var(--surface),#fff)}
+    .content{position:relative;padding:24px}
+    .eyebrow{margin:0 0 12px;color:var(--accent);font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+    h2{margin:0 0 8px;font-size:28px;letter-spacing:-.03em}
+    .content p{margin:0 0 10px;font-family:Arial,sans-serif}
+    .meta{color:var(--muted);font-weight:600}
+    .copy{color:#334155;line-height:1.65;min-height:90px}
+    a{display:inline-block;margin-top:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));padding:12px 16px;border-radius:14px;font:700 14px/1 Arial,sans-serif}
+    @media (max-width:860px){.hero{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -140,15 +32,14 @@
     <section class="hero">
       <div>
         <h1>Doctor Demo Websites</h1>
-        <p class="sub">Six premium demo websites for private practices, each generated from your JSON and ready for outreach, sales demos, or GitHub Pages hosting.</p>
+        <p class="sub">Every doctor profile now uses a different layout system, so the showcase feels like six separate premium website concepts instead of one repeated template.</p>
       </div>
       <aside class="hero-card">
-        <p><strong>What’s included</strong></p>
-        <p>High-end doctor profile pages, premium homepage cards, deploy-safe image assets, and a clean flat docs structure for publishing.</p>
+        <p><strong>What changed</strong></p>
+        <p>Distinct hero structures, different content flows, varied card systems, unique page proportions, and separate visual moods for every doctor profile.</p>
       </aside>
     </section>
     <section class="grid">
-      
         <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#e6fffa;">
           <img src="./assets/images/dr-ravi-kumar.svg" alt="Dr. Ravi Kumar" />
           <div class="content">
@@ -157,7 +48,7 @@
             <p>Lotus Heart &amp; Wellness Clinic</p>
             <p class="meta">Bengaluru, Karnataka · 14 years</p>
             <p class="copy">Dr. Ravi Kumar provides preventive and long-term cardiac care with a focus on clear communication, practical treatment plans, and patient-friendly follow-up.</p>
-            <a href="./dr-ravi-kumar.html">View Premium Demo</a>
+            <a href="./dr-ravi-kumar.html">Open Unique Demo</a>
           </div>
         </article>
 
@@ -169,7 +60,7 @@
             <p>Aster Women &amp; Wellness Studio</p>
             <p class="meta">Hyderabad, Telangana · 11 years</p>
             <p class="copy">Dr. Ananya Sharma combines evidence-based women’s health care with a calm, modern clinic experience designed for trust, privacy, and continuity.</p>
-            <a href="./dr-ananya-sharma.html">View Premium Demo</a>
+            <a href="./dr-ananya-sharma.html">Open Unique Demo</a>
           </div>
         </article>
 
@@ -181,7 +72,7 @@
             <p>The Urban Skin Atelier</p>
             <p class="meta">Mumbai, Maharashtra · 9 years</p>
             <p class="copy">Dr. Arjun Mehta is known for refined aesthetic dermatology and long-term skin health programs tailored to busy urban professionals.</p>
-            <a href="./dr-arjun-mehta.html">View Premium Demo</a>
+            <a href="./dr-arjun-mehta.html">Open Unique Demo</a>
           </div>
         </article>
 
@@ -193,7 +84,7 @@
             <p>MindSpring Child Development Center</p>
             <p class="meta">Chennai, Tamil Nadu · 13 years</p>
             <p class="copy">Dr. Meera Iyer focuses on thoughtful pediatric care that supports both children and parents with clarity, warmth, and reliable follow-through.</p>
-            <a href="./dr-meera-iyer.html">View Premium Demo</a>
+            <a href="./dr-meera-iyer.html">Open Unique Demo</a>
           </div>
         </article>
 
@@ -205,7 +96,7 @@
             <p>Precision Ortho &amp; Sports Lab</p>
             <p class="meta">Pune, Maharashtra · 16 years</p>
             <p class="copy">Dr. Kabir Singh leads a premium orthopedic and sports recovery practice built around precise diagnosis, rehabilitation planning, and durable outcomes.</p>
-            <a href="./dr-kabir-singh.html">View Premium Demo</a>
+            <a href="./dr-kabir-singh.html">Open Unique Demo</a>
           </div>
         </article>
 
@@ -217,10 +108,9 @@
             <p>Serene Dental Lounge</p>
             <p class="meta">New Delhi, Delhi · 10 years</p>
             <p class="copy">Dr. Sana Farooq’s practice blends cosmetic precision with a hospitality-first clinic atmosphere for patients seeking confidence and comfort.</p>
-            <a href="./dr-sana-farooq.html">View Premium Demo</a>
+            <a href="./dr-sana-farooq.html">Open Unique Demo</a>
           </div>
-        </article>
-    </section>
+        </article></section>
   </main>
 </body>
 </html>
