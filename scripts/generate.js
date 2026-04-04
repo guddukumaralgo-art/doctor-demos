@@ -5,6 +5,8 @@ const rootDir = path.resolve(__dirname, "..");
 const doctorsFile = path.join(rootDir, "data", "doctors.json");
 const templateFile = path.join(rootDir, "template", "clinic-template.html");
 const docsDir = path.join(rootDir, "docs");
+const sourceImagesDir = path.join(rootDir, "data", "images");
+const outputImagesDir = path.join(docsDir, "assets", "images");
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
@@ -15,6 +17,7 @@ function cleanDocs() {
     fs.rmSync(docsDir, { recursive: true, force: true });
   }
   ensureDir(docsDir);
+  ensureDir(outputImagesDir);
 }
 
 function escapeHtml(value) {
@@ -85,6 +88,7 @@ function normalizeDoctor(doctor) {
   const clinic = doctor.clinic_name || doctor.clinic;
   const city = doctor.location || doctor.city;
   const slug = doctor.slug || slugify(name || clinic);
+  const imageFileName = doctor.image ? path.basename(doctor.image) : "";
 
   if (!name || !clinic || !city || !slug) {
     throw new Error("Each doctor needs doctor_name or name, clinic_name or clinic, location or city, and a valid slug.");
@@ -97,8 +101,24 @@ function normalizeDoctor(doctor) {
     clinic,
     city,
     address: doctor.address || city,
-    imagePath: doctor.image || "",
+    image: imageFileName,
+    imagePath: imageFileName ? `./assets/images/${imageFileName}` : "",
   };
+}
+
+function copyDoctorImage(doctor) {
+  if (!doctor.image) {
+    return;
+  }
+
+  const sourceFile = path.join(sourceImagesDir, doctor.image);
+  const outputFile = path.join(outputImagesDir, doctor.image);
+
+  if (!fs.existsSync(sourceFile)) {
+    throw new Error(`Image not found: data/images/${doctor.image}`);
+  }
+
+  fs.copyFileSync(sourceFile, outputFile);
 }
 
 function fillTemplate(template, doctor) {
@@ -216,6 +236,7 @@ function main() {
   const doctors = readDoctors().map(normalizeDoctor);
 
   for (const doctor of doctors) {
+    copyDoctorImage(doctor);
     const html = fillTemplate(template, doctor);
     const outputFile = path.join(docsDir, `${doctor.slug}.html`);
     fs.writeFileSync(outputFile, html, "utf8");
