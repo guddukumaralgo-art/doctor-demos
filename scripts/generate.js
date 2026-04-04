@@ -6,6 +6,7 @@ const doctorsFile = path.join(rootDir, "data", "doctors.json");
 const docsDir = path.join(rootDir, "docs");
 const sourceImagesDir = path.join(rootDir, "data", "images");
 const outputImagesDir = path.join(docsDir, "assets", "images");
+const siteBaseUrl = "https://guddukumaralgo-art.github.io/doctor-demos";
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
@@ -594,6 +595,12 @@ function main() {
   console.log("- docs/index.html");
   for (const doctor of doctors) {
     console.log(`- docs/${doctor.slug}.html`);
+  }
+  console.log("");
+  console.log("GitHub Pages URLs:");
+  console.log(`- ${siteBaseUrl}/`);
+  for (const doctor of doctors) {
+    console.log(`- ${siteBaseUrl}/${doctor.slug}.html`);
   }
 }
 
