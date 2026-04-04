@@ -1,0 +1,22 @@
+[
+  {
+    "slug": "dr-ravi-kumar",
+    "doctor_name": "Dr. Ravi Kumar",
+    "clinic_name": "Lotus Heart & Wellness Clinic",
+    "specialty": "Cardiology",
+    "location": "Bengaluru, Karnataka",
+    "bio": "Dr. Ravi Kumar provides preventive and long-term cardiac care with a focus on clear communication, practical treatment plans, and patient-friendly follow-up.",
+    "experience": "14 years",
+    "availability": "Mon-Sat, 9:00 AM-6:00 PM",
+    "phone": "+91 98765 43210",
+    "email": "appointments@lotusheartclinic.example",
+    "address": "12 Residency Road, Ashok Nagar, Bengaluru",
+    "image": "../data/images/dr-ravi-kumar.jpg",
+    "services": [
+      "General cardiology consultation",
+      "ECG and preventive heart screening",
+      "Hypertension and cholesterol management",
+      "Post-procedure follow-up care"
+    ]
+  }
+]
