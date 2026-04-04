@@ -11,7 +11,7 @@
     "phone": "+91 98765 43210",
     "email": "appointments@lotusheartclinic.example",
     "address": "12 Residency Road, Ashok Nagar, Bengaluru",
-    "image": "../data/images/dr-ravi-kumar.jpg",
+    "image": "dr-ravi-kumar.jpg",
     "services": [
       "General cardiology consultation",
       "ECG and preventive heart screening",
