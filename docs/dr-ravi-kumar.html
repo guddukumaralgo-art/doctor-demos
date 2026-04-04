@@ -3,57 +3,567 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dr. Ravi Kumar | Lotus Heart &amp; Wellness Clinic</title>
+  <title>Dr. Ravi Kumar | Cardiology in Bengaluru, Karnataka</title>
+  <meta name="description" content="Dr. Ravi Kumar at Lotus Heart &amp; Wellness Clinic offers Cardiology care in Bengaluru, Karnataka." />
+  <meta property="og:title" content="Dr. Ravi Kumar | Cardiology in Bengaluru, Karnataka" />
+  <meta property="og:description" content="Dr. Ravi Kumar at Lotus Heart &amp; Wellness Clinic offers Cardiology care in Bengaluru, Karnataka." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://guddukumaralgo-art.github.io/doctor-demos/dr-ravi-kumar.html" />
+  <meta property="og:image" content="https://guddukumaralgo-art.github.io/doctor-demos/assets/images/dr-ravi-kumar.svg" />
+  <link rel="canonical" href="https://guddukumaralgo-art.github.io/doctor-demos/dr-ravi-kumar.html" />
 </head>
-<body class="layout-one">
+<body class="theme-blue">
 <style>
-      :root{--accent:#0f766e;--accent2:#2563eb;--surface:#e6fffa;--ink:#102033;--muted:#64748b;}
-      *{box-sizing:border-box} body{margin:0;font-family:Georgia,"Times New Roman",serif;background:linear-gradient(180deg,#fffdf9 0%,#eef7ff 100%);color:var(--ink)}
-      .page{max-width:1180px;margin:0 auto;padding:28px 18px 60px}
-      .nav{display:flex;justify-content:space-between;align-items:center;padding:6px 0 18px}
-      .nav a,.nav strong{text-decoration:none;color:var(--ink);font:600 14px/1.2 Arial,sans-serif}
-      .hero{display:grid;grid-template-columns:340px 1fr;gap:28px;padding:34px;border-radius:34px;background:linear-gradient(135deg,var(--surface),rgba(255,255,255,.92));box-shadow:0 28px 60px rgba(15,23,42,.1)}
-      img{width:100%;aspect-ratio:1/1.15;object-fit:cover;border-radius:28px;background:#fff}
-      .tag{display:inline-block;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.9);color:var(--accent);font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
-      h1{margin:16px 0 10px;font-size:clamp(38px,6vw,72px);line-height:.93}
-      .clinic{font:600 24px/1.4 Arial,sans-serif;margin-bottom:12px}
-      .bio{max-width:58ch;color:var(--muted);font:400 17px/1.75 Arial,sans-serif}
-      .quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
-      .quick div{padding:16px;border-radius:18px;background:rgba(255,255,255,.84)}
-      .quick span{display:block;margin-bottom:6px;color:var(--muted);font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
-      .quick strong{font:700 17px/1.4 Arial,sans-serif}
-      .actions{display:flex;gap:12px;flex-wrap:wrap}.btn{padding:14px 18px;border-radius:16px;text-decoration:none;font:700 14px/1 Arial,sans-serif}.solid{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}.ghost{background:#fff;color:var(--ink)}
-      .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:20px}
-      .card{background:rgba(255,255,255,.82);padding:24px;border-radius:26px;box-shadow:0 18px 36px rgba(15,23,42,.06)}
-      h2{margin:0 0 16px;font-size:22px}
-      .services{list-style:none;padding:0;margin:0;display:grid;gap:12px}.services li{padding:14px 16px;border-radius:18px;background:#fff;font:500 15px/1.6 Arial,sans-serif}
-      .detail-list{display:grid;gap:14px}.detail span{display:block;color:var(--muted);font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.detail strong{font:500 15px/1.7 Arial,sans-serif}
-      @media (max-width:860px){.hero,.grid,.quick{grid-template-columns:1fr}}
+      :root{
+        --accent:#0f766e;
+        --accent2:#2563eb;
+        --surface:#e6fffa;
+        --ink:#102033;
+        --muted:#62748a;
+        --line:rgba(16,32,51,.08);
+        --panel:rgba(255,255,255,.86);
+        --buttonText:#ffffff;
+        --secondaryButtonBg:#ffffff;
+        --secondaryButtonText:#102033;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family:Arial,sans-serif;
+        background:linear-gradient(180deg,#f7fbff 0%,#edf7ff 100%);
+      }
+      .page{
+        width:min(1180px,calc(100% - 28px));
+        margin:0 auto;
+        padding:26px 0 56px;
+      }
+      .nav{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:14px;
+        padding-bottom:18px;
+      }
+      .nav strong,.nav a{
+        color:var(--ink);
+        text-decoration:none;
+        font:700 14px/1.2 Arial,sans-serif;
+      }
+      .nav a{
+        padding:11px 14px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:rgba(255,255,255,.72);
+      }
+      .hero{
+        position:relative;
+        overflow:hidden;
+        display:grid;
+        grid-template-columns:320px 1fr;
+        gap:30px;
+        padding:34px;
+        border-radius:34px;
+        background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.84)), linear-gradient(135deg, var(--surface), rgba(255,255,255,0));
+        border:1px solid rgba(255,255,255,.78);
+        box-shadow:0 28px 80px rgba(15,23,42,.10);
+      }
+      .hero::after{
+        content:"";
+        position:absolute;
+        right:-80px;
+        top:-80px;
+        width:240px;
+        height:240px;
+        border-radius:50%;
+        background:linear-gradient(135deg,color-mix(in srgb, var(--accent2) 20%, transparent), transparent);
+        pointer-events:none;
+      }
+      .portrait{
+        position:relative;
+        min-height:420px;
+      }
+      .portrait::before{
+        content:"";
+        position:absolute;
+        inset:-14px;
+        border-radius:30px;
+        transform:rotate(-4deg);
+        background:linear-gradient(135deg,var(--accent),var(--accent2));
+        opacity:.14;
+      }
+      .portrait img{
+        position:relative;
+        width:100%;
+        display:block;
+        height:100%;
+        min-height:420px;
+        object-fit:cover;
+        object-position:center top;
+        border-radius:28px;
+        background:linear-gradient(135deg,var(--surface),#ffffff);
+        box-shadow:0 22px 40px rgba(15,23,42,.12);
+      }
+      .image-frame{
+        position:relative;
+        height:100%;
+      }
+      .image-fallback{
+        position:absolute;
+        inset:0;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        padding:24px;
+        border-radius:28px;
+        background:
+          linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, white), color-mix(in srgb, var(--accent2) 14%, white)),
+          linear-gradient(135deg,var(--surface),#fff);
+        color:var(--ink);
+        font:700 18px/1.6 Georgia,"Times New Roman",serif;
+        letter-spacing:-.02em;
+      }
+      .image-frame.is-fallback .image-fallback{
+        display:flex;
+      }
+      .image-frame.is-fallback img{
+        opacity:0;
+      }
+      .eyebrow{
+        display:inline-block;
+        padding:9px 14px;
+        border-radius:999px;
+        background:rgba(255,255,255,.86);
+        color:var(--accent);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.1em;
+        text-transform:uppercase;
+      }
+      h1{
+        margin:18px 0 10px;
+        font:700 clamp(38px,6vw,70px)/.92 Georgia,"Times New Roman",serif;
+        letter-spacing:-.05em;
+      }
+      .clinic{
+        font-size:24px;
+        font-weight:700;
+        margin-bottom:12px;
+      }
+      .lede{
+        margin:0;
+        max-width:60ch;
+        color:var(--muted);
+        font-size:17px;
+        line-height:1.8;
+      }
+      .hero-meta{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:14px;
+        margin-top:24px;
+      }
+      .meta-card{
+        padding:16px;
+        border-radius:20px;
+        background:rgba(255,255,255,.74);
+        border:1px solid var(--line);
+      }
+      .meta-card span{
+        display:block;
+        margin-bottom:7px;
+        color:var(--muted);
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .meta-card strong{
+        font-size:16px;
+        line-height:1.5;
+      }
+      .hero-actions{
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-top:24px;
+      }
+      .btn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:14px 18px;
+        border-radius:16px;
+        text-decoration:none;
+        font-weight:700;
+      }
+      .btn-primary{
+        background:linear-gradient(135deg, var(--accent), var(--accent2));
+        color:var(--buttonText);
+        box-shadow:0 18px 32px rgba(37,99,235,.18);
+      }
+      .btn-secondary{
+        background:var(--secondaryButtonBg);
+        color:var(--secondaryButtonText);
+        border:1px solid var(--line);
+      }
+      .content-grid{
+        display:grid;
+        grid-template-columns:1.06fr .94fr;
+        gap:18px;
+        margin-top:20px;
+      }
+      .stack{
+        display:grid;
+        gap:18px;
+      }
+      .card{
+        padding:24px;
+        border-radius:28px;
+        background:var(--panel);
+        border:1px solid var(--line);
+        box-shadow:0 18px 34px rgba(15,23,42,.06);
+        backdrop-filter:blur(8px);
+      }
+      .card h2{
+        margin:0 0 16px;
+        font:700 24px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.03em;
+      }
+      .copy{
+        color:var(--muted);
+        font-size:15px;
+        line-height:1.8;
+      }
+      .services{
+        list-style:none;
+        padding:0;
+        margin:0;
+        display:grid;
+        gap:12px;
+      }
+      .services li{
+        padding:15px 16px;
+        border-radius:18px;
+        background:#ffffff;
+        border:1px solid var(--line);
+        line-height:1.7;
+      }
+      .detail-list{
+        display:grid;
+        gap:14px;
+      }
+      .detail{
+        padding-bottom:14px;
+        border-bottom:1px solid var(--line);
+      }
+      .detail:last-child{
+        padding-bottom:0;
+        border-bottom:0;
+      }
+      .detail span{
+        display:block;
+        margin-bottom:7px;
+        color:var(--muted);
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .detail strong{
+        font-size:15px;
+        line-height:1.7;
+      }
+      .availability{
+        display:grid;
+        gap:14px;
+      }
+      .availability-box{
+        padding:18px;
+        border-radius:20px;
+        background:#ffffff;
+        border:1px solid var(--line);
+      }
+      .availability-box strong{
+        display:block;
+        margin-bottom:8px;
+        font-size:17px;
+      }
+      .availability-box p{
+        margin:0;
+        color:var(--muted);
+        line-height:1.7;
+      }
+      .trust-strip{
+        display:grid;
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:12px;
+      }
+      .trust-badge{
+        padding:15px 16px;
+        border-radius:18px;
+        background:#ffffff;
+        border:1px solid var(--line);
+      }
+      .trust-badge strong{
+        display:block;
+        margin-bottom:6px;
+        font-size:15px;
+      }
+      .trust-badge span{
+        color:var(--muted);
+        font-size:13px;
+        line-height:1.6;
+      }
+      .testimonial-grid{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:14px;
+      }
+      .testimonial{
+        padding:18px;
+        border-radius:20px;
+        background:#ffffff;
+        border:1px solid var(--line);
+      }
+      .testimonial p{
+        margin:0 0 12px;
+        color:var(--muted);
+        line-height:1.75;
+      }
+      .testimonial strong{
+        display:block;
+        font-size:14px;
+      }
+      .testimonial span{
+        display:block;
+        margin-top:4px;
+        color:var(--muted);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .cta{
+        margin-top:18px;
+        padding:28px;
+        border-radius:30px;
+        background:linear-gradient(135deg, var(--accent), var(--accent2));
+        color:#ffffff;
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:16px;
+        align-items:center;
+      }
+      .cta h2{
+        margin:0 0 10px;
+        font:700 28px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.03em;
+      }
+      .cta p{
+        margin:0;
+        line-height:1.8;
+        color:rgba(255,255,255,.84);
+      }
+      .cta .btn{
+        background:#ffffff;
+        color:#0f172a;
+      }
+      .floating-actions{
+        position:fixed;
+        right:18px;
+        bottom:18px;
+        z-index:40;
+        display:grid;
+        gap:12px;
+      }
+      .floating-btn{
+        min-width:178px;
+        padding:14px 16px;
+        border-radius:999px;
+        text-decoration:none;
+        font-weight:700;
+        font-size:14px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:10px;
+        box-shadow:0 18px 34px rgba(15,23,42,.16);
+      }
+      .floating-btn.call{
+        background:linear-gradient(135deg,var(--accent),var(--accent2));
+        color:#fff;
+      }
+      .floating-btn.whatsapp{
+        background:#25d366;
+        color:#fff;
+      }
+      footer{
+        margin-top:18px;
+        padding:22px 8px 6px;
+        color:var(--muted);
+        text-align:center;
+        font-size:14px;
+        line-height:1.7;
+      }
+      @media (max-width:960px){
+        .hero,.content-grid,.cta{grid-template-columns:1fr}
+        .hero-meta{grid-template-columns:1fr}
+        .portrait,.portrait img{min-height:320px}
+        .trust-strip,.testimonial-grid{grid-template-columns:1fr}
+      }
+      @media (max-width:640px){
+        .floating-actions{
+          left:14px;
+          right:14px;
+          bottom:14px;
+          grid-template-columns:1fr 1fr;
+        }
+        .floating-btn{
+          min-width:0;
+          padding:14px 12px;
+          font-size:13px;
+        }
+      }
     </style>
     <main class="page">
-      <div class="nav"><strong>Signature Practice</strong><a href="./index.html">Back to Showcase</a></div>
+      <div class="nav">
+        <strong>Premium Clinic Demo</strong>
+        <a href="./index.html">Back to Homepage</a>
+      </div>
+
       <section class="hero">
-        <img src="./assets/images/dr-ravi-kumar.svg" alt="Dr. Ravi Kumar" />
+        <div class="portrait">
+          <div class="image-frame js-image-frame">
+            <img src="./assets/images/dr-ravi-kumar.svg" alt="Dr. Ravi Kumar" />
+            <div class="image-fallback">Dr. Ravi Kumar • Cardiology</div>
+          </div>
+        </div>
         <div>
-          <span class="tag">Cardiology</span>
+          <span class="eyebrow">Cardiology</span>
           <h1>Dr. Ravi Kumar</h1>
           <div class="clinic">Lotus Heart &amp; Wellness Clinic</div>
-          <p class="bio">Dr. Ravi Kumar provides preventive and long-term cardiac care with a focus on clear communication, practical treatment plans, and patient-friendly follow-up.</p>
-          <div class="quick">
-            <div><span>Experience</span><strong>14 years</strong></div>
-            <div><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div>
-            <div><span>Location</span><strong>Bengaluru, Karnataka</strong></div>
+          <p class="lede">Dr. Ravi Kumar provides preventive and long-term cardiac care with a focus on clear communication, practical treatment plans, and patient-friendly follow-up.</p>
+
+          <div class="hero-meta">
+            <div class="meta-card"><span>Experience</span><strong>14 years</strong></div>
+            <div class="meta-card"><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div>
+            <div class="meta-card"><span>Location</span><strong>Bengaluru, Karnataka</strong></div>
           </div>
-          <div class="actions">
-            <a class="btn solid" href="tel:+91 98765 43210">Call Now</a>
-            <a class="btn ghost" href="mailto:appointments@lotusheartclinic.example">Book Appointment</a>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="tel:+91 98765 43210">Call Clinic</a>
+            <a class="btn btn-secondary" href="https://wa.me/919876543210" target="_blank" rel="noreferrer">WhatsApp Now</a>
+            <a class="btn btn-secondary" href="mailto:appointments@lotusheartclinic.example">Book Appointment</a>
           </div>
         </div>
       </section>
-      <section class="grid">
-        <article class="card"><h2>Signature Services</h2><ul class="services"><li>General cardiology consultation</li><li>ECG and preventive heart screening</li><li>Hypertension and cholesterol management</li><li>Post-procedure follow-up care</li></ul></article>
-        <aside class="card"><h2>Visit Details</h2><div class="detail-list"><div class="detail"><span>Clinic</span><strong>Lotus Heart &amp; Wellness Clinic</strong></div><div class="detail"><span>Address</span><strong>12 Residency Road, Ashok Nagar, Bengaluru</strong></div><div class="detail"><span>Phone</span><strong>+91 98765 43210</strong></div><div class="detail"><span>Email</span><strong>appointments@lotusheartclinic.example</strong></div><div class="detail"><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div></div></aside>
+
+      <section class="content-grid">
+        <div class="stack">
+          <article class="card">
+            <h2>About Doctor</h2>
+            <p class="copy">Dr. Ravi Kumar provides preventive and long-term cardiac care with a focus on clear communication, practical treatment plans, and patient-friendly follow-up.</p>
+          </article>
+
+          <article class="card">
+            <h2>Trust Highlights</h2>
+            <div class="trust-strip">
+              <div class="trust-badge"><strong>14 years</strong><span>Years of experience in patient care</span></div>
+              <div class="trust-badge"><strong>Patient-First Care</strong><span>Clear communication and respectful follow-up</span></div>
+              <div class="trust-badge"><strong>Modern Clinic</strong><span>Clean, reassuring, and professional experience</span></div>
+              <div class="trust-badge"><strong>Easy Appointments</strong><span>Fast contact by phone, email, and WhatsApp</span></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Services</h2>
+            <ul class="services"><li>General cardiology consultation</li><li>ECG and preventive heart screening</li><li>Hypertension and cholesterol management</li><li>Post-procedure follow-up care</li></ul>
+          </article>
+
+          <article class="card">
+            <h2>Patient Testimonials</h2>
+            <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how patient feedback could appear on a premium clinic page.</p>
+            <div class="testimonial-grid">
+              <div class="testimonial">
+                <p>“The consultation felt calm, professional, and very easy to understand from the first visit onward.”</p>
+                <strong>Demo Patient A</strong>
+                <span>Demo Content</span>
+              </div>
+              <div class="testimonial">
+                <p>“Booking was simple, the clinic felt modern and clean, and every step was explained clearly.”</p>
+                <strong>Demo Patient B</strong>
+                <span>Demo Content</span>
+              </div>
+              <div class="testimonial">
+                <p>“A reassuring experience with thoughtful care, practical advice, and smooth follow-up communication.”</p>
+                <strong>Demo Patient C</strong>
+                <span>Demo Content</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Strong Call To Action</h2>
+            <p class="copy">Patients looking for trusted cardiology care can connect quickly with Dr. Ravi Kumar for consultation, treatment planning, and follow-up support.</p>
+            <div class="hero-actions" style="margin-top:18px">
+              <a class="btn btn-primary" href="tel:+91 98765 43210">Talk To Clinic</a>
+              <a class="btn btn-secondary" href="https://wa.me/919876543210" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
+              <a class="btn btn-secondary" href="mailto:appointments@lotusheartclinic.example">Request Appointment</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="stack">
+          <aside class="card">
+            <h2>Clinic Information</h2>
+            <div class="detail-list"><div class="detail"><span>Clinic</span><strong>Lotus Heart &amp; Wellness Clinic</strong></div><div class="detail"><span>Address</span><strong>12 Residency Road, Ashok Nagar, Bengaluru</strong></div><div class="detail"><span>Phone</span><strong>+91 98765 43210</strong></div><div class="detail"><span>Email</span><strong>appointments@lotusheartclinic.example</strong></div><div class="detail"><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div></div>
+          </aside>
+
+          <aside class="card">
+            <h2>Availability</h2>
+            <div class="availability">
+              <div class="availability-box">
+                <strong>Mon-Sat, 9:00 AM-6:00 PM</strong>
+                <p>Appointment windows can be positioned here clearly for mobile and desktop visitors with strong readability.</p>
+              </div>
+              <div class="availability-box">
+                <strong>Bengaluru, Karnataka</strong>
+                <p>12 Residency Road, Ashok Nagar, Bengaluru</p>
+              </div>
+            </div>
+          </aside>
+        </div>
       </section>
+
+      <section class="cta">
+        <div>
+          <h2>Book a premium consultation experience</h2>
+          <p>Designed for trustworthy medical brands, this concept highlights specialist care, smooth appointment intent, and clean patient-first communication.</p>
+        </div>
+        <a class="btn" href="mailto:appointments@lotusheartclinic.example">Schedule Now</a>
+      </section>
+
+      <footer>
+        This is a concept demo website created for showcase purposes only. It is not an official clinic website.
+      </footer>
+
+      <div class="floating-actions">
+        <a class="floating-btn whatsapp" href="https://wa.me/919876543210" target="_blank" rel="noreferrer">WhatsApp</a>
+        <a class="floating-btn call" href="tel:+91 98765 43210">Call Now</a>
+      </div>
     </main>
+    <script>
+    document.querySelectorAll('.js-image-frame img').forEach(function(img) {
+      if (!img.getAttribute('src')) {
+        img.parentElement.classList.add('is-fallback');
+        return;
+      }
+      img.addEventListener('error', function() {
+        img.parentElement.classList.add('is-fallback');
+      });
+    });
+  </script>
 </body>
 </html>

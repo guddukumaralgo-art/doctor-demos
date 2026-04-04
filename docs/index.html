@@ -5,120 +5,418 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctor Demo Websites</title>
   <style>
-    :root{--ink:#1a1720;--muted:#6d6677}
-    *{box-sizing:border-box} body{margin:0;font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:radial-gradient(circle at top left,rgba(236,72,153,.1),transparent 26%),radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 24%),linear-gradient(180deg,#fffdf8 0%,#f7f0e7 100%)}
-    .wrap{max-width:1220px;margin:0 auto;padding:42px 20px 68px}
-    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end;margin-bottom:34px}
-    h1{margin:0 0 10px;font-size:clamp(46px,6vw,82px);line-height:.92;letter-spacing:-.05em}
-    .sub{margin:0;color:var(--muted);font-size:18px;max-width:58ch;line-height:1.7;font-family:Arial,sans-serif}
-    .hero-card{padding:26px;border-radius:28px;background:rgba(255,250,242,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.82);box-shadow:0 24px 60px rgba(33,24,48,.08)}
-    .hero-card p{margin:0 0 14px;color:var(--muted);line-height:1.7;font-family:Arial,sans-serif}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
-    .feature{margin-bottom:24px;padding:26px;border-radius:30px;background:linear-gradient(135deg,#0f172a,#1d4ed8 58%,#06b6d4);color:#fff;box-shadow:0 24px 60px rgba(29,78,216,.22)}
-    .feature p{margin:0 0 14px;font-family:Arial,sans-serif;line-height:1.7;color:rgba(255,255,255,.85)}
+    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08)}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(15,118,110,.12), transparent 24%),
+        linear-gradient(180deg,#f8fbff 0%,#eef5ff 100%);
+    }
+    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px}
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding-bottom:16px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .brand-mark{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#165dff,#07b6d5);
+      color:#fff;
+      font:700 20px/1 Georgia,serif;
+      box-shadow:0 18px 34px rgba(22,93,255,.18);
+    }
+    .brand-copy strong{
+      display:block;
+      font:700 22px/1.05 Georgia,"Times New Roman",serif;
+      letter-spacing:-.03em;
+    }
+    .brand-copy span{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .nav-link{
+      text-decoration:none;
+      color:var(--ink);
+      font-weight:700;
+      padding:12px 15px;
+      border-radius:999px;
+      background:rgba(255,255,255,.75);
+      border:1px solid var(--line);
+    }
+    .hero{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:22px;
+      align-items:stretch;
+      margin-bottom:28px;
+    }
+    .hero-copy,.hero-panel{
+      padding:32px;
+      border-radius:32px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.86);
+      box-shadow:0 24px 60px rgba(15,23,42,.08);
+      backdrop-filter:blur(10px);
+    }
+    .eyebrow-top{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#e0f2fe;
+      color:#0c4a6e;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:18px 0 12px;
+      font:700 clamp(44px,6vw,82px)/.92 Georgia,"Times New Roman",serif;
+      letter-spacing:-.06em;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:18px;
+      line-height:1.8;
+      max-width:58ch;
+    }
+    .hero-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:24px;
+    }
+    .hero-actions a,.feature a,.card a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:13px 17px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:700;
+    }
+    .hero-actions .primary,.card a{
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+    }
+    .hero-actions .secondary{
+      color:var(--ink);
+      background:#fff;
+      border:1px solid var(--line);
+    }
+    .hero-panel h2,.feature h2{
+      margin:0 0 12px;
+      font:700 30px/1.05 Georgia,"Times New Roman",serif;
+      letter-spacing:-.03em;
+    }
+    .hero-panel p,.feature p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.75;
+    }
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-top:20px;
+    }
+    .mini-card{
+      padding:16px;
+      border-radius:18px;
+      background:#ffffff;
+      border:1px solid var(--line);
+    }
+    .mini-card strong{
+      display:block;
+      margin-bottom:7px;
+      font-size:15px;
+    }
+    .mini-card span{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+    .feature{
+      margin-bottom:24px;
+      padding:28px;
+      border-radius:32px;
+      background:linear-gradient(135deg,#0f172a,#1d4ed8 60%,#06b6d4);
+      color:#fff;
+      box-shadow:0 28px 64px rgba(29,78,216,.2);
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:18px;
+      align-items:center;
+    }
+    .feature p{color:rgba(255,255,255,.84)}
     .feature a{background:#fff;color:#0f172a}
-    .card{overflow:hidden;position:relative;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.82));border:1px solid rgba(255,255,255,.76);box-shadow:0 20px 50px rgba(33,24,48,.1)}
-    .card::before{content:"";position:absolute;inset:0 0 auto 0;height:220px;background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));pointer-events:none}
-    .card img{width:100%;height:260px;object-fit:cover;display:block;background:linear-gradient(135deg,var(--surface),#fff)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+    .card{
+      overflow:hidden;
+      position:relative;
+      border-radius:30px;
+      background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.84));
+      border:1px solid rgba(255,255,255,.84);
+      box-shadow:0 20px 48px rgba(15,23,42,.08);
+      display:flex;
+      flex-direction:column;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:220px;
+      background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
+      pointer-events:none;
+    }
+    .image-shell{
+      position:relative;
+      height:260px;
+      overflow:hidden;
+      background:linear-gradient(135deg,var(--surface),#fff);
+      border-bottom:1px solid rgba(255,255,255,.68);
+    }
+    .card img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      object-position:center top;
+      transform:scale(1.01);
+    }
+    .image-fallback{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:22px;
+      background:linear-gradient(135deg,var(--surface),#ffffff);
+      color:#163047;
+      font:700 18px/1.5 Georgia,"Times New Roman",serif;
+      letter-spacing:-.02em;
+    }
+    .js-image-frame.is-fallback .image-fallback{
+      display:flex;
+    }
+    .js-image-frame.is-fallback img{
+      opacity:0;
+    }
     .content{position:relative;padding:24px}
-    .eyebrow{margin:0 0 12px;color:var(--accent);font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
-    h2{margin:0 0 8px;font-size:28px;letter-spacing:-.03em}
-    .content p{margin:0 0 10px;font-family:Arial,sans-serif}
+    .eyebrow{
+      margin:0 0 12px;
+      color:var(--accent);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .content h2{
+      margin:0 0 10px;
+      font:700 28px/1.02 Georgia,"Times New Roman",serif;
+      letter-spacing:-.03em;
+    }
+    .content p{margin:0 0 10px}
+    .clinic{
+      font-weight:700;
+      color:#1e293b;
+      font-size:15px;
+      line-height:1.6;
+    }
+    .location{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
     .meta{color:var(--muted);font-weight:600}
-    .copy{color:#334155;line-height:1.65;min-height:90px}
-    a{display:inline-block;margin-top:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));padding:12px 16px;border-radius:14px;font:700 14px/1 Arial,sans-serif}
-    @media (max-width:860px){.hero{grid-template-columns:1fr}}
+    .copy{color:#334155;line-height:1.7;min-height:96px;font-size:14px}
+    .content a{
+      margin-top:16px;
+      width:100%;
+      justify-content:center;
+      box-shadow:0 16px 30px rgba(37,99,235,.16);
+    }
+    footer{
+      margin-top:24px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+    }
+    @media (max-width:900px){
+      .hero,.feature{grid-template-columns:1fr}
+      .mini-grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <section class="hero">
-      <div>
-        <h1>Doctor Demo Websites</h1>
-        <p class="sub">Every doctor profile now uses a different layout system, so the showcase feels like six separate premium website concepts instead of one repeated template.</p>
+    <div class="nav">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-copy">
+          <strong>Medical Demo Showcase</strong>
+          <span>Premium static doctor and clinic website concepts</span>
+        </div>
       </div>
-      <aside class="hero-card">
-        <p><strong>What changed</strong></p>
-        <p>Distinct hero structures, different content flows, varied card systems, unique page proportions, and separate visual moods for every doctor profile.</p>
+      <a class="nav-link" href="./apollo-inspired/">Hospital Network Demo</a>
+    </div>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow-top">Premium Clinic Showcase</span>
+        <h1>Modern medical websites that feel clean, credible, and high-trust</h1>
+        <p class="sub">This homepage showcases premium static doctor website concepts built from your generator. Each profile keeps the same data structure, but the presentation now feels more polished, spacious, trustworthy, and suitable for modern clinics.</p>
+        <div class="hero-actions">
+          <a class="primary" href="#doctors">Explore Doctor Pages</a>
+          <a class="secondary" href="./apollo-inspired/">Open Hospital Demo</a>
+        </div>
+      </div>
+      <aside class="hero-panel">
+        <h2>What this generator now supports</h2>
+        <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished doctor profile sections generated from the same JSON data.</p>
+        <div class="mini-grid">
+          <div class="mini-card"><strong>Hero-First</strong><span>Clear specialist identity, clinic branding, and immediate appointment intent.</span></div>
+          <div class="mini-card"><strong>Trust Signals</strong><span>Experience, availability, location, and clinic information are surfaced clearly.</span></div>
+          <div class="mini-card"><strong>Static & Fast</strong><span>No framework, no backend, just static HTML, CSS, and vanilla JavaScript output.</span></div>
+        </div>
       </aside>
     </section>
     <section class="feature">
-      <h2 style="margin:0 0 10px;font-size:34px;letter-spacing:-.03em">Hospital Network Landing Page</h2>
-      <p>An Apollo-inspired multispeciality hospital homepage is also available in a separate folder, with large-scale navigation, service discovery, quick actions, centres of excellence, city network highlights, and a premium healthcare landing-page feel.</p>
+      <div>
+        <h2>Hospital Network Landing Page</h2>
+        <p>An Apollo-inspired multispeciality hospital homepage is also available in a separate folder, with large-scale navigation, service discovery, quick actions, centres of excellence, city network highlights, and a premium healthcare landing-page feel.</p>
+      </div>
       <a href="./apollo-inspired/">Open Hospital Demo</a>
     </section>
-    <section class="grid">
+    <section class="grid" id="doctors">
         <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#e6fffa;">
-          <img src="./assets/images/dr-ravi-kumar.svg" alt="Dr. Ravi Kumar" />
+          <div class="image-shell js-image-frame">
+            <img src="./assets/images/dr-ravi-kumar.svg" alt="Dr. Ravi Kumar" />
+            <div class="image-fallback">Dr. Ravi Kumar • Cardiology</div>
+          </div>
           <div class="content">
             <p class="eyebrow">Cardiology</p>
             <h2>Dr. Ravi Kumar</h2>
-            <p>Lotus Heart &amp; Wellness Clinic</p>
-            <p class="meta">Bengaluru, Karnataka · 14 years</p>
+            <p class="clinic">Lotus Heart &amp; Wellness Clinic</p>
+            <p class="location">Bengaluru, Karnataka</p>
+            <p class="meta">14 years experience</p>
             <p class="copy">Dr. Ravi Kumar provides preventive and long-term cardiac care with a focus on clear communication, practical treatment plans, and patient-friendly follow-up.</p>
-            <a href="./dr-ravi-kumar.html">Open Unique Demo</a>
+            <a href="./dr-ravi-kumar.html">View Doctor Website</a>
           </div>
         </article>
 
         <article class="card" style="--accent:#be185d;--accent2:#f97316;--surface:#fff1f2;">
-          <img src="./assets/images/dr-ananya-sharma.svg" alt="Dr. Ananya Sharma" />
+          <div class="image-shell js-image-frame">
+            <img src="./assets/images/dr-ananya-sharma.svg" alt="Dr. Ananya Sharma" />
+            <div class="image-fallback">Dr. Ananya Sharma • Gynecology</div>
+          </div>
           <div class="content">
             <p class="eyebrow">Gynecology</p>
             <h2>Dr. Ananya Sharma</h2>
-            <p>Aster Women &amp; Wellness Studio</p>
-            <p class="meta">Hyderabad, Telangana · 11 years</p>
+            <p class="clinic">Aster Women &amp; Wellness Studio</p>
+            <p class="location">Hyderabad, Telangana</p>
+            <p class="meta">11 years experience</p>
             <p class="copy">Dr. Ananya Sharma combines evidence-based women’s health care with a calm, modern clinic experience designed for trust, privacy, and continuity.</p>
-            <a href="./dr-ananya-sharma.html">Open Unique Demo</a>
+            <a href="./dr-ananya-sharma.html">View Doctor Website</a>
           </div>
         </article>
 
         <article class="card" style="--accent:#7c3aed;--accent2:#2563eb;--surface:#f5f3ff;">
-          <img src="./assets/images/dr-arjun-mehta.svg" alt="Dr. Arjun Mehta" />
+          <div class="image-shell js-image-frame">
+            <img src="./assets/images/dr-arjun-mehta.svg" alt="Dr. Arjun Mehta" />
+            <div class="image-fallback">Dr. Arjun Mehta • Dermatology</div>
+          </div>
           <div class="content">
             <p class="eyebrow">Dermatology</p>
             <h2>Dr. Arjun Mehta</h2>
-            <p>The Urban Skin Atelier</p>
-            <p class="meta">Mumbai, Maharashtra · 9 years</p>
+            <p class="clinic">The Urban Skin Atelier</p>
+            <p class="location">Mumbai, Maharashtra</p>
+            <p class="meta">9 years experience</p>
             <p class="copy">Dr. Arjun Mehta is known for refined aesthetic dermatology and long-term skin health programs tailored to busy urban professionals.</p>
-            <a href="./dr-arjun-mehta.html">Open Unique Demo</a>
+            <a href="./dr-arjun-mehta.html">View Doctor Website</a>
           </div>
         </article>
 
         <article class="card" style="--accent:#2563eb;--accent2:#06b6d4;--surface:#eff6ff;">
-          <img src="./assets/images/dr-meera-iyer.svg" alt="Dr. Meera Iyer" />
+          <div class="image-shell js-image-frame">
+            <img src="./assets/images/dr-meera-iyer.svg" alt="Dr. Meera Iyer" />
+            <div class="image-fallback">Dr. Meera Iyer • Pediatrics</div>
+          </div>
           <div class="content">
             <p class="eyebrow">Pediatrics</p>
             <h2>Dr. Meera Iyer</h2>
-            <p>MindSpring Child Development Center</p>
-            <p class="meta">Chennai, Tamil Nadu · 13 years</p>
+            <p class="clinic">MindSpring Child Development Center</p>
+            <p class="location">Chennai, Tamil Nadu</p>
+            <p class="meta">13 years experience</p>
             <p class="copy">Dr. Meera Iyer focuses on thoughtful pediatric care that supports both children and parents with clarity, warmth, and reliable follow-through.</p>
-            <a href="./dr-meera-iyer.html">Open Unique Demo</a>
+            <a href="./dr-meera-iyer.html">View Doctor Website</a>
           </div>
         </article>
 
         <article class="card" style="--accent:#b45309;--accent2:#ea580c;--surface:#fff7ed;">
-          <img src="./assets/images/dr-kabir-singh.svg" alt="Dr. Kabir Singh" />
+          <div class="image-shell js-image-frame">
+            <img src="./assets/images/dr-kabir-singh.svg" alt="Dr. Kabir Singh" />
+            <div class="image-fallback">Dr. Kabir Singh • Orthopedics</div>
+          </div>
           <div class="content">
             <p class="eyebrow">Orthopedics</p>
             <h2>Dr. Kabir Singh</h2>
-            <p>Precision Ortho &amp; Sports Lab</p>
-            <p class="meta">Pune, Maharashtra · 16 years</p>
+            <p class="clinic">Precision Ortho &amp; Sports Lab</p>
+            <p class="location">Pune, Maharashtra</p>
+            <p class="meta">16 years experience</p>
             <p class="copy">Dr. Kabir Singh leads a premium orthopedic and sports recovery practice built around precise diagnosis, rehabilitation planning, and durable outcomes.</p>
-            <a href="./dr-kabir-singh.html">Open Unique Demo</a>
+            <a href="./dr-kabir-singh.html">View Doctor Website</a>
           </div>
         </article>
 
         <article class="card" style="--accent:#9333ea;--accent2:#ec4899;--surface:#faf5ff;">
-          <img src="./assets/images/dr-sana-farooq.svg" alt="Dr. Sana Farooq" />
+          <div class="image-shell js-image-frame">
+            <img src="./assets/images/dr-sana-farooq.svg" alt="Dr. Sana Farooq" />
+            <div class="image-fallback">Dr. Sana Farooq • Cosmetic Dentistry</div>
+          </div>
           <div class="content">
             <p class="eyebrow">Cosmetic Dentistry</p>
             <h2>Dr. Sana Farooq</h2>
-            <p>Serene Dental Lounge</p>
-            <p class="meta">New Delhi, Delhi · 10 years</p>
+            <p class="clinic">Serene Dental Lounge</p>
+            <p class="location">New Delhi, Delhi</p>
+            <p class="meta">10 years experience</p>
             <p class="copy">Dr. Sana Farooq’s practice blends cosmetic precision with a hospitality-first clinic atmosphere for patients seeking confidence and comfort.</p>
-            <a href="./dr-sana-farooq.html">Open Unique Demo</a>
+            <a href="./dr-sana-farooq.html">View Doctor Website</a>
           </div>
         </article></section>
+    <footer>
+      This is a concept demo showcase for doctor and hospital websites. All pages are generated from static project files.
+    </footer>
   </main>
+  <script>
+    document.querySelectorAll('.js-image-frame img').forEach(function(img) {
+      if (!img.getAttribute('src')) {
+        img.parentElement.classList.add('is-fallback');
+        return;
+      }
+      img.addEventListener('error', function() {
+        img.parentElement.classList.add('is-fallback');
+      });
+    });
+  </script>
 </body>
 </html>

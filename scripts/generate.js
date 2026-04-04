@@ -13,6 +13,11 @@ function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
 }
 
+function writeTextFile(filePath, content) {
+  ensureDir(path.dirname(filePath));
+  fs.writeFileSync(filePath, content, "utf8");
+}
+
 function cleanDocs() {
   if (fs.existsSync(docsDir)) {
     fs.rmSync(docsDir, { recursive: true, force: true });
@@ -58,6 +63,56 @@ function readDoctors() {
   return parsed;
 }
 
+function getDoctorLabel(doctor, index) {
+  return doctor.doctor_name || doctor.name || doctor.slug || `record ${index + 1}`;
+}
+
+function validateDoctors(doctors) {
+  const seenSlugs = new Set();
+  const requiredFields = [
+    "slug",
+    "doctor_name",
+    "clinic_name",
+    "specialty",
+    "location",
+    "image",
+  ];
+  const supportedThemes = ["blue", "premium", "modern"];
+
+  doctors.forEach((doctor, index) => {
+    const label = getDoctorLabel(doctor, index);
+
+    requiredFields.forEach((field) => {
+      if (!doctor[field] || !String(doctor[field]).trim()) {
+        throw new Error(
+          `Validation failed for doctor "${label}" at record ${index + 1}: missing required field "${field}".`
+        );
+      }
+    });
+
+    const slug = String(doctor.slug).trim();
+    if (seenSlugs.has(slug)) {
+      throw new Error(
+        `Validation failed for doctor "${label}" at record ${index + 1}: duplicate slug "${slug}" is not allowed.`
+      );
+    }
+    seenSlugs.add(slug);
+
+    const imageFile = path.join(sourceImagesDir, path.basename(doctor.image));
+    if (!fs.existsSync(imageFile)) {
+      throw new Error(
+        `Validation failed for doctor "${label}" at record ${index + 1}: image file "${doctor.image}" was not found in data/images.`
+      );
+    }
+
+    if (doctor.theme && !supportedThemes.includes(doctor.theme)) {
+      throw new Error(
+        `Validation failed for doctor "${label}" at record ${index + 1}: theme "${doctor.theme}" is not supported. Use blue, premium, or modern.`
+      );
+    }
+  });
+}
+
 function normalizeDoctor(doctor, index) {
   const name = doctor.doctor_name || doctor.name;
   const clinic = doctor.clinic_name || doctor.clinic;
@@ -83,6 +138,7 @@ function normalizeDoctor(doctor, index) {
     accent: doctor.accent || "#0f766e",
     accent2: doctor.accent2 || "#2563eb",
     surface: doctor.surface || "#eff6ff",
+    theme: doctor.theme || "blue",
     bio: doctor.bio || `${name} is a trusted ${doctor.specialty || "specialist"} serving patients through ${clinic}.`,
     experience: doctor.experience || "10+ years",
     availability: doctor.availability || "By appointment",
@@ -136,13 +192,48 @@ function detailRows(doctor, className = "detail-list") {
     .join("")}</div>`;
 }
 
-function pageShell(title, bodyClass, content) {
+function getPhoneHref(phone) {
+  return `tel:${String(phone ?? "").trim()}`;
+}
+
+function getWhatsAppHref(phone) {
+  const digits = String(phone ?? "").replace(/\D/g, "");
+  return `https://wa.me/${digits}`;
+}
+
+function getImageFallbackLabel(doctor) {
+  const specialty = doctor.specialty || "Doctor";
+  return `${doctor.name} • ${specialty}`;
+}
+
+function renderImageFallbackScript() {
+  return `<script>
+    document.querySelectorAll('.js-image-frame img').forEach(function(img) {
+      if (!img.getAttribute('src')) {
+        img.parentElement.classList.add('is-fallback');
+        return;
+      }
+      img.addEventListener('error', function() {
+        img.parentElement.classList.add('is-fallback');
+      });
+    });
+  </script>`;
+}
+
+function pageShell({ title, bodyClass, content, description = "", canonicalUrl = "", ogImage = "" }) {
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${escapeHtml(title)}</title>
+  <meta name="description" content="${escapeHtml(description)}" />
+  <meta property="og:title" content="${escapeHtml(title)}" />
+  <meta property="og:description" content="${escapeHtml(description)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${escapeHtml(canonicalUrl)}" />
+  ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ""}
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
 </head>
 <body class="${bodyClass}">
 ${content}
@@ -150,354 +241,633 @@ ${content}
 </html>`;
 }
 
-function renderLayoutOne(doctor) {
-  return pageShell(
-    `${doctor.name} | ${doctor.clinic}`,
-    "layout-one",
-    `<style>
-      :root{--accent:${doctor.accent};--accent2:${doctor.accent2};--surface:${doctor.surface};--ink:#102033;--muted:#64748b;}
-      *{box-sizing:border-box} body{margin:0;font-family:Georgia,"Times New Roman",serif;background:linear-gradient(180deg,#fffdf9 0%,#eef7ff 100%);color:var(--ink)}
-      .page{max-width:1180px;margin:0 auto;padding:28px 18px 60px}
-      .nav{display:flex;justify-content:space-between;align-items:center;padding:6px 0 18px}
-      .nav a,.nav strong{text-decoration:none;color:var(--ink);font:600 14px/1.2 Arial,sans-serif}
-      .hero{display:grid;grid-template-columns:340px 1fr;gap:28px;padding:34px;border-radius:34px;background:linear-gradient(135deg,var(--surface),rgba(255,255,255,.92));box-shadow:0 28px 60px rgba(15,23,42,.1)}
-      img{width:100%;aspect-ratio:1/1.15;object-fit:cover;border-radius:28px;background:#fff}
-      .tag{display:inline-block;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.9);color:var(--accent);font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
-      h1{margin:16px 0 10px;font-size:clamp(38px,6vw,72px);line-height:.93}
-      .clinic{font:600 24px/1.4 Arial,sans-serif;margin-bottom:12px}
-      .bio{max-width:58ch;color:var(--muted);font:400 17px/1.75 Arial,sans-serif}
-      .quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
-      .quick div{padding:16px;border-radius:18px;background:rgba(255,255,255,.84)}
-      .quick span{display:block;margin-bottom:6px;color:var(--muted);font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
-      .quick strong{font:700 17px/1.4 Arial,sans-serif}
-      .actions{display:flex;gap:12px;flex-wrap:wrap}.btn{padding:14px 18px;border-radius:16px;text-decoration:none;font:700 14px/1 Arial,sans-serif}.solid{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}.ghost{background:#fff;color:var(--ink)}
-      .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:20px}
-      .card{background:rgba(255,255,255,.82);padding:24px;border-radius:26px;box-shadow:0 18px 36px rgba(15,23,42,.06)}
-      h2{margin:0 0 16px;font-size:22px}
-      .services{list-style:none;padding:0;margin:0;display:grid;gap:12px}.services li{padding:14px 16px;border-radius:18px;background:#fff;font:500 15px/1.6 Arial,sans-serif}
-      .detail-list{display:grid;gap:14px}.detail span{display:block;color:var(--muted);font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.detail strong{font:500 15px/1.7 Arial,sans-serif}
-      @media (max-width:860px){.hero,.grid,.quick{grid-template-columns:1fr}}
-    </style>
-    <main class="page">
-      <div class="nav"><strong>Signature Practice</strong><a href="./index.html">Back to Showcase</a></div>
-      <section class="hero">
-        <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
-        <div>
-          <span class="tag">${escapeHtml(doctor.specialty)}</span>
-          <h1>${escapeHtml(doctor.name)}</h1>
-          <div class="clinic">${escapeHtml(doctor.clinic)}</div>
-          <p class="bio">${escapeHtml(doctor.bio)}</p>
-          <div class="quick">
-            <div><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
-            <div><span>Availability</span><strong>${escapeHtml(doctor.availability)}</strong></div>
-            <div><span>Location</span><strong>${escapeHtml(doctor.city)}</strong></div>
-          </div>
-          <div class="actions">
-            <a class="btn solid" href="tel:${escapeHtml(doctor.phone)}">Call Now</a>
-            <a class="btn ghost" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
-          </div>
-        </div>
-      </section>
-      <section class="grid">
-        <article class="card"><h2>Signature Services</h2>${servicesList(doctor)}</article>
-        <aside class="card"><h2>Visit Details</h2>${detailRows(doctor)}</aside>
-      </section>
-    </main>`
-  );
+function getDoctorSeo(doctor) {
+  const title = `${doctor.name} | ${doctor.specialty} in ${doctor.city}`;
+  const description = `${doctor.name} at ${doctor.clinic} offers ${doctor.specialty} care in ${doctor.city}.`;
+  const canonicalUrl = `${siteBaseUrl}/${doctor.slug}.html`;
+  const ogImage = doctor.image ? `${siteBaseUrl}/assets/images/${doctor.image}` : "";
+
+  return {
+    title,
+    description,
+    canonicalUrl,
+    ogImage,
+  };
 }
 
-function renderLayoutTwo(doctor) {
-  return pageShell(
-    `${doctor.name} | ${doctor.clinic}`,
-    "layout-two",
-    `<style>
-      :root{--accent:${doctor.accent};--accent2:${doctor.accent2};--surface:${doctor.surface};--ink:#f8fafc;--muted:#cbd5e1}
-      *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#09090f;color:var(--ink)}
-      .hero{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr}
-      .copy{padding:46px 44px 54px;background:radial-gradient(circle at top left,rgba(255,255,255,.08),transparent 26%),linear-gradient(180deg,#0f172a 0%,#111827 100%)}
-      .portrait{background:linear-gradient(160deg,var(--accent),var(--accent2));padding:46px;display:flex;align-items:center;justify-content:center}
-      .portrait img{width:min(480px,100%);aspect-ratio:1/1.1;object-fit:cover;border-radius:36px;background:#fff;box-shadow:0 32px 80px rgba(0,0,0,.28)}
-      .top{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-      .top a{color:#fff;text-decoration:none}
-      .spec{display:inline-block;margin-top:56px;padding:10px 14px;border:1px solid rgba(255,255,255,.16);border-radius:999px;color:#fff;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-      h1{margin:18px 0 12px;font-size:clamp(44px,7vw,92px);line-height:.88;letter-spacing:-.06em}
-      .clinic{font-size:26px;font-weight:600;color:#fff}
-      .bio{margin:20px 0 28px;max-width:60ch;color:var(--muted);font-size:18px;line-height:1.8}
-      .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-      .stat{padding:18px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
-      .stat span{display:block;margin-bottom:8px;color:#94a3b8;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-      .stat strong{font-size:18px}
-      .stack{display:grid;gap:18px;margin-top:26px}
-      .panel{padding:22px;border-radius:24px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
-      .panel h2{margin:0 0 14px;font-size:20px}
-      .services{list-style:none;padding:0;margin:0;display:grid;gap:12px}.services li{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.05);line-height:1.6}
-      .detail-list{display:grid;gap:14px}.detail span{display:block;color:#94a3b8;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}.detail strong{font-size:15px;line-height:1.6}
-      .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{padding:14px 18px;border-radius:16px;text-decoration:none;font-weight:700}.solid{background:#fff;color:#111827}.ghost{color:#fff;border:1px solid rgba(255,255,255,.18)}
-      @media (max-width:960px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
+const doctorThemes = {
+  blue: {
+    bodyClass: "theme-blue",
+    shellBg: "linear-gradient(180deg,#f7fbff 0%,#edf7ff 100%)",
+    heroBg: "linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.84)), linear-gradient(135deg, var(--surface), rgba(255,255,255,0))",
+    ctaBg: "linear-gradient(135deg, var(--accent), var(--accent2))",
+    cardTone: "rgba(255,255,255,.86)",
+  },
+  premium: {
+    bodyClass: "theme-premium",
+    shellBg: "linear-gradient(180deg,#fffdf8 0%,#f6efe6 100%)",
+    heroBg: "linear-gradient(135deg, rgba(255,255,255,.98), rgba(255,255,255,.9)), linear-gradient(135deg, var(--surface), rgba(255,255,255,0))",
+    ctaBg: "linear-gradient(135deg, #0f172a, color-mix(in srgb, var(--accent) 70%, #111827))",
+    cardTone: "rgba(255,255,255,.9)",
+  },
+  modern: {
+    bodyClass: "theme-modern",
+    shellBg: "linear-gradient(180deg,#0b1220 0%,#111827 100%)",
+    heroBg: "linear-gradient(135deg, rgba(19,31,57,.94), rgba(17,24,39,.88)), linear-gradient(135deg, color-mix(in srgb, var(--accent) 24%, transparent), transparent)",
+    ctaBg: "linear-gradient(135deg, #ffffff, #dbeafe)",
+    cardTone: "rgba(255,255,255,.08)",
+  },
+};
+
+function getDoctorTheme(themeName) {
+  return doctorThemes[themeName] || doctorThemes.blue;
+}
+
+function renderDoctorPage(doctor, variant) {
+  const seo = getDoctorSeo(doctor);
+  const isDark = variant.bodyClass === "theme-modern";
+  const ink = isDark ? "#f8fafc" : "#102033";
+  const muted = isDark ? "#cbd5e1" : "#62748a";
+  const line = isDark ? "rgba(255,255,255,.1)" : "rgba(16,32,51,.08)";
+  const panel = variant.cardTone;
+  const buttonText = isDark ? "#0f172a" : "#ffffff";
+  const secondaryButtonBg = isDark ? "rgba(255,255,255,.08)" : "#ffffff";
+  const secondaryButtonText = isDark ? "#ffffff" : "#102033";
+
+  const fallbackLabel = getImageFallbackLabel(doctor);
+  return pageShell({
+    title: seo.title,
+    bodyClass: variant.bodyClass,
+    description: seo.description,
+    canonicalUrl: seo.canonicalUrl,
+    ogImage: seo.ogImage,
+    content: `<style>
+      :root{
+        --accent:${doctor.accent};
+        --accent2:${doctor.accent2};
+        --surface:${doctor.surface};
+        --ink:${ink};
+        --muted:${muted};
+        --line:${line};
+        --panel:${panel};
+        --buttonText:${buttonText};
+        --secondaryButtonBg:${secondaryButtonBg};
+        --secondaryButtonText:${secondaryButtonText};
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family:Arial,sans-serif;
+        background:${variant.shellBg};
+      }
+      .page{
+        width:min(1180px,calc(100% - 28px));
+        margin:0 auto;
+        padding:26px 0 56px;
+      }
+      .nav{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:14px;
+        padding-bottom:18px;
+      }
+      .nav strong,.nav a{
+        color:var(--ink);
+        text-decoration:none;
+        font:700 14px/1.2 Arial,sans-serif;
+      }
+      .nav a{
+        padding:11px 14px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:${isDark ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.72)"};
+      }
+      .hero{
+        position:relative;
+        overflow:hidden;
+        display:grid;
+        grid-template-columns:320px 1fr;
+        gap:30px;
+        padding:34px;
+        border-radius:34px;
+        background:${variant.heroBg};
+        border:1px solid ${isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.78)"};
+        box-shadow:${isDark ? "0 28px 80px rgba(0,0,0,.22)" : "0 28px 80px rgba(15,23,42,.10)"};
+      }
+      .hero::after{
+        content:"";
+        position:absolute;
+        right:-80px;
+        top:-80px;
+        width:240px;
+        height:240px;
+        border-radius:50%;
+        background:linear-gradient(135deg,color-mix(in srgb, var(--accent2) 20%, transparent), transparent);
+        pointer-events:none;
+      }
+      .portrait{
+        position:relative;
+        min-height:420px;
+      }
+      .portrait::before{
+        content:"";
+        position:absolute;
+        inset:-14px;
+        border-radius:30px;
+        transform:rotate(-4deg);
+        background:linear-gradient(135deg,var(--accent),var(--accent2));
+        opacity:.14;
+      }
+      .portrait img{
+        position:relative;
+        width:100%;
+        display:block;
+        height:100%;
+        min-height:420px;
+        object-fit:cover;
+        object-position:center top;
+        border-radius:28px;
+        background:linear-gradient(135deg,var(--surface),#ffffff);
+        box-shadow:${isDark ? "0 22px 40px rgba(0,0,0,.24)" : "0 22px 40px rgba(15,23,42,.12)"};
+      }
+      .image-frame{
+        position:relative;
+        height:100%;
+      }
+      .image-fallback{
+        position:absolute;
+        inset:0;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        padding:24px;
+        border-radius:28px;
+        background:
+          linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, white), color-mix(in srgb, var(--accent2) 14%, white)),
+          linear-gradient(135deg,var(--surface),#fff);
+        color:var(--ink);
+        font:700 18px/1.6 Georgia,"Times New Roman",serif;
+        letter-spacing:-.02em;
+      }
+      .image-frame.is-fallback .image-fallback{
+        display:flex;
+      }
+      .image-frame.is-fallback img{
+        opacity:0;
+      }
+      .eyebrow{
+        display:inline-block;
+        padding:9px 14px;
+        border-radius:999px;
+        background:${isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.86)"};
+        color:${isDark ? "#ffffff" : "var(--accent)"};
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.1em;
+        text-transform:uppercase;
+      }
+      h1{
+        margin:18px 0 10px;
+        font:700 clamp(38px,6vw,70px)/.92 Georgia,"Times New Roman",serif;
+        letter-spacing:-.05em;
+      }
+      .clinic{
+        font-size:24px;
+        font-weight:700;
+        margin-bottom:12px;
+      }
+      .lede{
+        margin:0;
+        max-width:60ch;
+        color:var(--muted);
+        font-size:17px;
+        line-height:1.8;
+      }
+      .hero-meta{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:14px;
+        margin-top:24px;
+      }
+      .meta-card{
+        padding:16px;
+        border-radius:20px;
+        background:${isDark ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.74)"};
+        border:1px solid var(--line);
+      }
+      .meta-card span{
+        display:block;
+        margin-bottom:7px;
+        color:var(--muted);
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .meta-card strong{
+        font-size:16px;
+        line-height:1.5;
+      }
+      .hero-actions{
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-top:24px;
+      }
+      .btn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:14px 18px;
+        border-radius:16px;
+        text-decoration:none;
+        font-weight:700;
+      }
+      .btn-primary{
+        background:${variant.ctaBg};
+        color:var(--buttonText);
+        box-shadow:${isDark ? "0 18px 32px rgba(0,0,0,.16)" : "0 18px 32px rgba(37,99,235,.18)"};
+      }
+      .btn-secondary{
+        background:var(--secondaryButtonBg);
+        color:var(--secondaryButtonText);
+        border:1px solid var(--line);
+      }
+      .content-grid{
+        display:grid;
+        grid-template-columns:1.06fr .94fr;
+        gap:18px;
+        margin-top:20px;
+      }
+      .stack{
+        display:grid;
+        gap:18px;
+      }
+      .card{
+        padding:24px;
+        border-radius:28px;
+        background:var(--panel);
+        border:1px solid var(--line);
+        box-shadow:${isDark ? "none" : "0 18px 34px rgba(15,23,42,.06)"};
+        backdrop-filter:blur(8px);
+      }
+      .card h2{
+        margin:0 0 16px;
+        font:700 24px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.03em;
+      }
+      .copy{
+        color:var(--muted);
+        font-size:15px;
+        line-height:1.8;
+      }
+      .services{
+        list-style:none;
+        padding:0;
+        margin:0;
+        display:grid;
+        gap:12px;
+      }
+      .services li{
+        padding:15px 16px;
+        border-radius:18px;
+        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
+        border:1px solid var(--line);
+        line-height:1.7;
+      }
+      .detail-list{
+        display:grid;
+        gap:14px;
+      }
+      .detail{
+        padding-bottom:14px;
+        border-bottom:1px solid var(--line);
+      }
+      .detail:last-child{
+        padding-bottom:0;
+        border-bottom:0;
+      }
+      .detail span{
+        display:block;
+        margin-bottom:7px;
+        color:var(--muted);
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .detail strong{
+        font-size:15px;
+        line-height:1.7;
+      }
+      .availability{
+        display:grid;
+        gap:14px;
+      }
+      .availability-box{
+        padding:18px;
+        border-radius:20px;
+        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
+        border:1px solid var(--line);
+      }
+      .availability-box strong{
+        display:block;
+        margin-bottom:8px;
+        font-size:17px;
+      }
+      .availability-box p{
+        margin:0;
+        color:var(--muted);
+        line-height:1.7;
+      }
+      .trust-strip{
+        display:grid;
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:12px;
+      }
+      .trust-badge{
+        padding:15px 16px;
+        border-radius:18px;
+        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
+        border:1px solid var(--line);
+      }
+      .trust-badge strong{
+        display:block;
+        margin-bottom:6px;
+        font-size:15px;
+      }
+      .trust-badge span{
+        color:var(--muted);
+        font-size:13px;
+        line-height:1.6;
+      }
+      .testimonial-grid{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:14px;
+      }
+      .testimonial{
+        padding:18px;
+        border-radius:20px;
+        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
+        border:1px solid var(--line);
+      }
+      .testimonial p{
+        margin:0 0 12px;
+        color:var(--muted);
+        line-height:1.75;
+      }
+      .testimonial strong{
+        display:block;
+        font-size:14px;
+      }
+      .testimonial span{
+        display:block;
+        margin-top:4px;
+        color:var(--muted);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .cta{
+        margin-top:18px;
+        padding:28px;
+        border-radius:30px;
+        background:${variant.ctaBg};
+        color:${isDark ? "#0f172a" : "#ffffff"};
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:16px;
+        align-items:center;
+      }
+      .cta h2{
+        margin:0 0 10px;
+        font:700 28px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.03em;
+      }
+      .cta p{
+        margin:0;
+        line-height:1.8;
+        color:${isDark ? "rgba(15,23,42,.78)" : "rgba(255,255,255,.84)"};
+      }
+      .cta .btn{
+        background:#ffffff;
+        color:#0f172a;
+      }
+      .floating-actions{
+        position:fixed;
+        right:18px;
+        bottom:18px;
+        z-index:40;
+        display:grid;
+        gap:12px;
+      }
+      .floating-btn{
+        min-width:178px;
+        padding:14px 16px;
+        border-radius:999px;
+        text-decoration:none;
+        font-weight:700;
+        font-size:14px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:10px;
+        box-shadow:0 18px 34px rgba(15,23,42,.16);
+      }
+      .floating-btn.call{
+        background:linear-gradient(135deg,var(--accent),var(--accent2));
+        color:#fff;
+      }
+      .floating-btn.whatsapp{
+        background:#25d366;
+        color:#fff;
+      }
+      footer{
+        margin-top:18px;
+        padding:22px 8px 6px;
+        color:var(--muted);
+        text-align:center;
+        font-size:14px;
+        line-height:1.7;
+      }
+      @media (max-width:960px){
+        .hero,.content-grid,.cta{grid-template-columns:1fr}
+        .hero-meta{grid-template-columns:1fr}
+        .portrait,.portrait img{min-height:320px}
+        .trust-strip,.testimonial-grid{grid-template-columns:1fr}
+      }
+      @media (max-width:640px){
+        .floating-actions{
+          left:14px;
+          right:14px;
+          bottom:14px;
+          grid-template-columns:1fr 1fr;
+        }
+        .floating-btn{
+          min-width:0;
+          padding:14px 12px;
+          font-size:13px;
+        }
+      }
     </style>
-    <section class="hero">
-      <div class="copy">
-        <div class="top"><span>Private Practice Demo</span><a href="./index.html">Back to Showcase</a></div>
-        <span class="spec">${escapeHtml(doctor.specialty)}</span>
-        <h1>${escapeHtml(doctor.name)}</h1>
-        <div class="clinic">${escapeHtml(doctor.clinic)}</div>
-        <p class="bio">${escapeHtml(doctor.bio)}</p>
-        <div class="stats">
-          <div class="stat"><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
-          <div class="stat"><span>Availability</span><strong>${escapeHtml(doctor.availability)}</strong></div>
-          <div class="stat"><span>Location</span><strong>${escapeHtml(doctor.city)}</strong></div>
-        </div>
-        <div class="actions">
-          <a class="btn solid" href="tel:${escapeHtml(doctor.phone)}">Call Now</a>
-          <a class="btn ghost" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
-        </div>
-        <div class="stack">
-          <article class="panel"><h2>Specialized Care</h2>${servicesList(doctor)}</article>
-          <article class="panel"><h2>Contact & Access</h2>${detailRows(doctor)}</article>
-        </div>
+    <main class="page">
+      <div class="nav">
+        <strong>Premium Clinic Demo</strong>
+        <a href="./index.html">Back to Homepage</a>
       </div>
-      <div class="portrait"><img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" /></div>
-    </section>`
-  );
-}
 
-function renderLayoutThree(doctor) {
-  return pageShell(
-    `${doctor.name} | ${doctor.clinic}`,
-    "layout-three",
-    `<style>
-      :root{--accent:${doctor.accent};--accent2:${doctor.accent2};--surface:${doctor.surface};--ink:#1f2937;--muted:#64748b}
-      *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f8fafc;color:var(--ink)}
-      .page{max-width:1220px;margin:0 auto;padding:26px 18px 56px}
-      .top{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}
-      .mast,.photo,.content,.aside{border-radius:28px;overflow:hidden;box-shadow:0 18px 40px rgba(15,23,42,.08)}
-      .mast{padding:34px;background:linear-gradient(135deg,#fff,var(--surface))}
-      .mast a{display:inline-block;margin-bottom:28px;color:var(--ink);text-decoration:none;font-weight:700}
-      .eyebrow{display:inline-block;padding:8px 12px;border-radius:999px;background:#fff;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-      h1{margin:16px 0 10px;font-size:clamp(42px,6vw,78px);line-height:.92;letter-spacing:-.05em;font-family:Georgia,"Times New Roman",serif}
-      .clinic{font-size:24px;font-weight:600;margin-bottom:12px}
-      .bio{max-width:56ch;color:var(--muted);font-size:17px;line-height:1.8}
-      .ribbon{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
-      .pill{padding:12px 14px;border-radius:14px;background:#fff;font-size:14px;font-weight:700}
-      .photo{background:linear-gradient(180deg,var(--accent),var(--accent2));display:flex;align-items:flex-end;justify-content:center;padding:28px}
-      .photo img{width:100%;max-width:380px;aspect-ratio:1/1.15;object-fit:cover;border-radius:24px;background:#fff}
-      .bottom{display:grid;grid-template-columns:.85fr 1.15fr;gap:18px;margin-top:18px}
-      .aside,.content{background:#fff;padding:24px}
-      h2{margin:0 0 16px;font-size:22px;font-family:Georgia,"Times New Roman",serif}
-      .detail-list{display:grid;gap:14px}.detail{padding-bottom:14px;border-bottom:1px solid #e2e8f0}.detail:last-child{border-bottom:0;padding-bottom:0}.detail span{display:block;margin-bottom:6px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.detail strong{font-size:15px;line-height:1.7}
-      .services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}.services li{padding:16px;border-radius:18px;background:var(--surface);line-height:1.7}
-      .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.btn{padding:14px 18px;border-radius:14px;text-decoration:none;font-weight:700}.solid{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}.ghost{background:#f8fafc;color:var(--ink)}
-      @media (max-width:960px){.top,.bottom,.services{grid-template-columns:1fr}}
-    </style>
-    <main class="page">
-      <section class="top">
-        <article class="mast">
-          <a href="./index.html">Back to Showcase</a>
+      <section class="hero">
+        <div class="portrait">
+          <div class="image-frame js-image-frame">
+            <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
+            <div class="image-fallback">${escapeHtml(fallbackLabel)}</div>
+          </div>
+        </div>
+        <div>
           <span class="eyebrow">${escapeHtml(doctor.specialty)}</span>
           <h1>${escapeHtml(doctor.name)}</h1>
           <div class="clinic">${escapeHtml(doctor.clinic)}</div>
-          <p class="bio">${escapeHtml(doctor.bio)}</p>
-          <div class="ribbon">
-            <span class="pill">${escapeHtml(doctor.experience)}</span>
-            <span class="pill">${escapeHtml(doctor.availability)}</span>
-            <span class="pill">${escapeHtml(doctor.city)}</span>
+          <p class="lede">${escapeHtml(doctor.bio)}</p>
+
+          <div class="hero-meta">
+            <div class="meta-card"><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
+            <div class="meta-card"><span>Availability</span><strong>${escapeHtml(doctor.availability)}</strong></div>
+            <div class="meta-card"><span>Location</span><strong>${escapeHtml(doctor.city)}</strong></div>
           </div>
-          <div class="actions">
-            <a class="btn solid" href="tel:${escapeHtml(doctor.phone)}">Call Now</a>
-            <a class="btn ghost" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Call Clinic</a>
+            <a class="btn btn-secondary" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">WhatsApp Now</a>
+            <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
           </div>
-        </article>
-        <aside class="photo"><img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" /></aside>
+        </div>
       </section>
-      <section class="bottom">
-        <aside class="aside"><h2>Clinic Information</h2>${detailRows(doctor)}</aside>
-        <article class="content"><h2>Treatment Highlights</h2>${servicesList(doctor)}</article>
+
+      <section class="content-grid">
+        <div class="stack">
+          <article class="card">
+            <h2>About Doctor</h2>
+            <p class="copy">${escapeHtml(doctor.bio)}</p>
+          </article>
+
+          <article class="card">
+            <h2>Trust Highlights</h2>
+            <div class="trust-strip">
+              <div class="trust-badge"><strong>${escapeHtml(doctor.experience)}</strong><span>Years of experience in patient care</span></div>
+              <div class="trust-badge"><strong>Patient-First Care</strong><span>Clear communication and respectful follow-up</span></div>
+              <div class="trust-badge"><strong>Modern Clinic</strong><span>Clean, reassuring, and professional experience</span></div>
+              <div class="trust-badge"><strong>Easy Appointments</strong><span>Fast contact by phone, email, and WhatsApp</span></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Services</h2>
+            ${servicesList(doctor)}
+          </article>
+
+          <article class="card">
+            <h2>Patient Testimonials</h2>
+            <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how patient feedback could appear on a premium clinic page.</p>
+            <div class="testimonial-grid">
+              <div class="testimonial">
+                <p>“The consultation felt calm, professional, and very easy to understand from the first visit onward.”</p>
+                <strong>Demo Patient A</strong>
+                <span>Demo Content</span>
+              </div>
+              <div class="testimonial">
+                <p>“Booking was simple, the clinic felt modern and clean, and every step was explained clearly.”</p>
+                <strong>Demo Patient B</strong>
+                <span>Demo Content</span>
+              </div>
+              <div class="testimonial">
+                <p>“A reassuring experience with thoughtful care, practical advice, and smooth follow-up communication.”</p>
+                <strong>Demo Patient C</strong>
+                <span>Demo Content</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Strong Call To Action</h2>
+            <p class="copy">Patients looking for trusted ${escapeHtml(doctor.specialty.toLowerCase())} care can connect quickly with ${escapeHtml(doctor.name)} for consultation, treatment planning, and follow-up support.</p>
+            <div class="hero-actions" style="margin-top:18px">
+              <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Talk To Clinic</a>
+              <a class="btn btn-secondary" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
+              <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Request Appointment</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="stack">
+          <aside class="card">
+            <h2>Clinic Information</h2>
+            ${detailRows(doctor)}
+          </aside>
+
+          <aside class="card">
+            <h2>Availability</h2>
+            <div class="availability">
+              <div class="availability-box">
+                <strong>${escapeHtml(doctor.availability)}</strong>
+                <p>Appointment windows can be positioned here clearly for mobile and desktop visitors with strong readability.</p>
+              </div>
+              <div class="availability-box">
+                <strong>${escapeHtml(doctor.city)}</strong>
+                <p>${escapeHtml(doctor.address)}</p>
+              </div>
+            </div>
+          </aside>
+        </div>
       </section>
-    </main>`
-  );
+
+      <section class="cta">
+        <div>
+          <h2>Book a premium consultation experience</h2>
+          <p>Designed for trustworthy medical brands, this concept highlights specialist care, smooth appointment intent, and clean patient-first communication.</p>
+        </div>
+        <a class="btn" href="mailto:${escapeHtml(doctor.email)}">Schedule Now</a>
+      </section>
+
+      <footer>
+        This is a concept demo website created for showcase purposes only. It is not an official clinic website.
+      </footer>
+
+      <div class="floating-actions">
+        <a class="floating-btn whatsapp" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">WhatsApp</a>
+        <a class="floating-btn call" href="${escapeHtml(getPhoneHref(doctor.phone))}">Call Now</a>
+      </div>
+    </main>
+    ${renderImageFallbackScript()}`,
+  });
+}
+
+function renderLayoutOne(doctor) {
+  return renderDoctorPage(doctor, getDoctorTheme(doctor.theme));
+}
+
+function renderLayoutTwo(doctor) {
+  return renderDoctorPage(doctor, getDoctorTheme(doctor.theme));
+}
+
+function renderLayoutThree(doctor) {
+  return renderDoctorPage(doctor, getDoctorTheme(doctor.theme));
 }
 
 function renderLayoutFour(doctor) {
-  return pageShell(
-    `${doctor.name} | ${doctor.clinic}`,
-    "layout-four",
-    `<style>
-      :root{--accent:${doctor.accent};--accent2:${doctor.accent2};--surface:${doctor.surface};--ink:#0f172a;--muted:#475569}
-      *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#ffffff;color:var(--ink)}
-      .strip{height:18px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-      .page{max-width:1240px;margin:0 auto;padding:0 20px 56px}
-      .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
-      .nav a,.nav strong{text-decoration:none;color:var(--ink);font-weight:700}
-      .grid{display:grid;grid-template-columns:1fr 320px;gap:24px}
-      .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;padding:10px 0 10px}
-      h1{margin:0 0 8px;font-size:clamp(44px,6vw,84px);line-height:.92;letter-spacing:-.06em;font-family:Georgia,"Times New Roman",serif}
-      .spec{color:var(--accent);font-size:14px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:14px 0}
-      .clinic{font-size:24px;font-weight:700}
-      .bio{margin:18px 0 0;max-width:60ch;color:var(--muted);font-size:17px;line-height:1.8}
-      .portrait{padding:20px;border-radius:32px;background:linear-gradient(180deg,var(--surface),#fff)}
-      .portrait img{width:100%;aspect-ratio:1/1.15;object-fit:cover;border-radius:24px}
-      .sidebar{padding:24px;border-radius:28px;background:#0f172a;color:#e2e8f0;align-self:start;position:sticky;top:18px}
-      .sidebar h2{margin:0 0 16px;font-size:20px;font-family:Georgia,"Times New Roman",serif}
-      .sidebar .detail{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
-      .sidebar .detail:last-child{border-bottom:0}
-      .sidebar span{display:block;margin-bottom:6px;color:#94a3b8;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-      .sidebar strong{font-size:15px;line-height:1.7}
-      .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.btn{padding:14px 18px;border-radius:14px;text-decoration:none;font-weight:700}.solid{background:#fff;color:#111827}.ghost{color:#fff;border:1px solid rgba(255,255,255,.2)}
-      .panels{display:grid;gap:18px;margin-top:20px}
-      .panel{padding:24px;border-radius:28px;background:#f8fafc}
-      .panel h2{margin:0 0 14px;font-size:22px;font-family:Georgia,"Times New Roman",serif}
-      .services{list-style:none;padding:0;margin:0;display:grid;gap:12px}.services li{padding:16px;border-radius:18px;background:#fff;border-left:6px solid var(--accent);line-height:1.7}
-      .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.metric{padding:16px;border-radius:18px;background:#fff}.metric span{display:block;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.metric strong{font-size:17px}
-      @media (max-width:1024px){.grid,.hero,.metrics{grid-template-columns:1fr}.sidebar{position:static}}
-    </style>
-    <div class="strip"></div>
-    <main class="page">
-      <div class="nav"><strong>Clinical Profile</strong><a href="./index.html">Back to Showcase</a></div>
-      <section class="grid">
-        <div>
-          <section class="hero">
-            <div>
-              <div class="spec">${escapeHtml(doctor.specialty)}</div>
-              <h1>${escapeHtml(doctor.name)}</h1>
-              <div class="clinic">${escapeHtml(doctor.clinic)}</div>
-              <p class="bio">${escapeHtml(doctor.bio)}</p>
-            </div>
-            <div class="portrait"><img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" /></div>
-          </section>
-          <section class="panels">
-            <article class="panel"><h2>Care Focus</h2>${servicesList(doctor)}</article>
-            <article class="panel">
-              <h2>Practice Snapshot</h2>
-              <div class="metrics">
-                <div class="metric"><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
-                <div class="metric"><span>Availability</span><strong>${escapeHtml(doctor.availability)}</strong></div>
-                <div class="metric"><span>Location</span><strong>${escapeHtml(doctor.city)}</strong></div>
-              </div>
-            </article>
-          </section>
-        </div>
-        <aside class="sidebar">
-          <h2>Book & Visit</h2>
-          ${detailRows(doctor)}
-          <div class="actions">
-            <a class="btn solid" href="tel:${escapeHtml(doctor.phone)}">Call Now</a>
-            <a class="btn ghost" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
-          </div>
-        </aside>
-      </section>
-    </main>`
-  );
+  return renderDoctorPage(doctor, getDoctorTheme(doctor.theme));
 }
 
 function renderLayoutFive(doctor) {
-  return pageShell(
-    `${doctor.name} | ${doctor.clinic}`,
-    "layout-five",
-    `<style>
-      :root{--accent:${doctor.accent};--accent2:${doctor.accent2};--surface:${doctor.surface};--ink:#1f2937;--muted:#64748b}
-      *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,var(--surface),#fff);color:var(--ink)}
-      .page{max-width:1220px;margin:0 auto;padding:24px 20px 56px}
-      .nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-      .nav a,.nav strong{text-decoration:none;color:var(--ink);font-weight:700}
-      .hero{display:grid;grid-template-columns:320px 1fr 280px;gap:18px;align-items:stretch}
-      .portrait,.center,.rail{border-radius:30px;background:#fff;box-shadow:0 18px 40px rgba(15,23,42,.08)}
-      .portrait{padding:18px}.portrait img{width:100%;aspect-ratio:1/1.18;object-fit:cover;border-radius:24px;background:var(--surface)}
-      .center{padding:28px;background:linear-gradient(160deg,#fff,rgba(255,255,255,.88))}
-      .spec{display:inline-block;padding:9px 14px;border-radius:999px;background:var(--surface);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
-      h1{margin:18px 0 10px;font-size:clamp(42px,6vw,76px);line-height:.92;letter-spacing:-.05em;font-family:Georgia,"Times New Roman",serif}
-      .clinic{font-size:26px;font-weight:700;margin-bottom:12px}
-      .bio{color:var(--muted);font-size:17px;line-height:1.8;max-width:56ch}
-      .inline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}.inline div{padding:14px;border-radius:18px;background:#f8fafc}.inline span{display:block;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.inline strong{font-size:16px}
-      .rail{padding:24px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff}
-      .rail h2{margin:0 0 14px;font-size:22px;font-family:Georgia,"Times New Roman",serif}
-      .rail .detail{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.18)}.rail .detail:last-child{border-bottom:0}
-      .rail span{display:block;color:rgba(255,255,255,.72);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}.rail strong{font-size:15px;line-height:1.7}
-      .actions{display:grid;gap:10px;margin-top:20px}.btn{text-decoration:none;text-align:center;padding:14px 18px;border-radius:14px;font-weight:700}.solid{background:#fff;color:var(--accent)}.ghost{background:rgba(255,255,255,.14);color:#fff}
-      .section{margin-top:18px;padding:24px;border-radius:30px;background:#fff;box-shadow:0 18px 40px rgba(15,23,42,.06)}
-      .section h2{margin:0 0 16px;font-size:24px;font-family:Georgia,"Times New Roman",serif}
-      .services{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}.services li{padding:16px;border-radius:20px;background:var(--surface);line-height:1.7}
-      @media (max-width:1080px){.hero,.inline,.services{grid-template-columns:1fr}}
-    </style>
-    <main class="page">
-      <div class="nav"><strong>Concierge Practice Demo</strong><a href="./index.html">Back to Showcase</a></div>
-      <section class="hero">
-        <aside class="portrait"><img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" /></aside>
-        <article class="center">
-          <span class="spec">${escapeHtml(doctor.specialty)}</span>
-          <h1>${escapeHtml(doctor.name)}</h1>
-          <div class="clinic">${escapeHtml(doctor.clinic)}</div>
-          <p class="bio">${escapeHtml(doctor.bio)}</p>
-          <div class="inline">
-            <div><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
-            <div><span>Hours</span><strong>${escapeHtml(doctor.availability)}</strong></div>
-            <div><span>City</span><strong>${escapeHtml(doctor.city)}</strong></div>
-          </div>
-        </article>
-        <aside class="rail">
-          <h2>Contact</h2>
-          ${detailRows(doctor)}
-          <div class="actions">
-            <a class="btn solid" href="tel:${escapeHtml(doctor.phone)}">Call Now</a>
-            <a class="btn ghost" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
-          </div>
-        </aside>
-      </section>
-      <section class="section"><h2>Service Menu</h2>${servicesList(doctor)}</section>
-    </main>`
-  );
+  return renderDoctorPage(doctor, getDoctorTheme(doctor.theme));
 }
 
 function renderLayoutSix(doctor) {
-  return pageShell(
-    `${doctor.name} | ${doctor.clinic}`,
-    "layout-six",
-    `<style>
-      :root{--accent:${doctor.accent};--accent2:${doctor.accent2};--surface:${doctor.surface};--ink:#111827;--muted:#6b7280}
-      *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f3f4f6;color:var(--ink)}
-      .hero{min-height:100vh;display:grid;grid-template-columns:44% 56%}
-      .left{padding:42px;background:linear-gradient(180deg,var(--surface),#fff)}
-      .right{padding:42px;background:#fff}
-      .nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:34px}
-      .nav a,.nav strong{text-decoration:none;color:var(--ink);font-weight:700}
-      .spec{display:inline-block;padding:10px 14px;border-radius:999px;background:#fff;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
-      h1{margin:18px 0 10px;font-size:clamp(46px,7vw,88px);line-height:.88;letter-spacing:-.07em;font-family:Georgia,"Times New Roman",serif}
-      .clinic{font-size:24px;font-weight:700}
-      .bio{margin:18px 0 0;color:var(--muted);font-size:17px;line-height:1.85;max-width:54ch}
-      .portrait-wrap{margin-top:34px;padding:20px;border-radius:32px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
-      .portrait-wrap img{width:100%;aspect-ratio:1/1.12;object-fit:cover;border-radius:24px;background:#fff}
-      .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px}
-      .metric{padding:16px;border-radius:18px;background:#fff}.metric span{display:block;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.metric strong{font-size:16px}
-      .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.btn{padding:14px 18px;border-radius:16px;text-decoration:none;font-weight:700}.solid{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}.ghost{background:#f3f4f6;color:var(--ink)}
-      .block{padding:24px;border-radius:26px;background:#f9fafb;margin-bottom:18px}
-      .block h2{margin:0 0 16px;font-size:24px;font-family:Georgia,"Times New Roman",serif}
-      .services{list-style:none;padding:0;margin:0;display:grid;gap:12px}.services li{padding:15px 16px;border-radius:16px;background:#fff;border:1px solid #e5e7eb;line-height:1.7}
-      .detail-list{display:grid;grid-template-columns:1fr 1fr;gap:14px}.detail{padding:16px;border-radius:18px;background:#fff}.detail span{display:block;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.detail strong{font-size:15px;line-height:1.7}
-      @media (max-width:1024px){.hero,.metrics,.detail-list{grid-template-columns:1fr}}
-    </style>
-    <section class="hero">
-      <div class="left">
-        <div class="nav"><strong>Modern Practice Profile</strong><a href="./index.html">Back to Showcase</a></div>
-        <span class="spec">${escapeHtml(doctor.specialty)}</span>
-        <h1>${escapeHtml(doctor.name)}</h1>
-        <div class="clinic">${escapeHtml(doctor.clinic)}</div>
-        <p class="bio">${escapeHtml(doctor.bio)}</p>
-        <div class="metrics">
-          <div class="metric"><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
-          <div class="metric"><span>Availability</span><strong>${escapeHtml(doctor.availability)}</strong></div>
-          <div class="metric"><span>Location</span><strong>${escapeHtml(doctor.city)}</strong></div>
-        </div>
-        <div class="actions">
-          <a class="btn solid" href="tel:${escapeHtml(doctor.phone)}">Call Now</a>
-          <a class="btn ghost" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
-        </div>
-        <div class="portrait-wrap"><img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" /></div>
-      </div>
-      <div class="right">
-        <div class="block"><h2>Featured Services</h2>${servicesList(doctor)}</div>
-        <div class="block"><h2>Practice Details</h2>${detailRows(doctor)}</div>
-      </div>
-    </section>`
-  );
+  return renderDoctorPage(doctor, getDoctorTheme(doctor.theme));
 }
 
 const profileLayouts = [
@@ -519,14 +889,18 @@ function renderIndex(doctors) {
     .map((doctor) => {
       return `
         <article class="card" style="--accent:${escapeHtml(doctor.accent)};--accent2:${escapeHtml(doctor.accent2)};--surface:${escapeHtml(doctor.surface)};">
-          <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
+          <div class="image-shell js-image-frame">
+            <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
+            <div class="image-fallback">${escapeHtml(getImageFallbackLabel(doctor))}</div>
+          </div>
           <div class="content">
             <p class="eyebrow">${escapeHtml(doctor.specialty || "")}</p>
             <h2>${escapeHtml(doctor.name)}</h2>
-            <p>${escapeHtml(doctor.clinic)}</p>
-            <p class="meta">${escapeHtml(doctor.city)} · ${escapeHtml(doctor.experience)}</p>
+            <p class="clinic">${escapeHtml(doctor.clinic)}</p>
+            <p class="location">${escapeHtml(doctor.city)}</p>
+            <p class="meta">${escapeHtml(doctor.experience)} experience</p>
             <p class="copy">${escapeHtml(doctor.bio)}</p>
-            <a href="./${escapeHtml(doctor.slug)}.html">Open Unique Demo</a>
+            <a href="./${escapeHtml(doctor.slug)}.html">View Doctor Website</a>
           </div>
         </article>`;
     })
@@ -539,52 +913,369 @@ function renderIndex(doctors) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctor Demo Websites</title>
   <style>
-    :root{--ink:#1a1720;--muted:#6d6677}
-    *{box-sizing:border-box} body{margin:0;font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:radial-gradient(circle at top left,rgba(236,72,153,.1),transparent 26%),radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 24%),linear-gradient(180deg,#fffdf8 0%,#f7f0e7 100%)}
-    .wrap{max-width:1220px;margin:0 auto;padding:42px 20px 68px}
-    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end;margin-bottom:34px}
-    h1{margin:0 0 10px;font-size:clamp(46px,6vw,82px);line-height:.92;letter-spacing:-.05em}
-    .sub{margin:0;color:var(--muted);font-size:18px;max-width:58ch;line-height:1.7;font-family:Arial,sans-serif}
-    .hero-card{padding:26px;border-radius:28px;background:rgba(255,250,242,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.82);box-shadow:0 24px 60px rgba(33,24,48,.08)}
-    .hero-card p{margin:0 0 14px;color:var(--muted);line-height:1.7;font-family:Arial,sans-serif}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
-    .feature{margin-bottom:24px;padding:26px;border-radius:30px;background:linear-gradient(135deg,#0f172a,#1d4ed8 58%,#06b6d4);color:#fff;box-shadow:0 24px 60px rgba(29,78,216,.22)}
-    .feature p{margin:0 0 14px;font-family:Arial,sans-serif;line-height:1.7;color:rgba(255,255,255,.85)}
+    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08)}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 26%),
+        radial-gradient(circle at top right, rgba(15,118,110,.12), transparent 24%),
+        linear-gradient(180deg,#f8fbff 0%,#eef5ff 100%);
+    }
+    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px}
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding-bottom:16px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .brand-mark{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#165dff,#07b6d5);
+      color:#fff;
+      font:700 20px/1 Georgia,serif;
+      box-shadow:0 18px 34px rgba(22,93,255,.18);
+    }
+    .brand-copy strong{
+      display:block;
+      font:700 22px/1.05 Georgia,"Times New Roman",serif;
+      letter-spacing:-.03em;
+    }
+    .brand-copy span{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .nav-link{
+      text-decoration:none;
+      color:var(--ink);
+      font-weight:700;
+      padding:12px 15px;
+      border-radius:999px;
+      background:rgba(255,255,255,.75);
+      border:1px solid var(--line);
+    }
+    .hero{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:22px;
+      align-items:stretch;
+      margin-bottom:28px;
+    }
+    .hero-copy,.hero-panel{
+      padding:32px;
+      border-radius:32px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.86);
+      box-shadow:0 24px 60px rgba(15,23,42,.08);
+      backdrop-filter:blur(10px);
+    }
+    .eyebrow-top{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#e0f2fe;
+      color:#0c4a6e;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:18px 0 12px;
+      font:700 clamp(44px,6vw,82px)/.92 Georgia,"Times New Roman",serif;
+      letter-spacing:-.06em;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:18px;
+      line-height:1.8;
+      max-width:58ch;
+    }
+    .hero-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:24px;
+    }
+    .hero-actions a,.feature a,.card a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:13px 17px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:700;
+    }
+    .hero-actions .primary,.card a{
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+    }
+    .hero-actions .secondary{
+      color:var(--ink);
+      background:#fff;
+      border:1px solid var(--line);
+    }
+    .hero-panel h2,.feature h2{
+      margin:0 0 12px;
+      font:700 30px/1.05 Georgia,"Times New Roman",serif;
+      letter-spacing:-.03em;
+    }
+    .hero-panel p,.feature p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.75;
+    }
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-top:20px;
+    }
+    .mini-card{
+      padding:16px;
+      border-radius:18px;
+      background:#ffffff;
+      border:1px solid var(--line);
+    }
+    .mini-card strong{
+      display:block;
+      margin-bottom:7px;
+      font-size:15px;
+    }
+    .mini-card span{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+    .feature{
+      margin-bottom:24px;
+      padding:28px;
+      border-radius:32px;
+      background:linear-gradient(135deg,#0f172a,#1d4ed8 60%,#06b6d4);
+      color:#fff;
+      box-shadow:0 28px 64px rgba(29,78,216,.2);
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:18px;
+      align-items:center;
+    }
+    .feature p{color:rgba(255,255,255,.84)}
     .feature a{background:#fff;color:#0f172a}
-    .card{overflow:hidden;position:relative;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.82));border:1px solid rgba(255,255,255,.76);box-shadow:0 20px 50px rgba(33,24,48,.1)}
-    .card::before{content:"";position:absolute;inset:0 0 auto 0;height:220px;background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));pointer-events:none}
-    .card img{width:100%;height:260px;object-fit:cover;display:block;background:linear-gradient(135deg,var(--surface),#fff)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+    .card{
+      overflow:hidden;
+      position:relative;
+      border-radius:30px;
+      background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.84));
+      border:1px solid rgba(255,255,255,.84);
+      box-shadow:0 20px 48px rgba(15,23,42,.08);
+      display:flex;
+      flex-direction:column;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:220px;
+      background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
+      pointer-events:none;
+    }
+    .image-shell{
+      position:relative;
+      height:260px;
+      overflow:hidden;
+      background:linear-gradient(135deg,var(--surface),#fff);
+      border-bottom:1px solid rgba(255,255,255,.68);
+    }
+    .card img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      object-position:center top;
+      transform:scale(1.01);
+    }
+    .image-fallback{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:22px;
+      background:linear-gradient(135deg,var(--surface),#ffffff);
+      color:#163047;
+      font:700 18px/1.5 Georgia,"Times New Roman",serif;
+      letter-spacing:-.02em;
+    }
+    .js-image-frame.is-fallback .image-fallback{
+      display:flex;
+    }
+    .js-image-frame.is-fallback img{
+      opacity:0;
+    }
     .content{position:relative;padding:24px}
-    .eyebrow{margin:0 0 12px;color:var(--accent);font:700 12px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
-    h2{margin:0 0 8px;font-size:28px;letter-spacing:-.03em}
-    .content p{margin:0 0 10px;font-family:Arial,sans-serif}
+    .eyebrow{
+      margin:0 0 12px;
+      color:var(--accent);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .content h2{
+      margin:0 0 10px;
+      font:700 28px/1.02 Georgia,"Times New Roman",serif;
+      letter-spacing:-.03em;
+    }
+    .content p{margin:0 0 10px}
+    .clinic{
+      font-weight:700;
+      color:#1e293b;
+      font-size:15px;
+      line-height:1.6;
+    }
+    .location{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
     .meta{color:var(--muted);font-weight:600}
-    .copy{color:#334155;line-height:1.65;min-height:90px}
-    a{display:inline-block;margin-top:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));padding:12px 16px;border-radius:14px;font:700 14px/1 Arial,sans-serif}
-    @media (max-width:860px){.hero{grid-template-columns:1fr}}
+    .copy{color:#334155;line-height:1.7;min-height:96px;font-size:14px}
+    .content a{
+      margin-top:16px;
+      width:100%;
+      justify-content:center;
+      box-shadow:0 16px 30px rgba(37,99,235,.16);
+    }
+    footer{
+      margin-top:24px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+    }
+    @media (max-width:900px){
+      .hero,.feature{grid-template-columns:1fr}
+      .mini-grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <section class="hero">
-      <div>
-        <h1>Doctor Demo Websites</h1>
-        <p class="sub">Every doctor profile now uses a different layout system, so the showcase feels like six separate premium website concepts instead of one repeated template.</p>
+    <div class="nav">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-copy">
+          <strong>Medical Demo Showcase</strong>
+          <span>Premium static doctor and clinic website concepts</span>
+        </div>
       </div>
-      <aside class="hero-card">
-        <p><strong>What changed</strong></p>
-        <p>Distinct hero structures, different content flows, varied card systems, unique page proportions, and separate visual moods for every doctor profile.</p>
+      <a class="nav-link" href="./apollo-inspired/">Hospital Network Demo</a>
+    </div>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow-top">Premium Clinic Showcase</span>
+        <h1>Modern medical websites that feel clean, credible, and high-trust</h1>
+        <p class="sub">This homepage showcases premium static doctor website concepts built from your generator. Each profile keeps the same data structure, but the presentation now feels more polished, spacious, trustworthy, and suitable for modern clinics.</p>
+        <div class="hero-actions">
+          <a class="primary" href="#doctors">Explore Doctor Pages</a>
+          <a class="secondary" href="./apollo-inspired/">Open Hospital Demo</a>
+        </div>
+      </div>
+      <aside class="hero-panel">
+        <h2>What this generator now supports</h2>
+        <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished doctor profile sections generated from the same JSON data.</p>
+        <div class="mini-grid">
+          <div class="mini-card"><strong>Hero-First</strong><span>Clear specialist identity, clinic branding, and immediate appointment intent.</span></div>
+          <div class="mini-card"><strong>Trust Signals</strong><span>Experience, availability, location, and clinic information are surfaced clearly.</span></div>
+          <div class="mini-card"><strong>Static & Fast</strong><span>No framework, no backend, just static HTML, CSS, and vanilla JavaScript output.</span></div>
+        </div>
       </aside>
     </section>
     <section class="feature">
-      <h2 style="margin:0 0 10px;font-size:34px;letter-spacing:-.03em">Hospital Network Landing Page</h2>
-      <p>An Apollo-inspired multispeciality hospital homepage is also available in a separate folder, with large-scale navigation, service discovery, quick actions, centres of excellence, city network highlights, and a premium healthcare landing-page feel.</p>
+      <div>
+        <h2>Hospital Network Landing Page</h2>
+        <p>An Apollo-inspired multispeciality hospital homepage is also available in a separate folder, with large-scale navigation, service discovery, quick actions, centres of excellence, city network highlights, and a premium healthcare landing-page feel.</p>
+      </div>
       <a href="./apollo-inspired/">Open Hospital Demo</a>
     </section>
-    <section class="grid">${cards}</section>
+    <section class="grid" id="doctors">${cards}</section>
+    <footer>
+      This is a concept demo showcase for doctor and hospital websites. All pages are generated from static project files.
+    </footer>
   </main>
+  ${renderImageFallbackScript()}
 </body>
 </html>`;
+}
+
+function getDoctorOutputPath(doctor) {
+  return path.join(docsDir, `${doctor.slug}.html`);
+}
+
+function getDoctorOutputLabel(doctor) {
+  return `docs/${doctor.slug}.html`;
+}
+
+function generateDoctorPages(doctors) {
+  const files = [];
+
+  doctors.forEach((doctor) => {
+    copyDoctorImage(doctor);
+    writeTextFile(getDoctorOutputPath(doctor), renderProfile(doctor));
+    files.push(getDoctorOutputLabel(doctor));
+  });
+
+  return files;
+}
+
+function generateStaticPages(doctors) {
+  const files = [];
+
+  writeTextFile(path.join(docsDir, "index.html"), renderIndex(doctors));
+  files.push("docs/index.html");
+
+  writeTextFile(path.join(apolloInspiredDir, "index.html"), renderApolloInspiredSite());
+  files.push("docs/apollo-inspired/index.html");
+
+  return files;
+}
+
+function getGeneratedUrls(doctors) {
+  return [
+    `${siteBaseUrl}/`,
+    `${siteBaseUrl}/apollo-inspired/`,
+    ...doctors.map((doctor) => `${siteBaseUrl}/${doctor.slug}.html`),
+  ];
+}
+
+function logGenerationResult(files, urls) {
+  console.log(`Generated ${files.length} page(s):`);
+  files.forEach((file) => {
+    console.log(`- ${file}`);
+  });
+
+  console.log("");
+  console.log("GitHub Pages URLs:");
+  urls.forEach((url) => {
+    console.log(`- ${url}`);
+  });
 }
 
 function renderApolloInspiredSite() {
@@ -1286,31 +1977,15 @@ function renderApolloInspiredSite() {
 function main() {
   cleanDocs();
 
-  const doctors = readDoctors().map(normalizeDoctor);
+  const doctorRecords = readDoctors();
+  validateDoctors(doctorRecords);
+  const doctors = doctorRecords.map(normalizeDoctor);
+  const staticFiles = generateStaticPages(doctors);
+  const doctorFiles = generateDoctorPages(doctors);
+  const files = [...staticFiles, ...doctorFiles];
+  const urls = getGeneratedUrls(doctors);
 
-  for (const doctor of doctors) {
-    copyDoctorImage(doctor);
-    const html = renderProfile(doctor);
-    const outputFile = path.join(docsDir, `${doctor.slug}.html`);
-    fs.writeFileSync(outputFile, html, "utf8");
-  }
-
-  fs.writeFileSync(path.join(docsDir, "index.html"), renderIndex(doctors), "utf8");
-  fs.writeFileSync(path.join(apolloInspiredDir, "index.html"), renderApolloInspiredSite(), "utf8");
-
-  console.log(`Generated ${doctors.length + 1} page(s):`);
-  console.log("- docs/index.html");
-  console.log("- docs/apollo-inspired/index.html");
-  for (const doctor of doctors) {
-    console.log(`- docs/${doctor.slug}.html`);
-  }
-  console.log("");
-  console.log("GitHub Pages URLs:");
-  console.log(`- ${siteBaseUrl}/`);
-  console.log(`- ${siteBaseUrl}/apollo-inspired/`);
-  for (const doctor of doctors) {
-    console.log(`- ${siteBaseUrl}/${doctor.slug}.html`);
-  }
+  logGenerationResult(files, urls);
 }
 
 try {
