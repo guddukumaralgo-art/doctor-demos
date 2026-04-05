@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Healthcare Profile Demo Websites</title>
   <style>
-    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08)}
+    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08);--pointer-x:50vw;--pointer-y:18vh}
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -15,8 +15,30 @@
         radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 26%),
         radial-gradient(circle at top right, rgba(15,118,110,.12), transparent 24%),
         linear-gradient(180deg,#f8fbff 0%,#eef5ff 100%);
+      position:relative;
+      overflow-x:hidden;
     }
-    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:radial-gradient(circle 240px at var(--pointer-x) var(--pointer-y), rgba(22,93,255,.12), transparent 72%);
+      z-index:0;
+    }
+    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px;position:relative;z-index:1}
+    [data-reveal]{
+      opacity:0;
+      transform:translateY(28px);
+      transition:
+        opacity .7s ease,
+        transform .7s cubic-bezier(.22,1,.36,1);
+      transition-delay:var(--reveal-delay,0ms);
+    }
+    [data-reveal].is-visible{
+      opacity:1;
+      transform:translateY(0);
+    }
     .nav{
       display:flex;
       justify-content:space-between;
@@ -74,6 +96,7 @@
       border:1px solid rgba(255,255,255,.86);
       box-shadow:0 24px 60px rgba(15,23,42,.08);
       backdrop-filter:blur(10px);
+      transition:transform .24s ease, box-shadow .24s ease;
     }
     .eyebrow-top{
       display:inline-block;
@@ -143,6 +166,11 @@
       border-radius:18px;
       background:#ffffff;
       border:1px solid var(--line);
+      transition:transform .24s ease, border-color .24s ease;
+    }
+    .mini-card:hover{
+      transform:translateY(-4px);
+      border-color:rgba(22,93,255,.18);
     }
     .mini-card strong{
       display:block;
@@ -165,6 +193,7 @@
       grid-template-columns:1fr auto;
       gap:18px;
       align-items:center;
+      transition:transform .24s ease, box-shadow .24s ease;
     }
     .feature p{color:rgba(255,255,255,.84)}
     .feature a{background:#fff;color:#0f172a}
@@ -178,6 +207,12 @@
       box-shadow:0 20px 48px rgba(15,23,42,.08);
       display:flex;
       flex-direction:column;
+      transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+    }
+    .card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 28px 56px rgba(15,23,42,.12);
+      border-color:rgba(22,93,255,.16);
     }
     .card::before{
       content:"";
@@ -201,6 +236,10 @@
       display:block;
       object-position:center top;
       transform:scale(1.01);
+      transition:transform .4s ease;
+    }
+    .card:hover img{
+      transform:scale(1.05);
     }
     .image-fallback{
       position:absolute;
@@ -266,11 +305,24 @@
       .hero,.feature{grid-template-columns:1fr}
       .mini-grid{grid-template-columns:1fr}
     }
+    @media (prefers-reduced-motion: reduce){
+      [data-reveal]{
+        opacity:1;
+        transform:none;
+        transition:none;
+      }
+      .card,.hero-copy,.hero-panel,.feature,.mini-card,.card img{
+        transition:none;
+      }
+      body::before{
+        display:none;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <div class="nav">
+    <div class="nav" data-reveal>
       <div class="brand">
         <div class="brand-mark">M</div>
         <div class="brand-copy">
@@ -281,7 +333,7 @@
       <a class="nav-link" href="./apollo-inspired/">Hospital Network Demo</a>
     </div>
     <section class="hero">
-      <div class="hero-copy">
+      <div class="hero-copy" data-reveal data-tilt>
         <span class="eyebrow-top">Premium Profile Showcase</span>
         <h1>Modern healthcare profile websites that feel clean, credible, and high-trust</h1>
         <p class="sub">This homepage showcases premium static profile website concepts for healthcare professionals, founders, clinic owners, and healthcare leaders. Each page is generated from the same CSV data structure and stays fast, simple, and GitHub Pages-friendly.</p>
@@ -290,7 +342,7 @@
           <a class="secondary" href="./apollo-inspired/">Open Hospital Demo</a>
         </div>
       </div>
-      <aside class="hero-panel">
+      <aside class="hero-panel" data-reveal data-tilt>
         <h2>What this generator now supports</h2>
         <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished healthcare profile sections generated from CSV data.</p>
         <div class="mini-grid">
@@ -300,7 +352,7 @@
         </div>
       </aside>
     </section>
-    <section class="feature">
+    <section class="feature" data-reveal data-tilt>
       <div>
         <h2>Hospital Network Landing Page</h2>
         <p>An Apollo-inspired multispeciality hospital homepage is also available in a separate folder, with large-scale navigation, service discovery, quick actions, centres of excellence, city network highlights, and a premium healthcare landing-page feel.</p>
@@ -308,7 +360,7 @@
       <a href="./apollo-inspired/">Open Hospital Demo</a>
     </section>
     <section class="grid" id="doctors">
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/mohammed-adil-hussain.jpg" alt="Mohammed Adil Hussain" />
             <div class="image-fallback">Mohammed Adil Hussain • Co-Founder</div>
@@ -324,7 +376,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/vinay-verma.jpg" alt="Vinay Verma" />
             <div class="image-fallback">Vinay Verma • Chief Business Officer, Business and Strategic Partnerships</div>
@@ -340,7 +392,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/ayan-mondal.jpg" alt="Ayan Mondal" />
             <div class="image-fallback">Ayan Mondal • Entrepreneur in Residence</div>
@@ -356,7 +408,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/anand-bhardwaj.jpg" alt="Anand Bhardwaj" />
             <div class="image-fallback">Anand Bhardwaj • Head of Human Resources</div>
@@ -372,7 +424,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/vijay-talreja.jpg" alt="Vijay Talreja" />
             <div class="image-fallback">Vijay Talreja • President</div>
@@ -388,7 +440,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/dr-sabine-kapasi.jpg" alt="Dr Sabine Kapasi" />
             <div class="image-fallback">Dr Sabine Kapasi • Global Strategy Lead</div>
@@ -404,7 +456,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/chunky-shah.jpg" alt="Chunky Shah" />
             <div class="image-fallback">Chunky Shah • Co-Founder</div>
@@ -420,7 +472,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/zulfiqar-gadhiya.jpg" alt="Zulfiqar Gadhiya" />
             <div class="image-fallback">Zulfiqar Gadhiya • Director</div>
@@ -436,7 +488,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/dr.-kanan-khatau-chikhal.jpg" alt="Dr. Kanan Khatau Chikhal" />
             <div class="image-fallback">Dr. Kanan Khatau Chikhal • Chief Executive Officer</div>
@@ -452,7 +504,7 @@
           </div>
         </article>
 
-        <article class="card" style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
+        <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
           <div class="image-shell js-image-frame">
             <img src="./assets/images/dr.-sachitra-chakravorty.jpg" alt="Dr. Sachitra Chakravorty" />
             <div class="image-fallback">Dr. Sachitra Chakravorty • Founder &amp; CEO</div>
@@ -467,7 +519,7 @@
             <a href="./dr.-sachitra-chakravorty.html">View Profile Website</a>
           </div>
         </article></section>
-    <footer>
+    <footer data-reveal>
       This is a concept demo showcase for healthcare profile and hospital websites. All pages are generated from static project files.
     </footer>
   </main>
@@ -481,6 +533,79 @@
         img.parentElement.classList.add('is-fallback');
       });
     });
+  </script>
+  <script>
+    (function() {
+      var root = document.documentElement;
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function setRevealDelays() {
+        document.querySelectorAll('[data-reveal]').forEach(function(element, index) {
+          element.style.setProperty('--reveal-delay', (index * 80) + 'ms');
+        });
+      }
+
+      function setupPointerGlow() {
+        if (prefersReducedMotion) {
+          return;
+        }
+
+        window.addEventListener('pointermove', function(event) {
+          root.style.setProperty('--pointer-x', event.clientX + 'px');
+          root.style.setProperty('--pointer-y', event.clientY + 'px');
+        });
+      }
+
+      function setupReveal() {
+        var items = document.querySelectorAll('[data-reveal]');
+
+        if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+          items.forEach(function(element) {
+            element.classList.add('is-visible');
+          });
+          return;
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.14 });
+
+        items.forEach(function(element) {
+          observer.observe(element);
+        });
+      }
+
+      function setupTilt() {
+        if (prefersReducedMotion) {
+          return;
+        }
+
+        document.querySelectorAll('[data-tilt]').forEach(function(element) {
+          element.addEventListener('pointermove', function(event) {
+            var rect = element.getBoundingClientRect();
+            var x = (event.clientX - rect.left) / rect.width;
+            var y = (event.clientY - rect.top) / rect.height;
+            var rotateY = (x - 0.5) * 10;
+            var rotateX = (0.5 - y) * 10;
+            element.style.transform = 'perspective(1200px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) translateY(-6px)';
+          });
+
+          element.addEventListener('pointerleave', function() {
+            element.style.transform = '';
+          });
+        });
+      }
+
+      setRevealDelays();
+      setupPointerGlow();
+      setupReveal();
+      setupTilt();
+    })();
   </script>
 </body>
 </html>

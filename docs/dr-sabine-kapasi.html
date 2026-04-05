@@ -25,6 +25,8 @@
         --buttonText:#ffffff;
         --secondaryButtonBg:#ffffff;
         --secondaryButtonText:#102033;
+        --pointer-x:50vw;
+        --pointer-y:18vh;
       }
       *{box-sizing:border-box}
       body{
@@ -32,11 +34,36 @@
         color:var(--ink);
         font-family:Arial,sans-serif;
         background:linear-gradient(180deg,#f7fbff 0%,#edf7ff 100%);
+        position:relative;
+        overflow-x:hidden;
+      }
+      body::before{
+        content:"";
+        position:fixed;
+        inset:0;
+        pointer-events:none;
+        background:radial-gradient(circle 220px at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--accent2) 16%, transparent), transparent 72%);
+        opacity:.9;
+        z-index:0;
       }
       .page{
         width:min(1180px,calc(100% - 28px));
         margin:0 auto;
         padding:26px 0 56px;
+        position:relative;
+        z-index:1;
+      }
+      [data-reveal]{
+        opacity:0;
+        transform:translateY(28px);
+        transition:
+          opacity .7s ease,
+          transform .7s cubic-bezier(.22,1,.36,1);
+        transition-delay:var(--reveal-delay,0ms);
+      }
+      [data-reveal].is-visible{
+        opacity:1;
+        transform:translateY(0);
       }
       .nav{
         display:flex;
@@ -67,6 +94,7 @@
         background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.84)), linear-gradient(135deg, var(--surface), rgba(255,255,255,0));
         border:1px solid rgba(255,255,255,.78);
         box-shadow:0 28px 80px rgba(15,23,42,.10);
+        transition:transform .24s ease, box-shadow .24s ease;
       }
       .hero::after{
         content:"";
@@ -103,6 +131,10 @@
         border-radius:28px;
         background:linear-gradient(135deg,var(--surface),#ffffff);
         box-shadow:0 22px 40px rgba(15,23,42,.12);
+        transition:transform .45s ease;
+      }
+      .portrait:hover img{
+        transform:scale(1.03);
       }
       .image-frame{
         position:relative;
@@ -169,6 +201,11 @@
         border-radius:20px;
         background:rgba(255,255,255,.74);
         border:1px solid var(--line);
+        transition:transform .24s ease, border-color .24s ease;
+      }
+      .meta-card:hover{
+        transform:translateY(-4px);
+        border-color:color-mix(in srgb, var(--accent) 28%, var(--line));
       }
       .meta-card span{
         display:block;
@@ -225,6 +262,12 @@
         border:1px solid var(--line);
         box-shadow:0 18px 34px rgba(15,23,42,.06);
         backdrop-filter:blur(8px);
+        transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+      }
+      .card:hover{
+        transform:translateY(-6px);
+        box-shadow:0 22px 44px rgba(15,23,42,.10);
+        border-color:color-mix(in srgb, var(--accent2) 18%, var(--line));
       }
       .card h2{
         margin:0 0 16px;
@@ -426,14 +469,27 @@
           font-size:13px;
         }
       }
+      @media (prefers-reduced-motion: reduce){
+        [data-reveal]{
+          opacity:1;
+          transform:none;
+          transition:none;
+        }
+        .hero,.card,.meta-card,.portrait img{
+          transition:none;
+        }
+        body::before{
+          display:none;
+        }
+      }
     </style>
     <main class="page">
-      <div class="nav">
+      <div class="nav" data-reveal>
         <strong>Healthcare Profile Demo</strong>
         <a href="./index.html">Back to Homepage</a>
       </div>
 
-      <section class="hero">
+      <section class="hero" data-reveal data-tilt>
         <div class="portrait">
           <div class="image-frame js-image-frame">
             <img src="./assets/images/dr-sabine-kapasi.jpg" alt="Dr Sabine Kapasi" />
@@ -462,12 +518,12 @@
 
       <section class="content-grid">
         <div class="stack">
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>About This Profile</h2>
             <p class="copy">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Trust Highlights</h2>
             <div class="trust-strip">
               <div class="trust-badge"><strong>12 yrs 3 mos</strong><span>Experience across healthcare leadership and delivery</span></div>
@@ -477,12 +533,12 @@
             </div>
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Offerings</h2>
             <ul class="services"><li>Digital health strategy</li><li>Patient engagement solutions</li><li>Clinic growth consulting</li><li>Healthcare operations</li></ul>
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Testimonials</h2>
             <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how feedback could appear on a premium healthcare profile page.</p>
             <div class="testimonial-grid">
@@ -504,7 +560,7 @@
             </div>
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Strong Call To Action</h2>
             <p class="copy">People looking to connect with a trusted global strategy lead can reach Dr Sabine Kapasi for healthcare collaboration, leadership conversations, and professional inquiries.</p>
             <div class="hero-actions" style="margin-top:18px">
@@ -516,12 +572,12 @@
         </div>
 
         <div class="stack">
-          <aside class="card">
+          <aside class="card" data-reveal data-tilt>
             <h2>Profile Information</h2>
             <div class="detail-list"><div class="detail"><span>Company</span><strong>United Nations Platform for Space-based Information for Disaster Management and Emergency Response</strong></div><div class="detail"><span>Address</span><strong>17 Residency Road, Ashok Nagar, Bengaluru</strong></div><div class="detail"><span>Phone</span><strong>9999999999</strong></div><div class="detail"><span>Email</span><strong>hello@companyname.example</strong></div><div class="detail"><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div></div>
           </aside>
 
-          <aside class="card">
+          <aside class="card" data-reveal data-tilt>
             <h2>Availability</h2>
             <div class="availability">
               <div class="availability-box">
@@ -537,7 +593,7 @@
         </div>
       </section>
 
-      <section class="cta">
+      <section class="cta" data-reveal data-tilt>
         <div>
           <h2>Build a premium healthcare profile presence</h2>
           <p>Designed for healthcare professionals, founders, clinic owners, and leaders, this concept highlights credibility, strong positioning, and fast contact intent.</p>
@@ -545,7 +601,7 @@
         <a class="btn" href="mailto:hello@companyname.example">Schedule Now</a>
       </section>
 
-      <footer>
+      <footer data-reveal>
         This is a concept demo website created for showcase purposes only. It is not an official healthcare organization website.
       </footer>
 
@@ -564,6 +620,79 @@
         img.parentElement.classList.add('is-fallback');
       });
     });
+  </script>
+    <script>
+    (function() {
+      var root = document.documentElement;
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function setRevealDelays() {
+        document.querySelectorAll('[data-reveal]').forEach(function(element, index) {
+          element.style.setProperty('--reveal-delay', (index * 80) + 'ms');
+        });
+      }
+
+      function setupPointerGlow() {
+        if (prefersReducedMotion) {
+          return;
+        }
+
+        window.addEventListener('pointermove', function(event) {
+          root.style.setProperty('--pointer-x', event.clientX + 'px');
+          root.style.setProperty('--pointer-y', event.clientY + 'px');
+        });
+      }
+
+      function setupReveal() {
+        var items = document.querySelectorAll('[data-reveal]');
+
+        if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+          items.forEach(function(element) {
+            element.classList.add('is-visible');
+          });
+          return;
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.14 });
+
+        items.forEach(function(element) {
+          observer.observe(element);
+        });
+      }
+
+      function setupTilt() {
+        if (prefersReducedMotion) {
+          return;
+        }
+
+        document.querySelectorAll('[data-tilt]').forEach(function(element) {
+          element.addEventListener('pointermove', function(event) {
+            var rect = element.getBoundingClientRect();
+            var x = (event.clientX - rect.left) / rect.width;
+            var y = (event.clientY - rect.top) / rect.height;
+            var rotateY = (x - 0.5) * 10;
+            var rotateX = (0.5 - y) * 10;
+            element.style.transform = 'perspective(1200px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) translateY(-6px)';
+          });
+
+          element.addEventListener('pointerleave', function() {
+            element.style.transform = '';
+          });
+        });
+      }
+
+      setRevealDelays();
+      setupPointerGlow();
+      setupReveal();
+      setupTilt();
+    })();
   </script>
 </body>
 </html>

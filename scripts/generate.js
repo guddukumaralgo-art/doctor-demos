@@ -301,6 +301,82 @@ function renderImageFallbackScript() {
   </script>`;
 }
 
+function renderMotionScript() {
+  return `<script>
+    (function() {
+      var root = document.documentElement;
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function setRevealDelays() {
+        document.querySelectorAll('[data-reveal]').forEach(function(element, index) {
+          element.style.setProperty('--reveal-delay', (index * 80) + 'ms');
+        });
+      }
+
+      function setupPointerGlow() {
+        if (prefersReducedMotion) {
+          return;
+        }
+
+        window.addEventListener('pointermove', function(event) {
+          root.style.setProperty('--pointer-x', event.clientX + 'px');
+          root.style.setProperty('--pointer-y', event.clientY + 'px');
+        });
+      }
+
+      function setupReveal() {
+        var items = document.querySelectorAll('[data-reveal]');
+
+        if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+          items.forEach(function(element) {
+            element.classList.add('is-visible');
+          });
+          return;
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.14 });
+
+        items.forEach(function(element) {
+          observer.observe(element);
+        });
+      }
+
+      function setupTilt() {
+        if (prefersReducedMotion) {
+          return;
+        }
+
+        document.querySelectorAll('[data-tilt]').forEach(function(element) {
+          element.addEventListener('pointermove', function(event) {
+            var rect = element.getBoundingClientRect();
+            var x = (event.clientX - rect.left) / rect.width;
+            var y = (event.clientY - rect.top) / rect.height;
+            var rotateY = (x - 0.5) * 10;
+            var rotateX = (0.5 - y) * 10;
+            element.style.transform = 'perspective(1200px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) translateY(-6px)';
+          });
+
+          element.addEventListener('pointerleave', function() {
+            element.style.transform = '';
+          });
+        });
+      }
+
+      setRevealDelays();
+      setupPointerGlow();
+      setupReveal();
+      setupTilt();
+    })();
+  </script>`;
+}
+
 function pageShell({ title, bodyClass, content, description = "", canonicalUrl = "", ogImage = "" }) {
   return `<!doctype html>
 <html lang="en">
@@ -394,6 +470,8 @@ function renderDoctorPage(doctor, variant) {
         --buttonText:${buttonText};
         --secondaryButtonBg:${secondaryButtonBg};
         --secondaryButtonText:${secondaryButtonText};
+        --pointer-x:50vw;
+        --pointer-y:18vh;
       }
       *{box-sizing:border-box}
       body{
@@ -401,11 +479,36 @@ function renderDoctorPage(doctor, variant) {
         color:var(--ink);
         font-family:Arial,sans-serif;
         background:${variant.shellBg};
+        position:relative;
+        overflow-x:hidden;
+      }
+      body::before{
+        content:"";
+        position:fixed;
+        inset:0;
+        pointer-events:none;
+        background:radial-gradient(circle 220px at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--accent2) 16%, transparent), transparent 72%);
+        opacity:.9;
+        z-index:0;
       }
       .page{
         width:min(1180px,calc(100% - 28px));
         margin:0 auto;
         padding:26px 0 56px;
+        position:relative;
+        z-index:1;
+      }
+      [data-reveal]{
+        opacity:0;
+        transform:translateY(28px);
+        transition:
+          opacity .7s ease,
+          transform .7s cubic-bezier(.22,1,.36,1);
+        transition-delay:var(--reveal-delay,0ms);
+      }
+      [data-reveal].is-visible{
+        opacity:1;
+        transform:translateY(0);
       }
       .nav{
         display:flex;
@@ -436,6 +539,7 @@ function renderDoctorPage(doctor, variant) {
         background:${variant.heroBg};
         border:1px solid ${isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.78)"};
         box-shadow:${isDark ? "0 28px 80px rgba(0,0,0,.22)" : "0 28px 80px rgba(15,23,42,.10)"};
+        transition:transform .24s ease, box-shadow .24s ease;
       }
       .hero::after{
         content:"";
@@ -472,6 +576,10 @@ function renderDoctorPage(doctor, variant) {
         border-radius:28px;
         background:linear-gradient(135deg,var(--surface),#ffffff);
         box-shadow:${isDark ? "0 22px 40px rgba(0,0,0,.24)" : "0 22px 40px rgba(15,23,42,.12)"};
+        transition:transform .45s ease;
+      }
+      .portrait:hover img{
+        transform:scale(1.03);
       }
       .image-frame{
         position:relative;
@@ -538,6 +646,11 @@ function renderDoctorPage(doctor, variant) {
         border-radius:20px;
         background:${isDark ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.74)"};
         border:1px solid var(--line);
+        transition:transform .24s ease, border-color .24s ease;
+      }
+      .meta-card:hover{
+        transform:translateY(-4px);
+        border-color:color-mix(in srgb, var(--accent) 28%, var(--line));
       }
       .meta-card span{
         display:block;
@@ -594,6 +707,12 @@ function renderDoctorPage(doctor, variant) {
         border:1px solid var(--line);
         box-shadow:${isDark ? "none" : "0 18px 34px rgba(15,23,42,.06)"};
         backdrop-filter:blur(8px);
+        transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+      }
+      .card:hover{
+        transform:translateY(-6px);
+        box-shadow:${isDark ? "0 20px 40px rgba(0,0,0,.24)" : "0 22px 44px rgba(15,23,42,.10)"};
+        border-color:color-mix(in srgb, var(--accent2) 18%, var(--line));
       }
       .card h2{
         margin:0 0 16px;
@@ -795,14 +914,27 @@ function renderDoctorPage(doctor, variant) {
           font-size:13px;
         }
       }
+      @media (prefers-reduced-motion: reduce){
+        [data-reveal]{
+          opacity:1;
+          transform:none;
+          transition:none;
+        }
+        .hero,.card,.meta-card,.portrait img{
+          transition:none;
+        }
+        body::before{
+          display:none;
+        }
+      }
     </style>
     <main class="page">
-      <div class="nav">
+      <div class="nav" data-reveal>
         <strong>Healthcare Profile Demo</strong>
         <a href="./index.html">Back to Homepage</a>
       </div>
 
-      <section class="hero">
+      <section class="hero" data-reveal data-tilt>
         <div class="portrait">
           <div class="image-frame js-image-frame">
             <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
@@ -831,12 +963,12 @@ function renderDoctorPage(doctor, variant) {
 
       <section class="content-grid">
         <div class="stack">
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>About This Profile</h2>
             <p class="copy">${escapeHtml(doctor.bio)}</p>
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Trust Highlights</h2>
             <div class="trust-strip">
               <div class="trust-badge"><strong>${escapeHtml(doctor.experience)}</strong><span>Experience across healthcare leadership and delivery</span></div>
@@ -846,12 +978,12 @@ function renderDoctorPage(doctor, variant) {
             </div>
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Offerings</h2>
             ${servicesList(doctor)}
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Testimonials</h2>
             <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how feedback could appear on a premium healthcare profile page.</p>
             <div class="testimonial-grid">
@@ -873,7 +1005,7 @@ function renderDoctorPage(doctor, variant) {
             </div>
           </article>
 
-          <article class="card">
+          <article class="card" data-reveal data-tilt>
             <h2>Strong Call To Action</h2>
             <p class="copy">People looking to connect with a trusted ${escapeHtml(String(doctor.role).toLowerCase())} can reach ${escapeHtml(doctor.name)} for healthcare collaboration, leadership conversations, and professional inquiries.</p>
             <div class="hero-actions" style="margin-top:18px">
@@ -885,12 +1017,12 @@ function renderDoctorPage(doctor, variant) {
         </div>
 
         <div class="stack">
-          <aside class="card">
+          <aside class="card" data-reveal data-tilt>
             <h2>Profile Information</h2>
             ${detailRows(doctor)}
           </aside>
 
-          <aside class="card">
+          <aside class="card" data-reveal data-tilt>
             <h2>Availability</h2>
             <div class="availability">
               <div class="availability-box">
@@ -906,7 +1038,7 @@ function renderDoctorPage(doctor, variant) {
         </div>
       </section>
 
-      <section class="cta">
+      <section class="cta" data-reveal data-tilt>
         <div>
           <h2>Build a premium healthcare profile presence</h2>
           <p>Designed for healthcare professionals, founders, clinic owners, and leaders, this concept highlights credibility, strong positioning, and fast contact intent.</p>
@@ -914,7 +1046,7 @@ function renderDoctorPage(doctor, variant) {
         <a class="btn" href="mailto:${escapeHtml(doctor.email)}">Schedule Now</a>
       </section>
 
-      <footer>
+      <footer data-reveal>
         This is a concept demo website created for showcase purposes only. It is not an official healthcare organization website.
       </footer>
 
@@ -923,7 +1055,8 @@ function renderDoctorPage(doctor, variant) {
         <a class="floating-btn call" href="${escapeHtml(getPhoneHref(doctor.phone))}">Call Now</a>
       </div>
     </main>
-    ${renderImageFallbackScript()}`,
+    ${renderImageFallbackScript()}
+    ${renderMotionScript()}`,
   });
 }
 
@@ -969,7 +1102,7 @@ function renderIndex(doctors) {
   const cards = doctors
     .map((doctor) => {
       return `
-        <article class="card" style="--accent:${escapeHtml(doctor.accent)};--accent2:${escapeHtml(doctor.accent2)};--surface:${escapeHtml(doctor.surface)};">
+        <article class="card" data-reveal data-tilt style="--accent:${escapeHtml(doctor.accent)};--accent2:${escapeHtml(doctor.accent2)};--surface:${escapeHtml(doctor.surface)};">
           <div class="image-shell js-image-frame">
             <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
             <div class="image-fallback">${escapeHtml(getImageFallbackLabel(doctor))}</div>
@@ -994,7 +1127,7 @@ function renderIndex(doctors) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Healthcare Profile Demo Websites</title>
   <style>
-    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08)}
+    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08);--pointer-x:50vw;--pointer-y:18vh}
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -1004,8 +1137,30 @@ function renderIndex(doctors) {
         radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 26%),
         radial-gradient(circle at top right, rgba(15,118,110,.12), transparent 24%),
         linear-gradient(180deg,#f8fbff 0%,#eef5ff 100%);
+      position:relative;
+      overflow-x:hidden;
     }
-    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:radial-gradient(circle 240px at var(--pointer-x) var(--pointer-y), rgba(22,93,255,.12), transparent 72%);
+      z-index:0;
+    }
+    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px;position:relative;z-index:1}
+    [data-reveal]{
+      opacity:0;
+      transform:translateY(28px);
+      transition:
+        opacity .7s ease,
+        transform .7s cubic-bezier(.22,1,.36,1);
+      transition-delay:var(--reveal-delay,0ms);
+    }
+    [data-reveal].is-visible{
+      opacity:1;
+      transform:translateY(0);
+    }
     .nav{
       display:flex;
       justify-content:space-between;
@@ -1063,6 +1218,7 @@ function renderIndex(doctors) {
       border:1px solid rgba(255,255,255,.86);
       box-shadow:0 24px 60px rgba(15,23,42,.08);
       backdrop-filter:blur(10px);
+      transition:transform .24s ease, box-shadow .24s ease;
     }
     .eyebrow-top{
       display:inline-block;
@@ -1132,6 +1288,11 @@ function renderIndex(doctors) {
       border-radius:18px;
       background:#ffffff;
       border:1px solid var(--line);
+      transition:transform .24s ease, border-color .24s ease;
+    }
+    .mini-card:hover{
+      transform:translateY(-4px);
+      border-color:rgba(22,93,255,.18);
     }
     .mini-card strong{
       display:block;
@@ -1154,6 +1315,7 @@ function renderIndex(doctors) {
       grid-template-columns:1fr auto;
       gap:18px;
       align-items:center;
+      transition:transform .24s ease, box-shadow .24s ease;
     }
     .feature p{color:rgba(255,255,255,.84)}
     .feature a{background:#fff;color:#0f172a}
@@ -1167,6 +1329,12 @@ function renderIndex(doctors) {
       box-shadow:0 20px 48px rgba(15,23,42,.08);
       display:flex;
       flex-direction:column;
+      transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+    }
+    .card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 28px 56px rgba(15,23,42,.12);
+      border-color:rgba(22,93,255,.16);
     }
     .card::before{
       content:"";
@@ -1190,6 +1358,10 @@ function renderIndex(doctors) {
       display:block;
       object-position:center top;
       transform:scale(1.01);
+      transition:transform .4s ease;
+    }
+    .card:hover img{
+      transform:scale(1.05);
     }
     .image-fallback{
       position:absolute;
@@ -1255,11 +1427,24 @@ function renderIndex(doctors) {
       .hero,.feature{grid-template-columns:1fr}
       .mini-grid{grid-template-columns:1fr}
     }
+    @media (prefers-reduced-motion: reduce){
+      [data-reveal]{
+        opacity:1;
+        transform:none;
+        transition:none;
+      }
+      .card,.hero-copy,.hero-panel,.feature,.mini-card,.card img{
+        transition:none;
+      }
+      body::before{
+        display:none;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <div class="nav">
+    <div class="nav" data-reveal>
       <div class="brand">
         <div class="brand-mark">M</div>
         <div class="brand-copy">
@@ -1270,7 +1455,7 @@ function renderIndex(doctors) {
       <a class="nav-link" href="./apollo-inspired/">Hospital Network Demo</a>
     </div>
     <section class="hero">
-      <div class="hero-copy">
+      <div class="hero-copy" data-reveal data-tilt>
         <span class="eyebrow-top">Premium Profile Showcase</span>
         <h1>Modern healthcare profile websites that feel clean, credible, and high-trust</h1>
         <p class="sub">This homepage showcases premium static profile website concepts for healthcare professionals, founders, clinic owners, and healthcare leaders. Each page is generated from the same CSV data structure and stays fast, simple, and GitHub Pages-friendly.</p>
@@ -1279,7 +1464,7 @@ function renderIndex(doctors) {
           <a class="secondary" href="./apollo-inspired/">Open Hospital Demo</a>
         </div>
       </div>
-      <aside class="hero-panel">
+      <aside class="hero-panel" data-reveal data-tilt>
         <h2>What this generator now supports</h2>
         <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished healthcare profile sections generated from CSV data.</p>
         <div class="mini-grid">
@@ -1289,7 +1474,7 @@ function renderIndex(doctors) {
         </div>
       </aside>
     </section>
-    <section class="feature">
+    <section class="feature" data-reveal data-tilt>
       <div>
         <h2>Hospital Network Landing Page</h2>
         <p>An Apollo-inspired multispeciality hospital homepage is also available in a separate folder, with large-scale navigation, service discovery, quick actions, centres of excellence, city network highlights, and a premium healthcare landing-page feel.</p>
@@ -1297,11 +1482,12 @@ function renderIndex(doctors) {
       <a href="./apollo-inspired/">Open Hospital Demo</a>
     </section>
     <section class="grid" id="doctors">${cards}</section>
-    <footer>
+    <footer data-reveal>
       This is a concept demo showcase for healthcare profile and hospital websites. All pages are generated from static project files.
     </footer>
   </main>
   ${renderImageFallbackScript()}
+  ${renderMotionScript()}
 </body>
 </html>`;
 }
