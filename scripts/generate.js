@@ -931,7 +931,7 @@ function renderDoctorPage(doctor, variant) {
     <main class="page">
       <div class="nav" data-reveal>
         <strong>Healthcare Profile Demo</strong>
-        <a href="./index.html">Back to Homepage</a>
+        <a href="${escapeHtml(doctor.linkedin_url || "#")}" target="_blank" rel="noreferrer">LinkedIn</a>
       </div>
 
       <section class="hero" data-reveal data-tilt>
