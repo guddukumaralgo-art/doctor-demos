@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const rootDir = path.resolve(__dirname, "..");
-const doctorsFile = path.join(rootDir, "data", "doctors.json");
+const websiteDataFile = path.join(rootDir, "data", "website_data.csv");
 const docsDir = path.join(rootDir, "docs");
 const sourceImagesDir = path.join(rootDir, "data", "images");
 const outputImagesDir = path.join(docsDir, "assets", "images");
@@ -48,19 +48,92 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
-function readDoctors() {
-  const raw = fs.readFileSync(doctorsFile, "utf8").trim();
+function parseCsv(csvText) {
+  const rows = [];
+  let currentRow = [];
+  let currentValue = "";
+  let inQuotes = false;
 
-  if (!raw) {
-    throw new Error("data/doctors.json is empty.");
+  for (let index = 0; index < csvText.length; index += 1) {
+    const char = csvText[index];
+    const nextChar = csvText[index + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        currentValue += '"';
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      currentRow.push(currentValue);
+      currentValue = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && nextChar === "\n") {
+        index += 1;
+      }
+      currentRow.push(currentValue);
+      rows.push(currentRow);
+      currentRow = [];
+      currentValue = "";
+      continue;
+    }
+
+    currentValue += char;
   }
 
-  const parsed = JSON.parse(raw);
-  if (!Array.isArray(parsed) || parsed.length === 0) {
-    throw new Error("data/doctors.json must contain a non-empty array.");
+  if (inQuotes) {
+    throw new Error('data/website_data.csv has an unclosed quoted value.');
   }
 
-  return parsed;
+  if (currentValue || currentRow.length) {
+    currentRow.push(currentValue);
+    rows.push(currentRow);
+  }
+
+  return rows.filter((row) => row.some((value) => String(value).trim() !== ""));
+}
+
+function readDoctorsFromCsv() {
+  const raw = fs.readFileSync(websiteDataFile, "utf8");
+
+  if (!raw.trim()) {
+    throw new Error("data/website_data.csv is empty.");
+  }
+
+  const rows = parseCsv(raw);
+  if (rows.length < 2) {
+    throw new Error("data/website_data.csv must contain a header row and at least one data row.");
+  }
+
+  const headers = rows[0].map((header) => String(header).trim());
+  const records = rows.slice(1).map((row, rowIndex) => {
+    const record = {};
+
+    headers.forEach((header, columnIndex) => {
+      record[header] = String(row[columnIndex] ?? "").trim();
+    });
+
+    if (row.length > headers.length) {
+      throw new Error(
+        `data/website_data.csv row ${rowIndex + 2} has more columns than the header row.`
+      );
+    }
+
+    return record;
+  });
+
+  if (records.length === 0) {
+    throw new Error("data/website_data.csv must contain at least one doctor record.");
+  }
+
+  return records;
 }
 
 function getDoctorLabel(doctor, index) {
@@ -119,7 +192,11 @@ function normalizeDoctor(doctor, index) {
   const city = doctor.location || doctor.city;
   const slug = doctor.slug || slugify(name || clinic);
   const imageFileName = doctor.image ? path.basename(doctor.image) : "";
-  const services = Array.isArray(doctor.services) ? doctor.services : [];
+  const services = Array.isArray(doctor.services)
+    ? doctor.services
+    : [doctor.services_1, doctor.services_2, doctor.services_3, doctor.services_4].filter(
+        (service) => String(service ?? "").trim() !== ""
+      );
 
   if (!name || !clinic || !city || !slug) {
     throw new Error("Each doctor needs doctor_name or name, clinic_name or clinic, location or city, and a valid slug.");
@@ -1977,7 +2054,7 @@ function renderApolloInspiredSite() {
 function main() {
   cleanDocs();
 
-  const doctorRecords = readDoctors();
+  const doctorRecords = readDoctorsFromCsv();
   validateDoctors(doctorRecords);
   const doctors = doctorRecords.map(normalizeDoctor);
   const staticFiles = generateStaticPages(doctors);
