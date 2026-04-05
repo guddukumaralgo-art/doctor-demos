@@ -442,15 +442,6 @@ function getDoctorTheme(themeName) {
 
 function renderDoctorPage(doctor, variant) {
   const seo = getDoctorSeo(doctor);
-  const isDark = variant.bodyClass === "theme-modern";
-  const ink = isDark ? "#f8fafc" : "#102033";
-  const muted = isDark ? "#cbd5e1" : "#62748a";
-  const line = isDark ? "rgba(255,255,255,.1)" : "rgba(16,32,51,.08)";
-  const panel = variant.cardTone;
-  const buttonText = isDark ? "#0f172a" : "#ffffff";
-  const secondaryButtonBg = isDark ? "rgba(255,255,255,.08)" : "#ffffff";
-  const secondaryButtonText = isDark ? "#ffffff" : "#102033";
-
   const fallbackLabel = getImageFallbackLabel(doctor);
   return pageShell({
     title: seo.title,
@@ -463,22 +454,31 @@ function renderDoctorPage(doctor, variant) {
         --accent:${doctor.accent};
         --accent2:${doctor.accent2};
         --surface:${doctor.surface};
-        --ink:${ink};
-        --muted:${muted};
-        --line:${line};
-        --panel:${panel};
-        --buttonText:${buttonText};
-        --secondaryButtonBg:${secondaryButtonBg};
-        --secondaryButtonText:${secondaryButtonText};
+        --navy-950:#081a33;
+        --navy-900:#0d2342;
+        --navy-800:#133663;
+        --blue-600:#2563eb;
+        --paper:#fbfdff;
+        --mist:#f4f8fc;
+        --ink:#11233f;
+        --muted:#5f7086;
+        --line:rgba(14,35,66,.1);
+        --line-strong:rgba(14,35,66,.16);
+        --shadow-lg:0 32px 80px rgba(8,26,51,.12);
+        --shadow-md:0 20px 48px rgba(8,26,51,.08);
         --pointer-x:50vw;
         --pointer-y:18vh;
       }
       *{box-sizing:border-box}
+      html{scroll-behavior:smooth}
       body{
         margin:0;
-        color:var(--ink);
         font-family:Arial,sans-serif;
-        background:${variant.shellBg};
+        color:var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 26%),
+          radial-gradient(circle at top right, rgba(13,35,66,.08), transparent 24%),
+          linear-gradient(180deg,#f8fbff 0%,#eef4fb 45%,#f7fafe 100%);
         position:relative;
         overflow-x:hidden;
       }
@@ -487,12 +487,13 @@ function renderDoctorPage(doctor, variant) {
         position:fixed;
         inset:0;
         pointer-events:none;
-        background:radial-gradient(circle 220px at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--accent2) 16%, transparent), transparent 72%);
-        opacity:.9;
+        background:
+          radial-gradient(circle 220px at var(--pointer-x) var(--pointer-y), rgba(37,99,235,.1), transparent 72%),
+          linear-gradient(120deg, rgba(255,255,255,.26), transparent 40%);
         z-index:0;
       }
       .page{
-        width:min(1180px,calc(100% - 28px));
+        width:min(1220px,calc(100% - 28px));
         margin:0 auto;
         padding:26px 0 56px;
         position:relative;
@@ -514,76 +515,224 @@ function renderDoctorPage(doctor, variant) {
         display:flex;
         justify-content:space-between;
         align-items:center;
-        gap:14px;
+        gap:16px;
         padding-bottom:18px;
       }
-      .nav strong,.nav a{
+      .brand{
+        display:flex;
+        align-items:center;
+        gap:14px;
+      }
+      .brand-mark{
+        width:54px;
+        height:54px;
+        border-radius:18px;
+        display:grid;
+        place-items:center;
+        color:#fff;
+        background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
+        box-shadow:0 18px 34px rgba(13,35,66,.2);
+        font:700 20px/1 Georgia,"Times New Roman",serif;
+      }
+      .brand-copy strong{
+        display:block;
+        font:700 20px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.03em;
+        color:var(--navy-950);
+      }
+      .brand-copy span{
+        display:block;
+        margin-top:4px;
+        color:var(--muted);
+        font-size:13px;
+      }
+      .nav a{
         color:var(--ink);
         text-decoration:none;
         font:700 14px/1.2 Arial,sans-serif;
-      }
-      .nav a{
-        padding:11px 14px;
+        min-height:46px;
+        padding:0 18px;
         border-radius:999px;
         border:1px solid var(--line);
-        background:${isDark ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.72)"};
+        background:rgba(255,255,255,.82);
+        box-shadow:0 10px 24px rgba(8,26,51,.05);
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
       }
       .hero{
         position:relative;
         overflow:hidden;
         display:grid;
-        grid-template-columns:320px 1fr;
-        gap:30px;
-        padding:34px;
-        border-radius:34px;
-        background:${variant.heroBg};
-        border:1px solid ${isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.78)"};
-        box-shadow:${isDark ? "0 28px 80px rgba(0,0,0,.22)" : "0 28px 80px rgba(15,23,42,.10)"};
+        grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);
+        gap:24px;
+        padding:28px;
+        border-radius:40px;
+        background:
+          linear-gradient(140deg, rgba(255,255,255,.96), rgba(255,255,255,.84)),
+          linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
+        border:1px solid rgba(255,255,255,.88);
+        box-shadow:var(--shadow-lg);
         transition:transform .24s ease, box-shadow .24s ease;
       }
-      .hero::after{
+      .hero::before,.hero::after{
         content:"";
         position:absolute;
-        right:-80px;
-        top:-80px;
-        width:240px;
-        height:240px;
         border-radius:50%;
-        background:linear-gradient(135deg,color-mix(in srgb, var(--accent2) 20%, transparent), transparent);
         pointer-events:none;
       }
-      .portrait{
-        position:relative;
-        min-height:420px;
+      .hero::before{
+        width:280px;
+        height:280px;
+        right:-110px;
+        top:-120px;
+        background:radial-gradient(circle, rgba(59,130,246,.14), transparent 70%);
       }
-      .portrait::before{
+      .hero::after{
+        width:180px;
+        height:180px;
+        left:44%;
+        bottom:-90px;
+        background:radial-gradient(circle, rgba(13,35,66,.08), transparent 72%);
+      }
+      .hero-copy{
+        position:relative;
+        z-index:1;
+        padding:10px 4px 8px;
+      }
+      .eyebrow{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding:10px 16px;
+        border-radius:999px;
+        background:rgba(234,243,255,.88);
+        color:var(--navy-800);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        border:1px solid rgba(37,99,235,.1);
+      }
+      .eyebrow::before{
         content:"";
-        position:absolute;
-        inset:-14px;
-        border-radius:30px;
-        transform:rotate(-4deg);
+        width:8px;
+        height:8px;
+        border-radius:50%;
         background:linear-gradient(135deg,var(--accent),var(--accent2));
-        opacity:.14;
+        box-shadow:0 0 0 6px rgba(37,99,235,.08);
       }
-      .portrait img{
-        position:relative;
-        width:100%;
+      h1{
+        margin:18px 0 14px;
+        font:700 clamp(44px,6vw,84px)/.92 Georgia,"Times New Roman",serif;
+        letter-spacing:-.06em;
+        color:var(--navy-950);
+        max-width:10ch;
+      }
+      .clinic{
+        margin-bottom:14px;
+        font:600 clamp(22px,2.4vw,30px)/1.2 Arial,sans-serif;
+        color:var(--navy-900);
+      }
+      .lede{
+        margin:0;
+        max-width:60ch;
+        color:var(--muted);
+        font-size:18px;
+        line-height:1.85;
+      }
+      .hero-actions{
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-top:28px;
+      }
+      .btn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:54px;
+        padding:0 22px;
+        border-radius:999px;
+        text-decoration:none;
+        font-weight:700;
+        font-size:14px;
+        transition:transform .24s ease, box-shadow .24s ease, background .24s ease, border-color .24s ease;
+      }
+      .btn:hover{
+        transform:translateY(-2px);
+      }
+      .btn-primary{
+        background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
+        color:#fff;
+        box-shadow:0 18px 38px rgba(13,35,66,.2);
+      }
+      .btn-secondary{
+        background:rgba(255,255,255,.88);
+        color:var(--ink);
+        border:1px solid var(--line);
+      }
+      .hero-highlights{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:14px;
+        margin-top:28px;
+      }
+      .metric{
+        padding:18px;
+        border-radius:22px;
+        background:rgba(255,255,255,.74);
+        border:1px solid rgba(17,35,63,.08);
+        box-shadow:0 10px 30px rgba(8,26,51,.04);
+      }
+      .metric span{
         display:block;
-        height:100%;
-        min-height:420px;
-        object-fit:cover;
-        object-position:center top;
-        border-radius:28px;
-        background:linear-gradient(135deg,var(--surface),#ffffff);
-        box-shadow:${isDark ? "0 22px 40px rgba(0,0,0,.24)" : "0 22px 40px rgba(15,23,42,.12)"};
-        transition:transform .45s ease;
+        margin-bottom:8px;
+        color:var(--muted);
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:.1em;
+        text-transform:uppercase;
       }
-      .portrait:hover img{
-        transform:scale(1.03);
+      .metric strong{
+        font-size:18px;
+        line-height:1.45;
+        color:var(--navy-900);
+      }
+      .hero-side{
+        display:grid;
+        gap:18px;
+        position:relative;
+        z-index:1;
+      }
+      .portrait-card,.trust-panel,.section-card,.footer-panel{
+        border-radius:34px;
+        border:1px solid rgba(255,255,255,.88);
+        box-shadow:var(--shadow-md);
+        background:rgba(255,255,255,.9);
+      }
+      .portrait-card{
+        overflow:hidden;
+        padding:14px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,.96), rgba(242,247,255,.94)),
+          linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
       }
       .image-frame{
         position:relative;
-        height:100%;
+      }
+      .portrait-card img{
+        width:100%;
+        aspect-ratio:.92/1;
+        display:block;
+        object-fit:cover;
+        object-position:center top;
+        border-radius:28px;
+        background:linear-gradient(135deg,var(--surface),#fff);
+        transition:transform .4s ease;
+      }
+      .portrait-card:hover img{
+        transform:scale(1.03);
       }
       .image-fallback{
         position:absolute;
@@ -595,7 +744,7 @@ function renderDoctorPage(doctor, variant) {
         padding:24px;
         border-radius:28px;
         background:
-          linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, white), color-mix(in srgb, var(--accent2) 14%, white)),
+          linear-gradient(135deg, rgba(255,255,255,.94), rgba(242,247,255,.96)),
           linear-gradient(135deg,var(--surface),#fff);
         color:var(--ink);
         font:700 18px/1.6 Georgia,"Times New Roman",serif;
@@ -607,256 +756,171 @@ function renderDoctorPage(doctor, variant) {
       .image-frame.is-fallback img{
         opacity:0;
       }
-      .eyebrow{
-        display:inline-block;
-        padding:9px 14px;
-        border-radius:999px;
-        background:${isDark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.86)"};
-        color:${isDark ? "#ffffff" : "var(--accent)"};
+      .trust-panel{
+        padding:22px;
+        background:linear-gradient(180deg,#ffffff,#f7faff);
+      }
+      .trust-panel h2,.section-card h2,.cta-card h2{
+        margin:0 0 12px;
+        font:700 30px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.04em;
+        color:var(--navy-950);
+      }
+      .trust-grid,.expertise-grid,.info-grid,.availability-grid,.testimonial-grid,.footer-grid{
+        display:grid;
+        gap:16px;
+      }
+      .trust-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:12px;
+      }
+      .trust-badge,.expertise-card,.info-card,.availability-card,.testimonial{
+        padding:20px;
+        border-radius:24px;
+        background:linear-gradient(180deg,#ffffff,#f7faff);
+        border:1px solid var(--line);
+        transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+      }
+      .trust-badge:hover,.expertise-card:hover,.info-card:hover,.availability-card:hover,.testimonial:hover{
+        transform:translateY(-4px);
+        box-shadow:0 18px 40px rgba(8,26,51,.08);
+        border-color:var(--line-strong);
+      }
+      .trust-badge strong,.expertise-card strong,.info-card strong,.availability-card strong,.testimonial strong{
+        display:block;
+        margin-bottom:8px;
+        font-size:18px;
+        line-height:1.45;
+        color:var(--navy-900);
+      }
+      .trust-badge span,.expertise-card p,.info-card p,.availability-card p{
+        margin:0;
+        color:var(--muted);
+        font-size:15px;
+        line-height:1.75;
+      }
+      .section-grid{
+        display:grid;
+        gap:24px;
+        margin-top:24px;
+      }
+      .section-card{
+        position:relative;
+        overflow:hidden;
+        padding:30px;
+        background:rgba(255,255,255,.84);
+      }
+      .section-card::before{
+        content:"";
+        position:absolute;
+        inset:0 0 auto 0;
+        height:1px;
+        background:linear-gradient(90deg, rgba(37,99,235,.24), transparent 72%);
+      }
+      .section-head{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) auto;
+        gap:18px;
+        align-items:end;
+        margin-bottom:18px;
+      }
+      .kicker{
+        margin:0 0 10px;
+        color:var(--blue-600);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+      }
+      .section-copy,.testimonial p,.cta-copy{
+        margin:0;
+        color:var(--muted);
+        font-size:16px;
+        line-height:1.85;
+      }
+      .expertise-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      .info-grid,.availability-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+      .testimonial-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+      .testimonial p{
+        margin:0;
+      }
+      .testimonial span{
+        display:block;
+        margin-top:5px;
+        color:var(--muted);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .cta-card{
+        position:relative;
+        overflow:hidden;
+        display:grid;
+        grid-template-columns:minmax(0,1fr) auto;
+        gap:20px;
+        align-items:center;
+        padding:34px;
+        border-radius:36px;
+        background:linear-gradient(135deg,var(--navy-950),var(--navy-800) 54%,var(--blue-600));
+        box-shadow:0 28px 70px rgba(8,26,51,.22);
+        color:#fff;
+      }
+      .cta-card::before{
+        content:"";
+        position:absolute;
+        inset:auto -80px -80px auto;
+        width:240px;
+        height:240px;
+        border-radius:50%;
+        background:radial-gradient(circle, rgba(255,255,255,.16), transparent 68%);
+        pointer-events:none;
+      }
+      .cta-card h2{
+        color:#fff;
+      }
+      .cta-copy{
+        color:rgba(255,255,255,.82);
+      }
+      .cta-card .btn{
+        background:#fff;
+        color:var(--navy-950);
+        box-shadow:none;
+      }
+      .footer-panel{
+        margin-top:18px;
+        padding:26px 28px;
+      }
+      .footer-grid{
+        grid-template-columns:minmax(0,1.1fr) repeat(2,minmax(0,.7fr));
+        align-items:start;
+      }
+      .footer-brand strong{
+        display:block;
+        margin-bottom:8px;
+        font:700 22px/1.1 Georgia,"Times New Roman",serif;
+        color:var(--navy-950);
+      }
+      .footer-brand p,.footer-column p{
+        margin:0;
+        color:var(--muted);
+        font-size:14px;
+        line-height:1.75;
+      }
+      .footer-column span{
+        display:block;
+        margin-bottom:8px;
+        color:var(--blue-600);
         font-size:12px;
         font-weight:700;
         letter-spacing:.1em;
         text-transform:uppercase;
-      }
-      h1{
-        margin:18px 0 10px;
-        font:700 clamp(38px,6vw,70px)/.92 Georgia,"Times New Roman",serif;
-        letter-spacing:-.05em;
-      }
-      .clinic{
-        font-size:24px;
-        font-weight:700;
-        margin-bottom:12px;
-      }
-      .lede{
-        margin:0;
-        max-width:60ch;
-        color:var(--muted);
-        font-size:17px;
-        line-height:1.8;
-      }
-      .hero-meta{
-        display:grid;
-        grid-template-columns:repeat(3,minmax(0,1fr));
-        gap:14px;
-        margin-top:24px;
-      }
-      .meta-card{
-        padding:16px;
-        border-radius:20px;
-        background:${isDark ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.74)"};
-        border:1px solid var(--line);
-        transition:transform .24s ease, border-color .24s ease;
-      }
-      .meta-card:hover{
-        transform:translateY(-4px);
-        border-color:color-mix(in srgb, var(--accent) 28%, var(--line));
-      }
-      .meta-card span{
-        display:block;
-        margin-bottom:7px;
-        color:var(--muted);
-        font-size:11px;
-        font-weight:700;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-      }
-      .meta-card strong{
-        font-size:16px;
-        line-height:1.5;
-      }
-      .hero-actions{
-        display:flex;
-        gap:12px;
-        flex-wrap:wrap;
-        margin-top:24px;
-      }
-      .btn{
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        padding:14px 18px;
-        border-radius:16px;
-        text-decoration:none;
-        font-weight:700;
-      }
-      .btn-primary{
-        background:${variant.ctaBg};
-        color:var(--buttonText);
-        box-shadow:${isDark ? "0 18px 32px rgba(0,0,0,.16)" : "0 18px 32px rgba(37,99,235,.18)"};
-      }
-      .btn-secondary{
-        background:var(--secondaryButtonBg);
-        color:var(--secondaryButtonText);
-        border:1px solid var(--line);
-      }
-      .content-grid{
-        display:grid;
-        grid-template-columns:1.06fr .94fr;
-        gap:18px;
-        margin-top:20px;
-      }
-      .stack{
-        display:grid;
-        gap:18px;
-      }
-      .card{
-        padding:24px;
-        border-radius:28px;
-        background:var(--panel);
-        border:1px solid var(--line);
-        box-shadow:${isDark ? "none" : "0 18px 34px rgba(15,23,42,.06)"};
-        backdrop-filter:blur(8px);
-        transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
-      }
-      .card:hover{
-        transform:translateY(-6px);
-        box-shadow:${isDark ? "0 20px 40px rgba(0,0,0,.24)" : "0 22px 44px rgba(15,23,42,.10)"};
-        border-color:color-mix(in srgb, var(--accent2) 18%, var(--line));
-      }
-      .card h2{
-        margin:0 0 16px;
-        font:700 24px/1.05 Georgia,"Times New Roman",serif;
-        letter-spacing:-.03em;
-      }
-      .copy{
-        color:var(--muted);
-        font-size:15px;
-        line-height:1.8;
-      }
-      .services{
-        list-style:none;
-        padding:0;
-        margin:0;
-        display:grid;
-        gap:12px;
-      }
-      .services li{
-        padding:15px 16px;
-        border-radius:18px;
-        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
-        border:1px solid var(--line);
-        line-height:1.7;
-      }
-      .detail-list{
-        display:grid;
-        gap:14px;
-      }
-      .detail{
-        padding-bottom:14px;
-        border-bottom:1px solid var(--line);
-      }
-      .detail:last-child{
-        padding-bottom:0;
-        border-bottom:0;
-      }
-      .detail span{
-        display:block;
-        margin-bottom:7px;
-        color:var(--muted);
-        font-size:11px;
-        font-weight:700;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-      }
-      .detail strong{
-        font-size:15px;
-        line-height:1.7;
-      }
-      .availability{
-        display:grid;
-        gap:14px;
-      }
-      .availability-box{
-        padding:18px;
-        border-radius:20px;
-        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
-        border:1px solid var(--line);
-      }
-      .availability-box strong{
-        display:block;
-        margin-bottom:8px;
-        font-size:17px;
-      }
-      .availability-box p{
-        margin:0;
-        color:var(--muted);
-        line-height:1.7;
-      }
-      .trust-strip{
-        display:grid;
-        grid-template-columns:repeat(4,minmax(0,1fr));
-        gap:12px;
-      }
-      .trust-badge{
-        padding:15px 16px;
-        border-radius:18px;
-        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
-        border:1px solid var(--line);
-      }
-      .trust-badge strong{
-        display:block;
-        margin-bottom:6px;
-        font-size:15px;
-      }
-      .trust-badge span{
-        color:var(--muted);
-        font-size:13px;
-        line-height:1.6;
-      }
-      .testimonial-grid{
-        display:grid;
-        grid-template-columns:repeat(3,minmax(0,1fr));
-        gap:14px;
-      }
-      .testimonial{
-        padding:18px;
-        border-radius:20px;
-        background:${isDark ? "rgba(255,255,255,.05)" : "#ffffff"};
-        border:1px solid var(--line);
-      }
-      .testimonial p{
-        margin:0 0 12px;
-        color:var(--muted);
-        line-height:1.75;
-      }
-      .testimonial strong{
-        display:block;
-        font-size:14px;
-      }
-      .testimonial span{
-        display:block;
-        margin-top:4px;
-        color:var(--muted);
-        font-size:12px;
-        font-weight:700;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-      }
-      .cta{
-        margin-top:18px;
-        padding:28px;
-        border-radius:30px;
-        background:${variant.ctaBg};
-        color:${isDark ? "#0f172a" : "#ffffff"};
-        display:grid;
-        grid-template-columns:1fr auto;
-        gap:16px;
-        align-items:center;
-      }
-      .cta h2{
-        margin:0 0 10px;
-        font:700 28px/1.05 Georgia,"Times New Roman",serif;
-        letter-spacing:-.03em;
-      }
-      .cta p{
-        margin:0;
-        line-height:1.8;
-        color:${isDark ? "rgba(15,23,42,.78)" : "rgba(255,255,255,.84)"};
-      }
-      .cta .btn{
-        background:#ffffff;
-        color:#0f172a;
       }
       .floating-actions{
         position:fixed;
@@ -880,26 +944,61 @@ function renderDoctorPage(doctor, variant) {
         box-shadow:0 18px 34px rgba(15,23,42,.16);
       }
       .floating-btn.call{
-        background:linear-gradient(135deg,var(--accent),var(--accent2));
+        background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
         color:#fff;
       }
       .floating-btn.whatsapp{
         background:#25d366;
         color:#fff;
       }
-      footer{
+      .footer-note{
         margin-top:18px;
-        padding:22px 8px 6px;
+        padding-top:18px;
+        border-top:1px solid var(--line);
         color:var(--muted);
         text-align:center;
-        font-size:14px;
+        font-size:13px;
         line-height:1.7;
       }
-      @media (max-width:960px){
-        .hero,.content-grid,.cta{grid-template-columns:1fr}
-        .hero-meta{grid-template-columns:1fr}
-        .portrait,.portrait img{min-height:320px}
-        .trust-strip,.testimonial-grid{grid-template-columns:1fr}
+      @media (max-width:1080px){
+        .hero,.cta-card,.footer-grid,.info-grid,.availability-grid,.testimonial-grid{
+          grid-template-columns:1fr;
+        }
+        h1{
+          max-width:100%;
+        }
+        .section-head{
+          grid-template-columns:1fr;
+        }
+        .trust-grid,.expertise-grid{
+          grid-template-columns:1fr 1fr;
+        }
+      }
+      @media (max-width:760px){
+        .page{
+          width:min(100% - 20px,1220px);
+        }
+        .nav,.brand{
+          align-items:flex-start;
+          flex-direction:column;
+        }
+        .hero{
+          padding:18px;
+          border-radius:30px;
+        }
+        .section-card,.cta-card,.footer-panel{
+          padding:22px;
+          border-radius:28px;
+        }
+        .hero-highlights,.trust-grid,.expertise-grid,.info-grid,.availability-grid,.testimonial-grid{
+          grid-template-columns:1fr;
+        }
+        .btn{
+          width:100%;
+        }
+        .hero-actions{
+          display:grid;
+        }
       }
       @media (max-width:640px){
         .floating-actions{
@@ -920,7 +1019,7 @@ function renderDoctorPage(doctor, variant) {
           transform:none;
           transition:none;
         }
-        .hero,.card,.meta-card,.portrait img{
+        .hero,.trust-badge,.expertise-card,.info-card,.availability-card,.testimonial,.portrait-card img,.btn{
           transition:none;
         }
         body::before{
@@ -930,124 +1029,165 @@ function renderDoctorPage(doctor, variant) {
     </style>
     <main class="page">
       <div class="nav" data-reveal>
-        <strong>Healthcare Profile Demo</strong>
-        <a href="${escapeHtml(doctor.linkedin_url || "#")}" target="_blank" rel="noreferrer">LinkedIn</a>
+        <div class="brand">
+          <div class="brand-mark">M</div>
+          <div class="brand-copy">
+            <strong>${escapeHtml(doctor.company)}</strong>
+            <span>Premium healthcare profile concept</span>
+          </div>
+        </div>
+        <a href="./index.html">Back to Showcase</a>
       </div>
 
       <section class="hero" data-reveal data-tilt>
-        <div class="portrait">
-          <div class="image-frame js-image-frame">
-            <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
-            <div class="image-fallback">${escapeHtml(fallbackLabel)}</div>
-          </div>
-        </div>
-        <div>
+        <div class="hero-copy">
           <span class="eyebrow">${escapeHtml(doctor.role)}</span>
           <h1>${escapeHtml(doctor.name)}</h1>
           <div class="clinic">${escapeHtml(doctor.company)}</div>
           <p class="lede">${escapeHtml(doctor.bio)}</p>
 
-          <div class="hero-meta">
-            <div class="meta-card"><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
-            <div class="meta-card"><span>Availability</span><strong>${escapeHtml(doctor.availability)}</strong></div>
-            <div class="meta-card"><span>Location</span><strong>${escapeHtml(doctor.city)}</strong></div>
-          </div>
-
           <div class="hero-actions">
-            <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Call Now</a>
-            <a class="btn btn-secondary" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">WhatsApp Now</a>
-            <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Email Profile</a>
+            <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Book a Call</a>
+            <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Request Appointment</a>
+            <a class="btn btn-secondary" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">WhatsApp</a>
+          </div>
+
+          <div class="hero-highlights">
+            <div class="metric"><span>Experience</span><strong>${escapeHtml(doctor.experience)}</strong></div>
+            <div class="metric"><span>Availability</span><strong>${escapeHtml(doctor.availability)}</strong></div>
+            <div class="metric"><span>Location</span><strong>${escapeHtml(doctor.city)}</strong></div>
           </div>
         </div>
-      </section>
 
-      <section class="content-grid">
-        <div class="stack">
-          <article class="card" data-reveal data-tilt>
-            <h2>About This Profile</h2>
-            <p class="copy">${escapeHtml(doctor.bio)}</p>
-          </article>
+        <div class="hero-side">
+          <div class="portrait-card">
+            <div class="image-frame js-image-frame">
+              <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
+              <div class="image-fallback">${escapeHtml(fallbackLabel)}</div>
+            </div>
+          </div>
 
-          <article class="card" data-reveal data-tilt>
+          <aside class="trust-panel">
             <h2>Trust Highlights</h2>
-            <div class="trust-strip">
-              <div class="trust-badge"><strong>${escapeHtml(doctor.experience)}</strong><span>Experience across healthcare leadership and delivery</span></div>
-              <div class="trust-badge"><strong>Trusted Presence</strong><span>Clear communication and professional follow-up</span></div>
-              <div class="trust-badge"><strong>Healthcare Focus</strong><span>Built to showcase leaders, founders, and clinic teams</span></div>
-              <div class="trust-badge"><strong>Easy Contact</strong><span>Fast connection by phone, email, and WhatsApp</span></div>
-            </div>
-          </article>
-
-          <article class="card" data-reveal data-tilt>
-            <h2>Offerings</h2>
-            ${servicesList(doctor)}
-          </article>
-
-          <article class="card" data-reveal data-tilt>
-            <h2>Testimonials</h2>
-            <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how feedback could appear on a premium healthcare profile page.</p>
-            <div class="testimonial-grid">
-              <div class="testimonial">
-                <p>“The consultation felt calm, professional, and very easy to understand from the first visit onward.”</p>
-                <strong>Demo Patient A</strong>
-                <span>Demo Content</span>
-              </div>
-              <div class="testimonial">
-                <p>“Connecting was simple, the profile felt modern and trustworthy, and every next step was explained clearly.”</p>
-                <strong>Demo Contact B</strong>
-                <span>Demo Content</span>
-              </div>
-              <div class="testimonial">
-                <p>“A reassuring experience with thoughtful care, practical advice, and smooth follow-up communication.”</p>
-                <strong>Demo Patient C</strong>
-                <span>Demo Content</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" data-reveal data-tilt>
-            <h2>Strong Call To Action</h2>
-            <p class="copy">People looking to connect with a trusted ${escapeHtml(String(doctor.role).toLowerCase())} can reach ${escapeHtml(doctor.name)} for healthcare collaboration, leadership conversations, and professional inquiries.</p>
-            <div class="hero-actions" style="margin-top:18px">
-              <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Talk Now</a>
-              <a class="btn btn-secondary" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
-              <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Send Email</a>
-            </div>
-          </article>
-        </div>
-
-        <div class="stack">
-          <aside class="card" data-reveal data-tilt>
-            <h2>Profile Information</h2>
-            ${detailRows(doctor)}
-          </aside>
-
-          <aside class="card" data-reveal data-tilt>
-            <h2>Availability</h2>
-            <div class="availability">
-              <div class="availability-box">
-                <strong>${escapeHtml(doctor.availability)}</strong>
-                <p>Availability details can be shown clearly here for visitors on both mobile and desktop.</p>
-              </div>
-              <div class="availability-box">
-                <strong>${escapeHtml(doctor.city)}</strong>
-                <p>${escapeHtml(doctor.address)}</p>
-              </div>
+            <div class="trust-grid">
+              <div class="trust-badge"><strong>Verified Presence</strong><span>Professional presentation that builds confidence on first view.</span></div>
+              <div class="trust-badge"><strong>Premium Care</strong><span>Calm, clear messaging with a refined clinic-led experience.</span></div>
+              <div class="trust-badge"><strong>Responsive Access</strong><span>Simple call, email, and WhatsApp actions across all devices.</span></div>
+              <div class="trust-badge"><strong>High-Trust Design</strong><span>Elegant spacing, hierarchy, and polished detail throughout.</span></div>
             </div>
           </aside>
         </div>
       </section>
 
-      <section class="cta" data-reveal data-tilt>
-        <div>
-          <h2>Build a premium healthcare profile presence</h2>
-          <p>Designed for healthcare professionals, founders, clinic owners, and leaders, this concept highlights credibility, strong positioning, and fast contact intent.</p>
-        </div>
-        <a class="btn" href="mailto:${escapeHtml(doctor.email)}">Schedule Now</a>
-      </section>
+      <div class="section-grid">
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">About</p>
+              <h2>A thoughtful profile experience built around clarity and credibility</h2>
+            </div>
+          </div>
+          <p class="section-copy">${escapeHtml(doctor.bio)}</p>
+        </section>
 
-      <footer data-reveal>
-        This is a concept demo website created for showcase purposes only. It is not an official healthcare organization website.
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Expertise</p>
+              <h2>Signature services and focus areas</h2>
+            </div>
+          </div>
+          <div class="expertise-grid">
+            ${doctor.services
+              .map(
+                (service) =>
+                  `<div class="expertise-card"><strong>${escapeHtml(service)}</strong><p>Structured care with clear next steps, confident presentation, and a premium healthcare experience.</p></div>`
+              )
+              .join("")}
+          </div>
+        </section>
+
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Clinic Info</p>
+              <h2>Company and contact information presented with precision</h2>
+            </div>
+          </div>
+          <div class="info-grid">
+            <div class="info-card"><strong>Clinic</strong><p>${escapeHtml(doctor.company)}</p></div>
+            <div class="info-card"><strong>Address</strong><p>${escapeHtml(doctor.address)}</p></div>
+            <div class="info-card"><strong>Email</strong><p>${escapeHtml(doctor.email)}</p></div>
+          </div>
+        </section>
+
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Availability</p>
+              <h2>Experience, location, and appointment access at a glance</h2>
+            </div>
+          </div>
+          <div class="availability-grid">
+            <div class="availability-card"><strong>${escapeHtml(doctor.experience)}</strong><p>Established experience highlighted in a reassuring and premium format.</p></div>
+            <div class="availability-card"><strong>${escapeHtml(doctor.availability)}</strong><p>Clear scheduling language helps visitors understand the next step immediately.</p></div>
+            <div class="availability-card"><strong>${escapeHtml(doctor.phone)}</strong><p>Direct contact stays visible and accessible on both mobile and desktop.</p></div>
+          </div>
+        </section>
+
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Testimonials</p>
+              <h2>Placeholder feedback cards for a premium social-proof section</h2>
+            </div>
+          </div>
+          <div class="testimonial-grid">
+            <div class="testimonial">
+              <p>“The experience felt calm, clear, and exceptionally professional from the first interaction.”</p>
+              <strong>Patient Placeholder</strong>
+              <span>Demo Content</span>
+            </div>
+            <div class="testimonial">
+              <p>“Everything from communication to presentation gave a high-trust and premium impression.”</p>
+              <strong>Visitor Placeholder</strong>
+              <span>Demo Content</span>
+            </div>
+            <div class="testimonial">
+              <p>“A refined, modern profile that makes it easy to understand expertise and take the next step.”</p>
+              <strong>Client Placeholder</strong>
+              <span>Demo Content</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="cta-card" data-reveal data-tilt>
+          <div>
+            <h2>Ready to connect with ${escapeHtml(doctor.name)}?</h2>
+            <p class="cta-copy">This final call-to-action closes the page with confidence and keeps appointment intent simple, clear, and premium.</p>
+          </div>
+          <a class="btn" href="mailto:${escapeHtml(doctor.email)}">Schedule an Appointment</a>
+        </section>
+      </div>
+
+      <footer class="footer-panel" data-reveal>
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <strong>${escapeHtml(doctor.name)}</strong>
+            <p>A premium static healthcare profile concept designed for elegant presentation, strong trust signals, and clear contact pathways.</p>
+          </div>
+          <div class="footer-column">
+            <span>Contact</span>
+            <p>${escapeHtml(doctor.phone)}</p>
+            <p>${escapeHtml(doctor.email)}</p>
+          </div>
+          <div class="footer-column">
+            <span>Location</span>
+            <p>${escapeHtml(doctor.city)}</p>
+            <p>${escapeHtml(doctor.address)}</p>
+          </div>
+        </div>
+        <div class="footer-note">This is a concept demo website created for showcase purposes only. It is not an official healthcare organization website.</div>
       </footer>
 
       <div class="floating-actions">
@@ -1103,18 +1243,20 @@ function renderIndex(doctors) {
     .map((doctor) => {
       return `
         <article class="card" data-reveal data-tilt style="--accent:${escapeHtml(doctor.accent)};--accent2:${escapeHtml(doctor.accent2)};--surface:${escapeHtml(doctor.surface)};">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="${escapeHtml(doctor.imagePath)}" alt="${escapeHtml(doctor.name)}" />
             <div class="image-fallback">${escapeHtml(getImageFallbackLabel(doctor))}</div>
           </div>
           <div class="content">
-            <p class="eyebrow">${escapeHtml(doctor.role || "")}</p>
+            <div class="card-topline">
+              <p class="eyebrow">${escapeHtml(doctor.role || "")}</p>
+              <span class="meta-pill">${escapeHtml(doctor.experience)}</span>
+            </div>
             <h2>${escapeHtml(doctor.name)}</h2>
             <p class="clinic">${escapeHtml(doctor.company)}</p>
             <p class="location">${escapeHtml(doctor.city)}</p>
-            <p class="meta">${escapeHtml(doctor.experience)} experience</p>
             <p class="copy">${escapeHtml(doctor.bio)}</p>
-            <a href="./${escapeHtml(doctor.slug)}.html">View Profile Website</a>
+            <a href="./${escapeHtml(doctor.slug)}.html">View Premium Profile</a>
           </div>
         </article>`;
     })
@@ -1127,16 +1269,31 @@ function renderIndex(doctors) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Healthcare Profile Demo Websites</title>
   <style>
-    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08);--pointer-x:50vw;--pointer-y:18vh}
+    :root{
+      --navy-950:#081a33;
+      --navy-900:#0d2342;
+      --navy-800:#133663;
+      --blue-600:#2563eb;
+      --blue-500:#3b82f6;
+      --sky-100:#eaf3ff;
+      --paper:#fbfdff;
+      --mist:#f4f8fc;
+      --ink:#11233f;
+      --muted:#607187;
+      --line:rgba(17,35,63,.08);
+      --pointer-x:50vw;
+      --pointer-y:18vh;
+    }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family:Arial,sans-serif;
       color:var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 26%),
-        radial-gradient(circle at top right, rgba(15,118,110,.12), transparent 24%),
-        linear-gradient(180deg,#f8fbff 0%,#eef5ff 100%);
+        radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 24%),
+        radial-gradient(circle at top right, rgba(13,35,66,.09), transparent 22%),
+        linear-gradient(180deg,#f8fbff 0%,#eef4fb 42%,#f7fafe 100%);
       position:relative;
       overflow-x:hidden;
     }
@@ -1145,10 +1302,12 @@ function renderIndex(doctors) {
       position:fixed;
       inset:0;
       pointer-events:none;
-      background:radial-gradient(circle 240px at var(--pointer-x) var(--pointer-y), rgba(22,93,255,.12), transparent 72%);
+      background:
+        radial-gradient(circle 260px at var(--pointer-x) var(--pointer-y), rgba(22,93,255,.1), transparent 72%),
+        linear-gradient(120deg, rgba(255,255,255,.24), transparent 40%);
       z-index:0;
     }
-    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px;position:relative;z-index:1}
+    .wrap{max-width:1240px;margin:0 auto;padding:28px 20px 68px;position:relative;z-index:1}
     [data-reveal]{
       opacity:0;
       transform:translateY(28px);
@@ -1166,7 +1325,7 @@ function renderIndex(doctors) {
       justify-content:space-between;
       align-items:center;
       gap:16px;
-      padding-bottom:16px;
+      padding-bottom:20px;
     }
     .brand{
       display:flex;
@@ -1179,10 +1338,10 @@ function renderIndex(doctors) {
       border-radius:16px;
       display:grid;
       place-items:center;
-      background:linear-gradient(135deg,#165dff,#07b6d5);
+      background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
       color:#fff;
       font:700 20px/1 Georgia,serif;
-      box-shadow:0 18px 34px rgba(22,93,255,.18);
+      box-shadow:0 18px 34px rgba(13,35,66,.2);
     }
     .brand-copy strong{
       display:block;
@@ -1199,100 +1358,142 @@ function renderIndex(doctors) {
       text-decoration:none;
       color:var(--ink);
       font-weight:700;
-      padding:12px 15px;
+      padding:13px 18px;
       border-radius:999px;
-      background:rgba(255,255,255,.75);
+      background:rgba(255,255,255,.82);
       border:1px solid var(--line);
+      box-shadow:0 10px 24px rgba(8,26,51,.05);
     }
     .hero{
       display:grid;
-      grid-template-columns:1.15fr .85fr;
-      gap:22px;
+      grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);
+      gap:24px;
       align-items:stretch;
-      margin-bottom:28px;
+      margin-bottom:24px;
     }
     .hero-copy,.hero-panel{
-      padding:32px;
-      border-radius:32px;
-      background:rgba(255,255,255,.82);
-      border:1px solid rgba(255,255,255,.86);
-      box-shadow:0 24px 60px rgba(15,23,42,.08);
+      padding:36px;
+      border-radius:36px;
+      background:rgba(255,255,255,.84);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 24px 64px rgba(15,23,42,.08);
       backdrop-filter:blur(10px);
       transition:transform .24s ease, box-shadow .24s ease;
     }
+    .hero-copy{
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top right, rgba(37,99,235,.1), transparent 26%),
+        linear-gradient(145deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+    }
     .eyebrow-top{
       display:inline-block;
-      padding:10px 14px;
+      padding:10px 16px;
       border-radius:999px;
-      background:#e0f2fe;
-      color:#0c4a6e;
+      background:rgba(234,243,255,.92);
+      color:var(--navy-800);
       font-size:12px;
       font-weight:700;
-      letter-spacing:.1em;
+      letter-spacing:.12em;
       text-transform:uppercase;
+      border:1px solid rgba(37,99,235,.08);
     }
     h1{
-      margin:18px 0 12px;
-      font:700 clamp(44px,6vw,82px)/.92 Georgia,"Times New Roman",serif;
+      margin:20px 0 14px;
+      font:700 clamp(48px,6.5vw,88px)/.92 Georgia,"Times New Roman",serif;
       letter-spacing:-.06em;
+      color:var(--navy-950);
     }
     .sub{
       margin:0;
       color:var(--muted);
       font-size:18px;
-      line-height:1.8;
+      line-height:1.9;
       max-width:58ch;
+    }
+    .hero-metrics{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-top:26px;
+    }
+    .hero-metric{
+      padding:18px;
+      border-radius:22px;
+      background:rgba(255,255,255,.78);
+      border:1px solid var(--line);
+      box-shadow:0 10px 28px rgba(8,26,51,.04);
+    }
+    .hero-metric strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:18px;
+      color:var(--navy-900);
+    }
+    .hero-metric span{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
     }
     .hero-actions{
       display:flex;
       gap:12px;
       flex-wrap:wrap;
-      margin-top:24px;
+      margin-top:26px;
     }
-    .hero-actions a,.feature a,.card a{
+    .hero-actions a,.feature a,.card a,.cta a{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:13px 17px;
-      border-radius:14px;
+      min-height:54px;
+      padding:0 22px;
+      border-radius:999px;
       text-decoration:none;
       font-weight:700;
+      transition:transform .24s ease, box-shadow .24s ease;
     }
-    .hero-actions .primary,.card a{
+    .hero-actions a:hover,.feature a:hover,.card a:hover,.cta a:hover{
+      transform:translateY(-2px);
+    }
+    .hero-actions .primary,.card a,.cta a{
       color:#fff;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
+      box-shadow:0 18px 36px rgba(13,35,66,.18);
     }
     .hero-actions .secondary{
       color:var(--ink);
-      background:#fff;
+      background:rgba(255,255,255,.9);
       border:1px solid var(--line);
     }
     .hero-panel h2,.feature h2{
       margin:0 0 12px;
       font:700 30px/1.05 Georgia,"Times New Roman",serif;
-      letter-spacing:-.03em;
+      letter-spacing:-.04em;
+      color:var(--navy-950);
     }
     .hero-panel p,.feature p{
       margin:0;
       color:var(--muted);
-      line-height:1.75;
+      line-height:1.8;
     }
     .mini-grid{
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:14px;
       margin-top:20px;
     }
     .mini-card{
-      padding:16px;
-      border-radius:18px;
-      background:#ffffff;
+      padding:18px;
+      border-radius:22px;
+      background:linear-gradient(180deg,#ffffff,#f7faff);
       border:1px solid var(--line);
-      transition:transform .24s ease, border-color .24s ease;
+      transition:transform .24s ease, border-color .24s ease, box-shadow .24s ease;
     }
     .mini-card:hover{
       transform:translateY(-4px);
       border-color:rgba(22,93,255,.18);
+      box-shadow:0 18px 40px rgba(8,26,51,.08);
     }
     .mini-card strong{
       display:block;
@@ -1306,11 +1507,11 @@ function renderIndex(doctors) {
     }
     .feature{
       margin-bottom:24px;
-      padding:28px;
-      border-radius:32px;
-      background:linear-gradient(135deg,#0f172a,#1d4ed8 60%,#06b6d4);
+      padding:32px;
+      border-radius:36px;
+      background:linear-gradient(135deg,var(--navy-950),var(--navy-800) 56%,var(--blue-600));
       color:#fff;
-      box-shadow:0 28px 64px rgba(29,78,216,.2);
+      box-shadow:0 28px 64px rgba(13,35,66,.24);
       display:grid;
       grid-template-columns:1fr auto;
       gap:18px;
@@ -1318,22 +1519,49 @@ function renderIndex(doctors) {
       transition:transform .24s ease, box-shadow .24s ease;
     }
     .feature p{color:rgba(255,255,255,.84)}
-    .feature a{background:#fff;color:#0f172a}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+    .feature a{background:#fff;color:var(--navy-950);box-shadow:none}
+    .section-intro{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:16px;
+      align-items:end;
+      margin:18px 0 18px;
+    }
+    .section-intro p{
+      margin:0 0 10px;
+      color:var(--blue-600);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .section-intro h2{
+      margin:0;
+      font:700 clamp(32px,4vw,48px)/1 Georgia,"Times New Roman",serif;
+      letter-spacing:-.05em;
+      color:var(--navy-950);
+    }
+    .section-intro span{
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.8;
+      max-width:36ch;
+    }
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
     .card{
       overflow:hidden;
       position:relative;
-      border-radius:30px;
-      background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.84));
-      border:1px solid rgba(255,255,255,.84);
-      box-shadow:0 20px 48px rgba(15,23,42,.08);
+      border-radius:34px;
+      background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.86));
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 22px 52px rgba(15,23,42,.08);
       display:flex;
       flex-direction:column;
       transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
     }
     .card:hover{
       transform:translateY(-6px);
-      box-shadow:0 28px 56px rgba(15,23,42,.12);
+      box-shadow:0 28px 64px rgba(15,23,42,.12);
       border-color:rgba(22,93,255,.16);
     }
     .card::before{
@@ -1344,9 +1572,9 @@ function renderIndex(doctors) {
       background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
       pointer-events:none;
     }
-    .image-shell{
+    .card-media{
       position:relative;
-      height:260px;
+      height:280px;
       overflow:hidden;
       background:linear-gradient(135deg,var(--surface),#fff);
       border-bottom:1px solid rgba(255,255,255,.68);
@@ -1383,23 +1611,43 @@ function renderIndex(doctors) {
       opacity:0;
     }
     .content{position:relative;padding:24px}
+    .card-topline{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+    }
     .eyebrow{
-      margin:0 0 12px;
+      margin:0;
       color:var(--accent);
       font-size:12px;
       font-weight:700;
-      letter-spacing:.08em;
+      letter-spacing:.1em;
       text-transform:uppercase;
     }
+    .meta-pill{
+      display:inline-flex;
+      align-items:center;
+      min-height:34px;
+      padding:0 12px;
+      border-radius:999px;
+      background:#eef4ff;
+      color:var(--navy-800);
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
     .content h2{
-      margin:0 0 10px;
-      font:700 28px/1.02 Georgia,"Times New Roman",serif;
-      letter-spacing:-.03em;
+      margin:0 0 12px;
+      font:700 30px/1.02 Georgia,"Times New Roman",serif;
+      letter-spacing:-.04em;
+      color:var(--navy-950);
     }
     .content p{margin:0 0 10px}
     .clinic{
       font-weight:700;
-      color:#1e293b;
+      color:var(--navy-900);
       font-size:15px;
       line-height:1.6;
     }
@@ -1408,24 +1656,76 @@ function renderIndex(doctors) {
       font-size:14px;
       line-height:1.6;
     }
-    .meta{color:var(--muted);font-weight:600}
-    .copy{color:#334155;line-height:1.7;min-height:96px;font-size:14px}
+    .copy{color:#334155;line-height:1.8;min-height:104px;font-size:14px}
     .content a{
       margin-top:16px;
       width:100%;
       justify-content:center;
-      box-shadow:0 16px 30px rgba(37,99,235,.16);
+    }
+    .cta{
+      margin-top:26px;
+      padding:34px;
+      border-radius:36px;
+      background:linear-gradient(135deg,var(--navy-950),var(--navy-800) 56%,var(--blue-600));
+      color:#fff;
+      box-shadow:0 28px 70px rgba(13,35,66,.2);
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:18px;
+      align-items:center;
+    }
+    .cta h2{
+      margin:0 0 12px;
+      font:700 34px/1.02 Georgia,"Times New Roman",serif;
+      letter-spacing:-.04em;
+    }
+    .cta p{
+      margin:0;
+      color:rgba(255,255,255,.82);
+      line-height:1.8;
+      max-width:58ch;
+    }
+    .cta a{
+      background:#fff;
+      color:var(--navy-950);
+      box-shadow:none;
     }
     footer{
-      margin-top:24px;
-      text-align:center;
+      margin-top:18px;
+      padding:28px 30px;
+      border-radius:32px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 18px 44px rgba(8,26,51,.06);
       color:var(--muted);
       font-size:14px;
-      line-height:1.7;
+      line-height:1.8;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:18px;
+      align-items:center;
+    }
+    .footer-title{
+      display:block;
+      margin-bottom:8px;
+      font:700 22px/1.05 Georgia,"Times New Roman",serif;
+      color:var(--navy-950);
+    }
+    .footer-link{
+      color:var(--navy-900);
+      text-decoration:none;
+      font-weight:700;
     }
     @media (max-width:900px){
-      .hero,.feature{grid-template-columns:1fr}
-      .mini-grid{grid-template-columns:1fr}
+      .hero,.feature,.cta,footer{grid-template-columns:1fr}
+      .hero-metrics,.mini-grid{grid-template-columns:1fr}
+      .section-intro{grid-template-columns:1fr}
+    }
+    @media (max-width:700px){
+      .card-topline{flex-direction:column;align-items:flex-start}
+      .hero-copy,.hero-panel,.feature,.cta,footer{padding:24px}
+      .hero-actions{display:grid}
+      .hero-actions a{width:100%}
     }
     @media (prefers-reduced-motion: reduce){
       [data-reveal]{
@@ -1449,7 +1749,7 @@ function renderIndex(doctors) {
         <div class="brand-mark">M</div>
         <div class="brand-copy">
           <strong>Healthcare Profile Showcase</strong>
-          <span>Premium static healthcare profile website concepts</span>
+          <span>Ultra-premium static healthcare profile website concepts</span>
         </div>
       </div>
       <a class="nav-link" href="./apollo-inspired/">Hospital Network Demo</a>
@@ -1457,20 +1757,26 @@ function renderIndex(doctors) {
     <section class="hero">
       <div class="hero-copy" data-reveal data-tilt>
         <span class="eyebrow-top">Premium Profile Showcase</span>
-        <h1>Modern healthcare profile websites that feel clean, credible, and high-trust</h1>
-        <p class="sub">This homepage showcases premium static profile website concepts for healthcare professionals, founders, clinic owners, and healthcare leaders. Each page is generated from the same CSV data structure and stays fast, simple, and GitHub Pages-friendly.</p>
+        <h1>Luxury-grade healthcare profile websites with calm authority and modern trust</h1>
+        <p class="sub">This showcase presents premium static profile website concepts for healthcare professionals, founders, clinic owners, and healthcare leaders. Every page is generated from the same CSV-driven system while staying fast, maintainable, and GitHub Pages-friendly.</p>
         <div class="hero-actions">
           <a class="primary" href="#doctors">Explore Profile Pages</a>
           <a class="secondary" href="./apollo-inspired/">Open Hospital Demo</a>
         </div>
+        <div class="hero-metrics">
+          <div class="hero-metric"><strong>Static First</strong><span>Pure HTML, CSS, and vanilla JavaScript output for speed and simplicity.</span></div>
+          <div class="hero-metric"><strong>Premium UI</strong><span>Luxury-grade spacing, typography, cards, CTAs, and trust presentation.</span></div>
+          <div class="hero-metric"><strong>Generator Safe</strong><span>Existing data fields, image paths, and GitHub Pages compatibility stay intact.</span></div>
+        </div>
       </div>
       <aside class="hero-panel" data-reveal data-tilt>
-        <h2>What this generator now supports</h2>
-        <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished healthcare profile sections generated from CSV data.</p>
+        <h2>What this system now feels like</h2>
+        <p>A refined healthcare presentation system with stronger hero storytelling, high-end homepage cards, premium CTA styling, elegant section rhythm, subtle motion, and a more complete finish from first impression to footer.</p>
         <div class="mini-grid">
-          <div class="mini-card"><strong>Hero-First</strong><span>Clear professional identity, company branding, and immediate contact intent.</span></div>
-          <div class="mini-card"><strong>Trust Signals</strong><span>Experience, availability, location, and company information are surfaced clearly.</span></div>
-          <div class="mini-card"><strong>Static & Fast</strong><span>No framework, no backend, just static HTML, CSS, and vanilla JavaScript output.</span></div>
+          <div class="mini-card"><strong>Hero-First Identity</strong><span>Stronger profile introductions with premium visual weight and calm confidence.</span></div>
+          <div class="mini-card"><strong>Trust Badge Layer</strong><span>Experience, access, and credibility are surfaced in a cleaner premium structure.</span></div>
+          <div class="mini-card"><strong>Card Refinement</strong><span>Homepage profile cards now feel more luxurious, polished, and conversion-ready.</span></div>
+          <div class="mini-card"><strong>Mobile Harmony</strong><span>Spacing, buttons, and card hierarchy remain clean and clear on small screens.</span></div>
         </div>
       </aside>
     </section>
@@ -1481,9 +1787,27 @@ function renderIndex(doctors) {
       </div>
       <a href="./apollo-inspired/">Open Hospital Demo</a>
     </section>
+    <section class="section-intro" data-reveal>
+      <div>
+        <p>Profile Collection</p>
+        <h2>Premium homepage cards for healthcare leaders and practices</h2>
+      </div>
+      <span>Each generated profile now sits inside a more elegant card system with refined imagery, spacing, stronger hierarchy, and smoother hover behavior.</span>
+    </section>
     <section class="grid" id="doctors">${cards}</section>
+    <section class="cta" data-reveal data-tilt>
+      <div>
+        <h2>Build a premium healthcare web presence without adding a framework</h2>
+        <p>The project remains static and generator-driven, but the UI now lands closer to a high-end clinic or concierge healthcare brand experience.</p>
+      </div>
+      <a href="#doctors">Review Profiles</a>
+    </section>
     <footer data-reveal>
-      This is a concept demo showcase for healthcare profile and hospital websites. All pages are generated from static project files.
+      <div>
+        <span class="footer-title">Premium static healthcare website system</span>
+        This is a concept demo showcase for healthcare profile and hospital websites. All pages are generated from static project files and remain GitHub Pages compatible.
+      </div>
+      <a class="footer-link" href="./apollo-inspired/">View Hospital Demo</a>
     </footer>
   </main>
   ${renderImageFallbackScript()}

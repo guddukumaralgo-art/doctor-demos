@@ -18,22 +18,31 @@
         --accent:#0f766e;
         --accent2:#2563eb;
         --surface:#eff6ff;
-        --ink:#102033;
-        --muted:#62748a;
-        --line:rgba(16,32,51,.08);
-        --panel:rgba(255,255,255,.86);
-        --buttonText:#ffffff;
-        --secondaryButtonBg:#ffffff;
-        --secondaryButtonText:#102033;
+        --navy-950:#081a33;
+        --navy-900:#0d2342;
+        --navy-800:#133663;
+        --blue-600:#2563eb;
+        --paper:#fbfdff;
+        --mist:#f4f8fc;
+        --ink:#11233f;
+        --muted:#5f7086;
+        --line:rgba(14,35,66,.1);
+        --line-strong:rgba(14,35,66,.16);
+        --shadow-lg:0 32px 80px rgba(8,26,51,.12);
+        --shadow-md:0 20px 48px rgba(8,26,51,.08);
         --pointer-x:50vw;
         --pointer-y:18vh;
       }
       *{box-sizing:border-box}
+      html{scroll-behavior:smooth}
       body{
         margin:0;
-        color:var(--ink);
         font-family:Arial,sans-serif;
-        background:linear-gradient(180deg,#f7fbff 0%,#edf7ff 100%);
+        color:var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 26%),
+          radial-gradient(circle at top right, rgba(13,35,66,.08), transparent 24%),
+          linear-gradient(180deg,#f8fbff 0%,#eef4fb 45%,#f7fafe 100%);
         position:relative;
         overflow-x:hidden;
       }
@@ -42,12 +51,13 @@
         position:fixed;
         inset:0;
         pointer-events:none;
-        background:radial-gradient(circle 220px at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--accent2) 16%, transparent), transparent 72%);
-        opacity:.9;
+        background:
+          radial-gradient(circle 220px at var(--pointer-x) var(--pointer-y), rgba(37,99,235,.1), transparent 72%),
+          linear-gradient(120deg, rgba(255,255,255,.26), transparent 40%);
         z-index:0;
       }
       .page{
-        width:min(1180px,calc(100% - 28px));
+        width:min(1220px,calc(100% - 28px));
         margin:0 auto;
         padding:26px 0 56px;
         position:relative;
@@ -69,76 +79,224 @@
         display:flex;
         justify-content:space-between;
         align-items:center;
-        gap:14px;
+        gap:16px;
         padding-bottom:18px;
       }
-      .nav strong,.nav a{
+      .brand{
+        display:flex;
+        align-items:center;
+        gap:14px;
+      }
+      .brand-mark{
+        width:54px;
+        height:54px;
+        border-radius:18px;
+        display:grid;
+        place-items:center;
+        color:#fff;
+        background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
+        box-shadow:0 18px 34px rgba(13,35,66,.2);
+        font:700 20px/1 Georgia,"Times New Roman",serif;
+      }
+      .brand-copy strong{
+        display:block;
+        font:700 20px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.03em;
+        color:var(--navy-950);
+      }
+      .brand-copy span{
+        display:block;
+        margin-top:4px;
+        color:var(--muted);
+        font-size:13px;
+      }
+      .nav a{
         color:var(--ink);
         text-decoration:none;
         font:700 14px/1.2 Arial,sans-serif;
-      }
-      .nav a{
-        padding:11px 14px;
+        min-height:46px;
+        padding:0 18px;
         border-radius:999px;
         border:1px solid var(--line);
-        background:rgba(255,255,255,.72);
+        background:rgba(255,255,255,.82);
+        box-shadow:0 10px 24px rgba(8,26,51,.05);
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
       }
       .hero{
         position:relative;
         overflow:hidden;
         display:grid;
-        grid-template-columns:320px 1fr;
-        gap:30px;
-        padding:34px;
-        border-radius:34px;
-        background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.84)), linear-gradient(135deg, var(--surface), rgba(255,255,255,0));
-        border:1px solid rgba(255,255,255,.78);
-        box-shadow:0 28px 80px rgba(15,23,42,.10);
+        grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);
+        gap:24px;
+        padding:28px;
+        border-radius:40px;
+        background:
+          linear-gradient(140deg, rgba(255,255,255,.96), rgba(255,255,255,.84)),
+          linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
+        border:1px solid rgba(255,255,255,.88);
+        box-shadow:var(--shadow-lg);
         transition:transform .24s ease, box-shadow .24s ease;
       }
-      .hero::after{
+      .hero::before,.hero::after{
         content:"";
         position:absolute;
-        right:-80px;
-        top:-80px;
-        width:240px;
-        height:240px;
         border-radius:50%;
-        background:linear-gradient(135deg,color-mix(in srgb, var(--accent2) 20%, transparent), transparent);
         pointer-events:none;
       }
-      .portrait{
-        position:relative;
-        min-height:420px;
+      .hero::before{
+        width:280px;
+        height:280px;
+        right:-110px;
+        top:-120px;
+        background:radial-gradient(circle, rgba(59,130,246,.14), transparent 70%);
       }
-      .portrait::before{
+      .hero::after{
+        width:180px;
+        height:180px;
+        left:44%;
+        bottom:-90px;
+        background:radial-gradient(circle, rgba(13,35,66,.08), transparent 72%);
+      }
+      .hero-copy{
+        position:relative;
+        z-index:1;
+        padding:10px 4px 8px;
+      }
+      .eyebrow{
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        padding:10px 16px;
+        border-radius:999px;
+        background:rgba(234,243,255,.88);
+        color:var(--navy-800);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        border:1px solid rgba(37,99,235,.1);
+      }
+      .eyebrow::before{
         content:"";
-        position:absolute;
-        inset:-14px;
-        border-radius:30px;
-        transform:rotate(-4deg);
+        width:8px;
+        height:8px;
+        border-radius:50%;
         background:linear-gradient(135deg,var(--accent),var(--accent2));
-        opacity:.14;
+        box-shadow:0 0 0 6px rgba(37,99,235,.08);
       }
-      .portrait img{
-        position:relative;
-        width:100%;
+      h1{
+        margin:18px 0 14px;
+        font:700 clamp(44px,6vw,84px)/.92 Georgia,"Times New Roman",serif;
+        letter-spacing:-.06em;
+        color:var(--navy-950);
+        max-width:10ch;
+      }
+      .clinic{
+        margin-bottom:14px;
+        font:600 clamp(22px,2.4vw,30px)/1.2 Arial,sans-serif;
+        color:var(--navy-900);
+      }
+      .lede{
+        margin:0;
+        max-width:60ch;
+        color:var(--muted);
+        font-size:18px;
+        line-height:1.85;
+      }
+      .hero-actions{
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-top:28px;
+      }
+      .btn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:54px;
+        padding:0 22px;
+        border-radius:999px;
+        text-decoration:none;
+        font-weight:700;
+        font-size:14px;
+        transition:transform .24s ease, box-shadow .24s ease, background .24s ease, border-color .24s ease;
+      }
+      .btn:hover{
+        transform:translateY(-2px);
+      }
+      .btn-primary{
+        background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
+        color:#fff;
+        box-shadow:0 18px 38px rgba(13,35,66,.2);
+      }
+      .btn-secondary{
+        background:rgba(255,255,255,.88);
+        color:var(--ink);
+        border:1px solid var(--line);
+      }
+      .hero-highlights{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:14px;
+        margin-top:28px;
+      }
+      .metric{
+        padding:18px;
+        border-radius:22px;
+        background:rgba(255,255,255,.74);
+        border:1px solid rgba(17,35,63,.08);
+        box-shadow:0 10px 30px rgba(8,26,51,.04);
+      }
+      .metric span{
         display:block;
-        height:100%;
-        min-height:420px;
-        object-fit:cover;
-        object-position:center top;
-        border-radius:28px;
-        background:linear-gradient(135deg,var(--surface),#ffffff);
-        box-shadow:0 22px 40px rgba(15,23,42,.12);
-        transition:transform .45s ease;
+        margin-bottom:8px;
+        color:var(--muted);
+        font-size:11px;
+        font-weight:700;
+        letter-spacing:.1em;
+        text-transform:uppercase;
       }
-      .portrait:hover img{
-        transform:scale(1.03);
+      .metric strong{
+        font-size:18px;
+        line-height:1.45;
+        color:var(--navy-900);
+      }
+      .hero-side{
+        display:grid;
+        gap:18px;
+        position:relative;
+        z-index:1;
+      }
+      .portrait-card,.trust-panel,.section-card,.footer-panel{
+        border-radius:34px;
+        border:1px solid rgba(255,255,255,.88);
+        box-shadow:var(--shadow-md);
+        background:rgba(255,255,255,.9);
+      }
+      .portrait-card{
+        overflow:hidden;
+        padding:14px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,.96), rgba(242,247,255,.94)),
+          linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
       }
       .image-frame{
         position:relative;
-        height:100%;
+      }
+      .portrait-card img{
+        width:100%;
+        aspect-ratio:.92/1;
+        display:block;
+        object-fit:cover;
+        object-position:center top;
+        border-radius:28px;
+        background:linear-gradient(135deg,var(--surface),#fff);
+        transition:transform .4s ease;
+      }
+      .portrait-card:hover img{
+        transform:scale(1.03);
       }
       .image-fallback{
         position:absolute;
@@ -150,7 +308,7 @@
         padding:24px;
         border-radius:28px;
         background:
-          linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, white), color-mix(in srgb, var(--accent2) 14%, white)),
+          linear-gradient(135deg, rgba(255,255,255,.94), rgba(242,247,255,.96)),
           linear-gradient(135deg,var(--surface),#fff);
         color:var(--ink);
         font:700 18px/1.6 Georgia,"Times New Roman",serif;
@@ -162,256 +320,171 @@
       .image-frame.is-fallback img{
         opacity:0;
       }
-      .eyebrow{
-        display:inline-block;
-        padding:9px 14px;
-        border-radius:999px;
-        background:rgba(255,255,255,.86);
-        color:var(--accent);
+      .trust-panel{
+        padding:22px;
+        background:linear-gradient(180deg,#ffffff,#f7faff);
+      }
+      .trust-panel h2,.section-card h2,.cta-card h2{
+        margin:0 0 12px;
+        font:700 30px/1.05 Georgia,"Times New Roman",serif;
+        letter-spacing:-.04em;
+        color:var(--navy-950);
+      }
+      .trust-grid,.expertise-grid,.info-grid,.availability-grid,.testimonial-grid,.footer-grid{
+        display:grid;
+        gap:16px;
+      }
+      .trust-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:12px;
+      }
+      .trust-badge,.expertise-card,.info-card,.availability-card,.testimonial{
+        padding:20px;
+        border-radius:24px;
+        background:linear-gradient(180deg,#ffffff,#f7faff);
+        border:1px solid var(--line);
+        transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+      }
+      .trust-badge:hover,.expertise-card:hover,.info-card:hover,.availability-card:hover,.testimonial:hover{
+        transform:translateY(-4px);
+        box-shadow:0 18px 40px rgba(8,26,51,.08);
+        border-color:var(--line-strong);
+      }
+      .trust-badge strong,.expertise-card strong,.info-card strong,.availability-card strong,.testimonial strong{
+        display:block;
+        margin-bottom:8px;
+        font-size:18px;
+        line-height:1.45;
+        color:var(--navy-900);
+      }
+      .trust-badge span,.expertise-card p,.info-card p,.availability-card p{
+        margin:0;
+        color:var(--muted);
+        font-size:15px;
+        line-height:1.75;
+      }
+      .section-grid{
+        display:grid;
+        gap:24px;
+        margin-top:24px;
+      }
+      .section-card{
+        position:relative;
+        overflow:hidden;
+        padding:30px;
+        background:rgba(255,255,255,.84);
+      }
+      .section-card::before{
+        content:"";
+        position:absolute;
+        inset:0 0 auto 0;
+        height:1px;
+        background:linear-gradient(90deg, rgba(37,99,235,.24), transparent 72%);
+      }
+      .section-head{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) auto;
+        gap:18px;
+        align-items:end;
+        margin-bottom:18px;
+      }
+      .kicker{
+        margin:0 0 10px;
+        color:var(--blue-600);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+      }
+      .section-copy,.testimonial p,.cta-copy{
+        margin:0;
+        color:var(--muted);
+        font-size:16px;
+        line-height:1.85;
+      }
+      .expertise-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      .info-grid,.availability-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+      .testimonial-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+      .testimonial p{
+        margin:0;
+      }
+      .testimonial span{
+        display:block;
+        margin-top:5px;
+        color:var(--muted);
+        font-size:12px;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .cta-card{
+        position:relative;
+        overflow:hidden;
+        display:grid;
+        grid-template-columns:minmax(0,1fr) auto;
+        gap:20px;
+        align-items:center;
+        padding:34px;
+        border-radius:36px;
+        background:linear-gradient(135deg,var(--navy-950),var(--navy-800) 54%,var(--blue-600));
+        box-shadow:0 28px 70px rgba(8,26,51,.22);
+        color:#fff;
+      }
+      .cta-card::before{
+        content:"";
+        position:absolute;
+        inset:auto -80px -80px auto;
+        width:240px;
+        height:240px;
+        border-radius:50%;
+        background:radial-gradient(circle, rgba(255,255,255,.16), transparent 68%);
+        pointer-events:none;
+      }
+      .cta-card h2{
+        color:#fff;
+      }
+      .cta-copy{
+        color:rgba(255,255,255,.82);
+      }
+      .cta-card .btn{
+        background:#fff;
+        color:var(--navy-950);
+        box-shadow:none;
+      }
+      .footer-panel{
+        margin-top:18px;
+        padding:26px 28px;
+      }
+      .footer-grid{
+        grid-template-columns:minmax(0,1.1fr) repeat(2,minmax(0,.7fr));
+        align-items:start;
+      }
+      .footer-brand strong{
+        display:block;
+        margin-bottom:8px;
+        font:700 22px/1.1 Georgia,"Times New Roman",serif;
+        color:var(--navy-950);
+      }
+      .footer-brand p,.footer-column p{
+        margin:0;
+        color:var(--muted);
+        font-size:14px;
+        line-height:1.75;
+      }
+      .footer-column span{
+        display:block;
+        margin-bottom:8px;
+        color:var(--blue-600);
         font-size:12px;
         font-weight:700;
         letter-spacing:.1em;
         text-transform:uppercase;
-      }
-      h1{
-        margin:18px 0 10px;
-        font:700 clamp(38px,6vw,70px)/.92 Georgia,"Times New Roman",serif;
-        letter-spacing:-.05em;
-      }
-      .clinic{
-        font-size:24px;
-        font-weight:700;
-        margin-bottom:12px;
-      }
-      .lede{
-        margin:0;
-        max-width:60ch;
-        color:var(--muted);
-        font-size:17px;
-        line-height:1.8;
-      }
-      .hero-meta{
-        display:grid;
-        grid-template-columns:repeat(3,minmax(0,1fr));
-        gap:14px;
-        margin-top:24px;
-      }
-      .meta-card{
-        padding:16px;
-        border-radius:20px;
-        background:rgba(255,255,255,.74);
-        border:1px solid var(--line);
-        transition:transform .24s ease, border-color .24s ease;
-      }
-      .meta-card:hover{
-        transform:translateY(-4px);
-        border-color:color-mix(in srgb, var(--accent) 28%, var(--line));
-      }
-      .meta-card span{
-        display:block;
-        margin-bottom:7px;
-        color:var(--muted);
-        font-size:11px;
-        font-weight:700;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-      }
-      .meta-card strong{
-        font-size:16px;
-        line-height:1.5;
-      }
-      .hero-actions{
-        display:flex;
-        gap:12px;
-        flex-wrap:wrap;
-        margin-top:24px;
-      }
-      .btn{
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        padding:14px 18px;
-        border-radius:16px;
-        text-decoration:none;
-        font-weight:700;
-      }
-      .btn-primary{
-        background:linear-gradient(135deg, var(--accent), var(--accent2));
-        color:var(--buttonText);
-        box-shadow:0 18px 32px rgba(37,99,235,.18);
-      }
-      .btn-secondary{
-        background:var(--secondaryButtonBg);
-        color:var(--secondaryButtonText);
-        border:1px solid var(--line);
-      }
-      .content-grid{
-        display:grid;
-        grid-template-columns:1.06fr .94fr;
-        gap:18px;
-        margin-top:20px;
-      }
-      .stack{
-        display:grid;
-        gap:18px;
-      }
-      .card{
-        padding:24px;
-        border-radius:28px;
-        background:var(--panel);
-        border:1px solid var(--line);
-        box-shadow:0 18px 34px rgba(15,23,42,.06);
-        backdrop-filter:blur(8px);
-        transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
-      }
-      .card:hover{
-        transform:translateY(-6px);
-        box-shadow:0 22px 44px rgba(15,23,42,.10);
-        border-color:color-mix(in srgb, var(--accent2) 18%, var(--line));
-      }
-      .card h2{
-        margin:0 0 16px;
-        font:700 24px/1.05 Georgia,"Times New Roman",serif;
-        letter-spacing:-.03em;
-      }
-      .copy{
-        color:var(--muted);
-        font-size:15px;
-        line-height:1.8;
-      }
-      .services{
-        list-style:none;
-        padding:0;
-        margin:0;
-        display:grid;
-        gap:12px;
-      }
-      .services li{
-        padding:15px 16px;
-        border-radius:18px;
-        background:#ffffff;
-        border:1px solid var(--line);
-        line-height:1.7;
-      }
-      .detail-list{
-        display:grid;
-        gap:14px;
-      }
-      .detail{
-        padding-bottom:14px;
-        border-bottom:1px solid var(--line);
-      }
-      .detail:last-child{
-        padding-bottom:0;
-        border-bottom:0;
-      }
-      .detail span{
-        display:block;
-        margin-bottom:7px;
-        color:var(--muted);
-        font-size:11px;
-        font-weight:700;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-      }
-      .detail strong{
-        font-size:15px;
-        line-height:1.7;
-      }
-      .availability{
-        display:grid;
-        gap:14px;
-      }
-      .availability-box{
-        padding:18px;
-        border-radius:20px;
-        background:#ffffff;
-        border:1px solid var(--line);
-      }
-      .availability-box strong{
-        display:block;
-        margin-bottom:8px;
-        font-size:17px;
-      }
-      .availability-box p{
-        margin:0;
-        color:var(--muted);
-        line-height:1.7;
-      }
-      .trust-strip{
-        display:grid;
-        grid-template-columns:repeat(4,minmax(0,1fr));
-        gap:12px;
-      }
-      .trust-badge{
-        padding:15px 16px;
-        border-radius:18px;
-        background:#ffffff;
-        border:1px solid var(--line);
-      }
-      .trust-badge strong{
-        display:block;
-        margin-bottom:6px;
-        font-size:15px;
-      }
-      .trust-badge span{
-        color:var(--muted);
-        font-size:13px;
-        line-height:1.6;
-      }
-      .testimonial-grid{
-        display:grid;
-        grid-template-columns:repeat(3,minmax(0,1fr));
-        gap:14px;
-      }
-      .testimonial{
-        padding:18px;
-        border-radius:20px;
-        background:#ffffff;
-        border:1px solid var(--line);
-      }
-      .testimonial p{
-        margin:0 0 12px;
-        color:var(--muted);
-        line-height:1.75;
-      }
-      .testimonial strong{
-        display:block;
-        font-size:14px;
-      }
-      .testimonial span{
-        display:block;
-        margin-top:4px;
-        color:var(--muted);
-        font-size:12px;
-        font-weight:700;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-      }
-      .cta{
-        margin-top:18px;
-        padding:28px;
-        border-radius:30px;
-        background:linear-gradient(135deg, var(--accent), var(--accent2));
-        color:#ffffff;
-        display:grid;
-        grid-template-columns:1fr auto;
-        gap:16px;
-        align-items:center;
-      }
-      .cta h2{
-        margin:0 0 10px;
-        font:700 28px/1.05 Georgia,"Times New Roman",serif;
-        letter-spacing:-.03em;
-      }
-      .cta p{
-        margin:0;
-        line-height:1.8;
-        color:rgba(255,255,255,.84);
-      }
-      .cta .btn{
-        background:#ffffff;
-        color:#0f172a;
       }
       .floating-actions{
         position:fixed;
@@ -435,26 +508,61 @@
         box-shadow:0 18px 34px rgba(15,23,42,.16);
       }
       .floating-btn.call{
-        background:linear-gradient(135deg,var(--accent),var(--accent2));
+        background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
         color:#fff;
       }
       .floating-btn.whatsapp{
         background:#25d366;
         color:#fff;
       }
-      footer{
+      .footer-note{
         margin-top:18px;
-        padding:22px 8px 6px;
+        padding-top:18px;
+        border-top:1px solid var(--line);
         color:var(--muted);
         text-align:center;
-        font-size:14px;
+        font-size:13px;
         line-height:1.7;
       }
-      @media (max-width:960px){
-        .hero,.content-grid,.cta{grid-template-columns:1fr}
-        .hero-meta{grid-template-columns:1fr}
-        .portrait,.portrait img{min-height:320px}
-        .trust-strip,.testimonial-grid{grid-template-columns:1fr}
+      @media (max-width:1080px){
+        .hero,.cta-card,.footer-grid,.info-grid,.availability-grid,.testimonial-grid{
+          grid-template-columns:1fr;
+        }
+        h1{
+          max-width:100%;
+        }
+        .section-head{
+          grid-template-columns:1fr;
+        }
+        .trust-grid,.expertise-grid{
+          grid-template-columns:1fr 1fr;
+        }
+      }
+      @media (max-width:760px){
+        .page{
+          width:min(100% - 20px,1220px);
+        }
+        .nav,.brand{
+          align-items:flex-start;
+          flex-direction:column;
+        }
+        .hero{
+          padding:18px;
+          border-radius:30px;
+        }
+        .section-card,.cta-card,.footer-panel{
+          padding:22px;
+          border-radius:28px;
+        }
+        .hero-highlights,.trust-grid,.expertise-grid,.info-grid,.availability-grid,.testimonial-grid{
+          grid-template-columns:1fr;
+        }
+        .btn{
+          width:100%;
+        }
+        .hero-actions{
+          display:grid;
+        }
       }
       @media (max-width:640px){
         .floating-actions{
@@ -475,7 +583,7 @@
           transform:none;
           transition:none;
         }
-        .hero,.card,.meta-card,.portrait img{
+        .hero,.trust-badge,.expertise-card,.info-card,.availability-card,.testimonial,.portrait-card img,.btn{
           transition:none;
         }
         body::before{
@@ -485,124 +593,160 @@
     </style>
     <main class="page">
       <div class="nav" data-reveal>
-        <strong>Healthcare Profile Demo</strong>
-        <a href="https://www.linkedin.com/in/ACwAAAKdSTYBbLhjPsH9LKW9vhNAzQrxUiS5AsA" target="_blank" rel="noreferrer">LinkedIn</a>
+        <div class="brand">
+          <div class="brand-mark">M</div>
+          <div class="brand-copy">
+            <strong>SUNACT Cancer Institute</strong>
+            <span>Premium healthcare profile concept</span>
+          </div>
+        </div>
+        <a href="./index.html">Back to Showcase</a>
       </div>
 
       <section class="hero" data-reveal data-tilt>
-        <div class="portrait">
-          <div class="image-frame js-image-frame">
-            <img src="./assets/images/anand-bhardwaj.jpg" alt="Anand Bhardwaj" />
-            <div class="image-fallback">Anand Bhardwaj • Head of Human Resources</div>
-          </div>
-        </div>
-        <div>
+        <div class="hero-copy">
           <span class="eyebrow">Head of Human Resources</span>
           <h1>Anand Bhardwaj</h1>
           <div class="clinic">SUNACT Cancer Institute</div>
           <p class="lede">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
 
-          <div class="hero-meta">
-            <div class="meta-card"><span>Experience</span><strong>10 yrs 3 mos</strong></div>
-            <div class="meta-card"><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div>
-            <div class="meta-card"><span>Location</span><strong>Mumbai, Maharashtra, India</strong></div>
-          </div>
-
           <div class="hero-actions">
-            <a class="btn btn-primary" href="tel:9999999999">Call Now</a>
-            <a class="btn btn-secondary" href="https://wa.me/9999999999" target="_blank" rel="noreferrer">WhatsApp Now</a>
-            <a class="btn btn-secondary" href="mailto:hello@companyname.example">Email Profile</a>
+            <a class="btn btn-primary" href="tel:9999999999">Book a Call</a>
+            <a class="btn btn-secondary" href="mailto:hello@companyname.example">Request Appointment</a>
+            <a class="btn btn-secondary" href="https://wa.me/9999999999" target="_blank" rel="noreferrer">WhatsApp</a>
+          </div>
+
+          <div class="hero-highlights">
+            <div class="metric"><span>Experience</span><strong>10 yrs 3 mos</strong></div>
+            <div class="metric"><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div>
+            <div class="metric"><span>Location</span><strong>Mumbai, Maharashtra, India</strong></div>
           </div>
         </div>
-      </section>
 
-      <section class="content-grid">
-        <div class="stack">
-          <article class="card" data-reveal data-tilt>
-            <h2>About This Profile</h2>
-            <p class="copy">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
-          </article>
+        <div class="hero-side">
+          <div class="portrait-card">
+            <div class="image-frame js-image-frame">
+              <img src="./assets/images/anand-bhardwaj.jpg" alt="Anand Bhardwaj" />
+              <div class="image-fallback">Anand Bhardwaj • Head of Human Resources</div>
+            </div>
+          </div>
 
-          <article class="card" data-reveal data-tilt>
+          <aside class="trust-panel">
             <h2>Trust Highlights</h2>
-            <div class="trust-strip">
-              <div class="trust-badge"><strong>10 yrs 3 mos</strong><span>Experience across healthcare leadership and delivery</span></div>
-              <div class="trust-badge"><strong>Trusted Presence</strong><span>Clear communication and professional follow-up</span></div>
-              <div class="trust-badge"><strong>Healthcare Focus</strong><span>Built to showcase leaders, founders, and clinic teams</span></div>
-              <div class="trust-badge"><strong>Easy Contact</strong><span>Fast connection by phone, email, and WhatsApp</span></div>
-            </div>
-          </article>
-
-          <article class="card" data-reveal data-tilt>
-            <h2>Offerings</h2>
-            <ul class="services"><li>Digital health strategy</li><li>Patient engagement solutions</li><li>Clinic growth consulting</li><li>Healthcare operations</li></ul>
-          </article>
-
-          <article class="card" data-reveal data-tilt>
-            <h2>Testimonials</h2>
-            <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how feedback could appear on a premium healthcare profile page.</p>
-            <div class="testimonial-grid">
-              <div class="testimonial">
-                <p>“The consultation felt calm, professional, and very easy to understand from the first visit onward.”</p>
-                <strong>Demo Patient A</strong>
-                <span>Demo Content</span>
-              </div>
-              <div class="testimonial">
-                <p>“Connecting was simple, the profile felt modern and trustworthy, and every next step was explained clearly.”</p>
-                <strong>Demo Contact B</strong>
-                <span>Demo Content</span>
-              </div>
-              <div class="testimonial">
-                <p>“A reassuring experience with thoughtful care, practical advice, and smooth follow-up communication.”</p>
-                <strong>Demo Patient C</strong>
-                <span>Demo Content</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card" data-reveal data-tilt>
-            <h2>Strong Call To Action</h2>
-            <p class="copy">People looking to connect with a trusted head of human resources can reach Anand Bhardwaj for healthcare collaboration, leadership conversations, and professional inquiries.</p>
-            <div class="hero-actions" style="margin-top:18px">
-              <a class="btn btn-primary" href="tel:9999999999">Talk Now</a>
-              <a class="btn btn-secondary" href="https://wa.me/9999999999" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
-              <a class="btn btn-secondary" href="mailto:hello@companyname.example">Send Email</a>
-            </div>
-          </article>
-        </div>
-
-        <div class="stack">
-          <aside class="card" data-reveal data-tilt>
-            <h2>Profile Information</h2>
-            <div class="detail-list"><div class="detail"><span>Company</span><strong>SUNACT Cancer Institute</strong></div><div class="detail"><span>Address</span><strong>15 Residency Road, Ashok Nagar, Bengaluru</strong></div><div class="detail"><span>Phone</span><strong>9999999999</strong></div><div class="detail"><span>Email</span><strong>hello@companyname.example</strong></div><div class="detail"><span>Availability</span><strong>Mon-Sat, 9:00 AM-6:00 PM</strong></div></div>
-          </aside>
-
-          <aside class="card" data-reveal data-tilt>
-            <h2>Availability</h2>
-            <div class="availability">
-              <div class="availability-box">
-                <strong>Mon-Sat, 9:00 AM-6:00 PM</strong>
-                <p>Availability details can be shown clearly here for visitors on both mobile and desktop.</p>
-              </div>
-              <div class="availability-box">
-                <strong>Mumbai, Maharashtra, India</strong>
-                <p>15 Residency Road, Ashok Nagar, Bengaluru</p>
-              </div>
+            <div class="trust-grid">
+              <div class="trust-badge"><strong>Verified Presence</strong><span>Professional presentation that builds confidence on first view.</span></div>
+              <div class="trust-badge"><strong>Premium Care</strong><span>Calm, clear messaging with a refined clinic-led experience.</span></div>
+              <div class="trust-badge"><strong>Responsive Access</strong><span>Simple call, email, and WhatsApp actions across all devices.</span></div>
+              <div class="trust-badge"><strong>High-Trust Design</strong><span>Elegant spacing, hierarchy, and polished detail throughout.</span></div>
             </div>
           </aside>
         </div>
       </section>
 
-      <section class="cta" data-reveal data-tilt>
-        <div>
-          <h2>Build a premium healthcare profile presence</h2>
-          <p>Designed for healthcare professionals, founders, clinic owners, and leaders, this concept highlights credibility, strong positioning, and fast contact intent.</p>
-        </div>
-        <a class="btn" href="mailto:hello@companyname.example">Schedule Now</a>
-      </section>
+      <div class="section-grid">
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">About</p>
+              <h2>A thoughtful profile experience built around clarity and credibility</h2>
+            </div>
+          </div>
+          <p class="section-copy">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
+        </section>
 
-      <footer data-reveal>
-        This is a concept demo website created for showcase purposes only. It is not an official healthcare organization website.
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Expertise</p>
+              <h2>Signature services and focus areas</h2>
+            </div>
+          </div>
+          <div class="expertise-grid">
+            <div class="expertise-card"><strong>Digital health strategy</strong><p>Structured care with clear next steps, confident presentation, and a premium healthcare experience.</p></div><div class="expertise-card"><strong>Patient engagement solutions</strong><p>Structured care with clear next steps, confident presentation, and a premium healthcare experience.</p></div><div class="expertise-card"><strong>Clinic growth consulting</strong><p>Structured care with clear next steps, confident presentation, and a premium healthcare experience.</p></div><div class="expertise-card"><strong>Healthcare operations</strong><p>Structured care with clear next steps, confident presentation, and a premium healthcare experience.</p></div>
+          </div>
+        </section>
+
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Clinic Info</p>
+              <h2>Company and contact information presented with precision</h2>
+            </div>
+          </div>
+          <div class="info-grid">
+            <div class="info-card"><strong>Clinic</strong><p>SUNACT Cancer Institute</p></div>
+            <div class="info-card"><strong>Address</strong><p>15 Residency Road, Ashok Nagar, Bengaluru</p></div>
+            <div class="info-card"><strong>Email</strong><p>hello@companyname.example</p></div>
+          </div>
+        </section>
+
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Availability</p>
+              <h2>Experience, location, and appointment access at a glance</h2>
+            </div>
+          </div>
+          <div class="availability-grid">
+            <div class="availability-card"><strong>10 yrs 3 mos</strong><p>Established experience highlighted in a reassuring and premium format.</p></div>
+            <div class="availability-card"><strong>Mon-Sat, 9:00 AM-6:00 PM</strong><p>Clear scheduling language helps visitors understand the next step immediately.</p></div>
+            <div class="availability-card"><strong>9999999999</strong><p>Direct contact stays visible and accessible on both mobile and desktop.</p></div>
+          </div>
+        </section>
+
+        <section class="section-card" data-reveal data-tilt>
+          <div class="section-head">
+            <div>
+              <p class="kicker">Testimonials</p>
+              <h2>Placeholder feedback cards for a premium social-proof section</h2>
+            </div>
+          </div>
+          <div class="testimonial-grid">
+            <div class="testimonial">
+              <p>“The experience felt calm, clear, and exceptionally professional from the first interaction.”</p>
+              <strong>Patient Placeholder</strong>
+              <span>Demo Content</span>
+            </div>
+            <div class="testimonial">
+              <p>“Everything from communication to presentation gave a high-trust and premium impression.”</p>
+              <strong>Visitor Placeholder</strong>
+              <span>Demo Content</span>
+            </div>
+            <div class="testimonial">
+              <p>“A refined, modern profile that makes it easy to understand expertise and take the next step.”</p>
+              <strong>Client Placeholder</strong>
+              <span>Demo Content</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="cta-card" data-reveal data-tilt>
+          <div>
+            <h2>Ready to connect with Anand Bhardwaj?</h2>
+            <p class="cta-copy">This final call-to-action closes the page with confidence and keeps appointment intent simple, clear, and premium.</p>
+          </div>
+          <a class="btn" href="mailto:hello@companyname.example">Schedule an Appointment</a>
+        </section>
+      </div>
+
+      <footer class="footer-panel" data-reveal>
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <strong>Anand Bhardwaj</strong>
+            <p>A premium static healthcare profile concept designed for elegant presentation, strong trust signals, and clear contact pathways.</p>
+          </div>
+          <div class="footer-column">
+            <span>Contact</span>
+            <p>9999999999</p>
+            <p>hello@companyname.example</p>
+          </div>
+          <div class="footer-column">
+            <span>Location</span>
+            <p>Mumbai, Maharashtra, India</p>
+            <p>15 Residency Road, Ashok Nagar, Bengaluru</p>
+          </div>
+        </div>
+        <div class="footer-note">This is a concept demo website created for showcase purposes only. It is not an official healthcare organization website.</div>
       </footer>
 
       <div class="floating-actions">

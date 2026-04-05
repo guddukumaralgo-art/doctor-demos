@@ -5,16 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Healthcare Profile Demo Websites</title>
   <style>
-    :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08);--pointer-x:50vw;--pointer-y:18vh}
+    :root{
+      --navy-950:#081a33;
+      --navy-900:#0d2342;
+      --navy-800:#133663;
+      --blue-600:#2563eb;
+      --blue-500:#3b82f6;
+      --sky-100:#eaf3ff;
+      --paper:#fbfdff;
+      --mist:#f4f8fc;
+      --ink:#11233f;
+      --muted:#607187;
+      --line:rgba(17,35,63,.08);
+      --pointer-x:50vw;
+      --pointer-y:18vh;
+    }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family:Arial,sans-serif;
       color:var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 26%),
-        radial-gradient(circle at top right, rgba(15,118,110,.12), transparent 24%),
-        linear-gradient(180deg,#f8fbff 0%,#eef5ff 100%);
+        radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 24%),
+        radial-gradient(circle at top right, rgba(13,35,66,.09), transparent 22%),
+        linear-gradient(180deg,#f8fbff 0%,#eef4fb 42%,#f7fafe 100%);
       position:relative;
       overflow-x:hidden;
     }
@@ -23,10 +38,12 @@
       position:fixed;
       inset:0;
       pointer-events:none;
-      background:radial-gradient(circle 240px at var(--pointer-x) var(--pointer-y), rgba(22,93,255,.12), transparent 72%);
+      background:
+        radial-gradient(circle 260px at var(--pointer-x) var(--pointer-y), rgba(22,93,255,.1), transparent 72%),
+        linear-gradient(120deg, rgba(255,255,255,.24), transparent 40%);
       z-index:0;
     }
-    .wrap{max-width:1220px;margin:0 auto;padding:34px 20px 68px;position:relative;z-index:1}
+    .wrap{max-width:1240px;margin:0 auto;padding:28px 20px 68px;position:relative;z-index:1}
     [data-reveal]{
       opacity:0;
       transform:translateY(28px);
@@ -44,7 +61,7 @@
       justify-content:space-between;
       align-items:center;
       gap:16px;
-      padding-bottom:16px;
+      padding-bottom:20px;
     }
     .brand{
       display:flex;
@@ -57,10 +74,10 @@
       border-radius:16px;
       display:grid;
       place-items:center;
-      background:linear-gradient(135deg,#165dff,#07b6d5);
+      background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
       color:#fff;
       font:700 20px/1 Georgia,serif;
-      box-shadow:0 18px 34px rgba(22,93,255,.18);
+      box-shadow:0 18px 34px rgba(13,35,66,.2);
     }
     .brand-copy strong{
       display:block;
@@ -77,100 +94,142 @@
       text-decoration:none;
       color:var(--ink);
       font-weight:700;
-      padding:12px 15px;
+      padding:13px 18px;
       border-radius:999px;
-      background:rgba(255,255,255,.75);
+      background:rgba(255,255,255,.82);
       border:1px solid var(--line);
+      box-shadow:0 10px 24px rgba(8,26,51,.05);
     }
     .hero{
       display:grid;
-      grid-template-columns:1.15fr .85fr;
-      gap:22px;
+      grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);
+      gap:24px;
       align-items:stretch;
-      margin-bottom:28px;
+      margin-bottom:24px;
     }
     .hero-copy,.hero-panel{
-      padding:32px;
-      border-radius:32px;
-      background:rgba(255,255,255,.82);
-      border:1px solid rgba(255,255,255,.86);
-      box-shadow:0 24px 60px rgba(15,23,42,.08);
+      padding:36px;
+      border-radius:36px;
+      background:rgba(255,255,255,.84);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 24px 64px rgba(15,23,42,.08);
       backdrop-filter:blur(10px);
       transition:transform .24s ease, box-shadow .24s ease;
     }
+    .hero-copy{
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top right, rgba(37,99,235,.1), transparent 26%),
+        linear-gradient(145deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+    }
     .eyebrow-top{
       display:inline-block;
-      padding:10px 14px;
+      padding:10px 16px;
       border-radius:999px;
-      background:#e0f2fe;
-      color:#0c4a6e;
+      background:rgba(234,243,255,.92);
+      color:var(--navy-800);
       font-size:12px;
       font-weight:700;
-      letter-spacing:.1em;
+      letter-spacing:.12em;
       text-transform:uppercase;
+      border:1px solid rgba(37,99,235,.08);
     }
     h1{
-      margin:18px 0 12px;
-      font:700 clamp(44px,6vw,82px)/.92 Georgia,"Times New Roman",serif;
+      margin:20px 0 14px;
+      font:700 clamp(48px,6.5vw,88px)/.92 Georgia,"Times New Roman",serif;
       letter-spacing:-.06em;
+      color:var(--navy-950);
     }
     .sub{
       margin:0;
       color:var(--muted);
       font-size:18px;
-      line-height:1.8;
+      line-height:1.9;
       max-width:58ch;
+    }
+    .hero-metrics{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-top:26px;
+    }
+    .hero-metric{
+      padding:18px;
+      border-radius:22px;
+      background:rgba(255,255,255,.78);
+      border:1px solid var(--line);
+      box-shadow:0 10px 28px rgba(8,26,51,.04);
+    }
+    .hero-metric strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:18px;
+      color:var(--navy-900);
+    }
+    .hero-metric span{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
     }
     .hero-actions{
       display:flex;
       gap:12px;
       flex-wrap:wrap;
-      margin-top:24px;
+      margin-top:26px;
     }
-    .hero-actions a,.feature a,.card a{
+    .hero-actions a,.feature a,.card a,.cta a{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:13px 17px;
-      border-radius:14px;
+      min-height:54px;
+      padding:0 22px;
+      border-radius:999px;
       text-decoration:none;
       font-weight:700;
+      transition:transform .24s ease, box-shadow .24s ease;
     }
-    .hero-actions .primary,.card a{
+    .hero-actions a:hover,.feature a:hover,.card a:hover,.cta a:hover{
+      transform:translateY(-2px);
+    }
+    .hero-actions .primary,.card a,.cta a{
       color:#fff;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      background:linear-gradient(135deg,var(--navy-900),var(--blue-600));
+      box-shadow:0 18px 36px rgba(13,35,66,.18);
     }
     .hero-actions .secondary{
       color:var(--ink);
-      background:#fff;
+      background:rgba(255,255,255,.9);
       border:1px solid var(--line);
     }
     .hero-panel h2,.feature h2{
       margin:0 0 12px;
       font:700 30px/1.05 Georgia,"Times New Roman",serif;
-      letter-spacing:-.03em;
+      letter-spacing:-.04em;
+      color:var(--navy-950);
     }
     .hero-panel p,.feature p{
       margin:0;
       color:var(--muted);
-      line-height:1.75;
+      line-height:1.8;
     }
     .mini-grid{
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:14px;
       margin-top:20px;
     }
     .mini-card{
-      padding:16px;
-      border-radius:18px;
-      background:#ffffff;
+      padding:18px;
+      border-radius:22px;
+      background:linear-gradient(180deg,#ffffff,#f7faff);
       border:1px solid var(--line);
-      transition:transform .24s ease, border-color .24s ease;
+      transition:transform .24s ease, border-color .24s ease, box-shadow .24s ease;
     }
     .mini-card:hover{
       transform:translateY(-4px);
       border-color:rgba(22,93,255,.18);
+      box-shadow:0 18px 40px rgba(8,26,51,.08);
     }
     .mini-card strong{
       display:block;
@@ -184,11 +243,11 @@
     }
     .feature{
       margin-bottom:24px;
-      padding:28px;
-      border-radius:32px;
-      background:linear-gradient(135deg,#0f172a,#1d4ed8 60%,#06b6d4);
+      padding:32px;
+      border-radius:36px;
+      background:linear-gradient(135deg,var(--navy-950),var(--navy-800) 56%,var(--blue-600));
       color:#fff;
-      box-shadow:0 28px 64px rgba(29,78,216,.2);
+      box-shadow:0 28px 64px rgba(13,35,66,.24);
       display:grid;
       grid-template-columns:1fr auto;
       gap:18px;
@@ -196,22 +255,49 @@
       transition:transform .24s ease, box-shadow .24s ease;
     }
     .feature p{color:rgba(255,255,255,.84)}
-    .feature a{background:#fff;color:#0f172a}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+    .feature a{background:#fff;color:var(--navy-950);box-shadow:none}
+    .section-intro{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:16px;
+      align-items:end;
+      margin:18px 0 18px;
+    }
+    .section-intro p{
+      margin:0 0 10px;
+      color:var(--blue-600);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .section-intro h2{
+      margin:0;
+      font:700 clamp(32px,4vw,48px)/1 Georgia,"Times New Roman",serif;
+      letter-spacing:-.05em;
+      color:var(--navy-950);
+    }
+    .section-intro span{
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.8;
+      max-width:36ch;
+    }
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
     .card{
       overflow:hidden;
       position:relative;
-      border-radius:30px;
-      background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.84));
-      border:1px solid rgba(255,255,255,.84);
-      box-shadow:0 20px 48px rgba(15,23,42,.08);
+      border-radius:34px;
+      background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.86));
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 22px 52px rgba(15,23,42,.08);
       display:flex;
       flex-direction:column;
       transition:transform .24s ease, box-shadow .24s ease, border-color .24s ease;
     }
     .card:hover{
       transform:translateY(-6px);
-      box-shadow:0 28px 56px rgba(15,23,42,.12);
+      box-shadow:0 28px 64px rgba(15,23,42,.12);
       border-color:rgba(22,93,255,.16);
     }
     .card::before{
@@ -222,9 +308,9 @@
       background:linear-gradient(135deg,var(--surface),rgba(255,255,255,0));
       pointer-events:none;
     }
-    .image-shell{
+    .card-media{
       position:relative;
-      height:260px;
+      height:280px;
       overflow:hidden;
       background:linear-gradient(135deg,var(--surface),#fff);
       border-bottom:1px solid rgba(255,255,255,.68);
@@ -261,23 +347,43 @@
       opacity:0;
     }
     .content{position:relative;padding:24px}
+    .card-topline{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+    }
     .eyebrow{
-      margin:0 0 12px;
+      margin:0;
       color:var(--accent);
       font-size:12px;
       font-weight:700;
-      letter-spacing:.08em;
+      letter-spacing:.1em;
       text-transform:uppercase;
     }
+    .meta-pill{
+      display:inline-flex;
+      align-items:center;
+      min-height:34px;
+      padding:0 12px;
+      border-radius:999px;
+      background:#eef4ff;
+      color:var(--navy-800);
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
     .content h2{
-      margin:0 0 10px;
-      font:700 28px/1.02 Georgia,"Times New Roman",serif;
-      letter-spacing:-.03em;
+      margin:0 0 12px;
+      font:700 30px/1.02 Georgia,"Times New Roman",serif;
+      letter-spacing:-.04em;
+      color:var(--navy-950);
     }
     .content p{margin:0 0 10px}
     .clinic{
       font-weight:700;
-      color:#1e293b;
+      color:var(--navy-900);
       font-size:15px;
       line-height:1.6;
     }
@@ -286,24 +392,76 @@
       font-size:14px;
       line-height:1.6;
     }
-    .meta{color:var(--muted);font-weight:600}
-    .copy{color:#334155;line-height:1.7;min-height:96px;font-size:14px}
+    .copy{color:#334155;line-height:1.8;min-height:104px;font-size:14px}
     .content a{
       margin-top:16px;
       width:100%;
       justify-content:center;
-      box-shadow:0 16px 30px rgba(37,99,235,.16);
+    }
+    .cta{
+      margin-top:26px;
+      padding:34px;
+      border-radius:36px;
+      background:linear-gradient(135deg,var(--navy-950),var(--navy-800) 56%,var(--blue-600));
+      color:#fff;
+      box-shadow:0 28px 70px rgba(13,35,66,.2);
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:18px;
+      align-items:center;
+    }
+    .cta h2{
+      margin:0 0 12px;
+      font:700 34px/1.02 Georgia,"Times New Roman",serif;
+      letter-spacing:-.04em;
+    }
+    .cta p{
+      margin:0;
+      color:rgba(255,255,255,.82);
+      line-height:1.8;
+      max-width:58ch;
+    }
+    .cta a{
+      background:#fff;
+      color:var(--navy-950);
+      box-shadow:none;
     }
     footer{
-      margin-top:24px;
-      text-align:center;
+      margin-top:18px;
+      padding:28px 30px;
+      border-radius:32px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.88);
+      box-shadow:0 18px 44px rgba(8,26,51,.06);
       color:var(--muted);
       font-size:14px;
-      line-height:1.7;
+      line-height:1.8;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:18px;
+      align-items:center;
+    }
+    .footer-title{
+      display:block;
+      margin-bottom:8px;
+      font:700 22px/1.05 Georgia,"Times New Roman",serif;
+      color:var(--navy-950);
+    }
+    .footer-link{
+      color:var(--navy-900);
+      text-decoration:none;
+      font-weight:700;
     }
     @media (max-width:900px){
-      .hero,.feature{grid-template-columns:1fr}
-      .mini-grid{grid-template-columns:1fr}
+      .hero,.feature,.cta,footer{grid-template-columns:1fr}
+      .hero-metrics,.mini-grid{grid-template-columns:1fr}
+      .section-intro{grid-template-columns:1fr}
+    }
+    @media (max-width:700px){
+      .card-topline{flex-direction:column;align-items:flex-start}
+      .hero-copy,.hero-panel,.feature,.cta,footer{padding:24px}
+      .hero-actions{display:grid}
+      .hero-actions a{width:100%}
     }
     @media (prefers-reduced-motion: reduce){
       [data-reveal]{
@@ -327,7 +485,7 @@
         <div class="brand-mark">M</div>
         <div class="brand-copy">
           <strong>Healthcare Profile Showcase</strong>
-          <span>Premium static healthcare profile website concepts</span>
+          <span>Ultra-premium static healthcare profile website concepts</span>
         </div>
       </div>
       <a class="nav-link" href="./apollo-inspired/">Hospital Network Demo</a>
@@ -335,20 +493,26 @@
     <section class="hero">
       <div class="hero-copy" data-reveal data-tilt>
         <span class="eyebrow-top">Premium Profile Showcase</span>
-        <h1>Modern healthcare profile websites that feel clean, credible, and high-trust</h1>
-        <p class="sub">This homepage showcases premium static profile website concepts for healthcare professionals, founders, clinic owners, and healthcare leaders. Each page is generated from the same CSV data structure and stays fast, simple, and GitHub Pages-friendly.</p>
+        <h1>Luxury-grade healthcare profile websites with calm authority and modern trust</h1>
+        <p class="sub">This showcase presents premium static profile website concepts for healthcare professionals, founders, clinic owners, and healthcare leaders. Every page is generated from the same CSV-driven system while staying fast, maintainable, and GitHub Pages-friendly.</p>
         <div class="hero-actions">
           <a class="primary" href="#doctors">Explore Profile Pages</a>
           <a class="secondary" href="./apollo-inspired/">Open Hospital Demo</a>
         </div>
+        <div class="hero-metrics">
+          <div class="hero-metric"><strong>Static First</strong><span>Pure HTML, CSS, and vanilla JavaScript output for speed and simplicity.</span></div>
+          <div class="hero-metric"><strong>Premium UI</strong><span>Luxury-grade spacing, typography, cards, CTAs, and trust presentation.</span></div>
+          <div class="hero-metric"><strong>Generator Safe</strong><span>Existing data fields, image paths, and GitHub Pages compatibility stay intact.</span></div>
+        </div>
       </div>
       <aside class="hero-panel" data-reveal data-tilt>
-        <h2>What this generator now supports</h2>
-        <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished healthcare profile sections generated from CSV data.</p>
+        <h2>What this system now feels like</h2>
+        <p>A refined healthcare presentation system with stronger hero storytelling, high-end homepage cards, premium CTA styling, elegant section rhythm, subtle motion, and a more complete finish from first impression to footer.</p>
         <div class="mini-grid">
-          <div class="mini-card"><strong>Hero-First</strong><span>Clear professional identity, company branding, and immediate contact intent.</span></div>
-          <div class="mini-card"><strong>Trust Signals</strong><span>Experience, availability, location, and company information are surfaced clearly.</span></div>
-          <div class="mini-card"><strong>Static & Fast</strong><span>No framework, no backend, just static HTML, CSS, and vanilla JavaScript output.</span></div>
+          <div class="mini-card"><strong>Hero-First Identity</strong><span>Stronger profile introductions with premium visual weight and calm confidence.</span></div>
+          <div class="mini-card"><strong>Trust Badge Layer</strong><span>Experience, access, and credibility are surfaced in a cleaner premium structure.</span></div>
+          <div class="mini-card"><strong>Card Refinement</strong><span>Homepage profile cards now feel more luxurious, polished, and conversion-ready.</span></div>
+          <div class="mini-card"><strong>Mobile Harmony</strong><span>Spacing, buttons, and card hierarchy remain clean and clear on small screens.</span></div>
         </div>
       </aside>
     </section>
@@ -359,168 +523,206 @@
       </div>
       <a href="./apollo-inspired/">Open Hospital Demo</a>
     </section>
+    <section class="section-intro" data-reveal>
+      <div>
+        <p>Profile Collection</p>
+        <h2>Premium homepage cards for healthcare leaders and practices</h2>
+      </div>
+      <span>Each generated profile now sits inside a more elegant card system with refined imagery, spacing, stronger hierarchy, and smoother hover behavior.</span>
+    </section>
     <section class="grid" id="doctors">
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/mohammed-adil-hussain.jpg" alt="Mohammed Adil Hussain" />
             <div class="image-fallback">Mohammed Adil Hussain • Co-Founder</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Co-Founder</p>
+            <div class="card-topline">
+              <p class="eyebrow">Co-Founder</p>
+              <span class="meta-pill">7 yrs 3 mos</span>
+            </div>
             <h2>Mohammed Adil Hussain</h2>
             <p class="clinic">AlShifa</p>
             <p class="location">Mumbai, Maharashtra, India</p>
-            <p class="meta">7 yrs 3 mos experience</p>
             <p class="copy">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
-            <a href="./mohammed-adil-hussain.html">View Profile Website</a>
+            <a href="./mohammed-adil-hussain.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/vinay-verma.jpg" alt="Vinay Verma" />
             <div class="image-fallback">Vinay Verma • Chief Business Officer, Business and Strategic Partnerships</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Chief Business Officer, Business and Strategic Partnerships</p>
+            <div class="card-topline">
+              <p class="eyebrow">Chief Business Officer, Business and Strategic Partnerships</p>
+              <span class="meta-pill">8 yrs 3 mos</span>
+            </div>
             <h2>Vinay Verma</h2>
             <p class="clinic">AnginaX</p>
             <p class="location">Delhi, India</p>
-            <p class="meta">8 yrs 3 mos experience</p>
             <p class="copy">Experienced healthcare leader helping clinics improve operations, access, and patient trust.</p>
-            <a href="./vinay-verma.html">View Profile Website</a>
+            <a href="./vinay-verma.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/ayan-mondal.jpg" alt="Ayan Mondal" />
             <div class="image-fallback">Ayan Mondal • Entrepreneur in Residence</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Entrepreneur in Residence</p>
+            <div class="card-topline">
+              <p class="eyebrow">Entrepreneur in Residence</p>
+              <span class="meta-pill">9 yrs 3 mos</span>
+            </div>
             <h2>Ayan Mondal</h2>
             <p class="clinic">23 Ventures Incorporation</p>
             <p class="location">Bengaluru, Karnataka</p>
-            <p class="meta">9 yrs 3 mos experience</p>
             <p class="copy">Long-term cardiac care with a focus on clear communication and practical treatment plans.</p>
-            <a href="./ayan-mondal.html">View Profile Website</a>
+            <a href="./ayan-mondal.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/anand-bhardwaj.jpg" alt="Anand Bhardwaj" />
             <div class="image-fallback">Anand Bhardwaj • Head of Human Resources</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Head of Human Resources</p>
+            <div class="card-topline">
+              <p class="eyebrow">Head of Human Resources</p>
+              <span class="meta-pill">10 yrs 3 mos</span>
+            </div>
             <h2>Anand Bhardwaj</h2>
             <p class="clinic">SUNACT Cancer Institute</p>
             <p class="location">Mumbai, Maharashtra, India</p>
-            <p class="meta">10 yrs 3 mos experience</p>
             <p class="copy">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
-            <a href="./anand-bhardwaj.html">View Profile Website</a>
+            <a href="./anand-bhardwaj.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/vijay-talreja.jpg" alt="Vijay Talreja" />
             <div class="image-fallback">Vijay Talreja • President</div>
           </div>
           <div class="content">
-            <p class="eyebrow">President</p>
+            <div class="card-topline">
+              <p class="eyebrow">President</p>
+              <span class="meta-pill">11 yrs 3 mos</span>
+            </div>
             <h2>Vijay Talreja</h2>
             <p class="clinic">VESIT Alumni Association</p>
             <p class="location">Bengaluru, Karnataka</p>
-            <p class="meta">11 yrs 3 mos experience</p>
             <p class="copy">Experienced healthcare leader helping clinics improve operations, access, and patient trust.</p>
-            <a href="./vijay-talreja.html">View Profile Website</a>
+            <a href="./vijay-talreja.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/dr-sabine-kapasi.jpg" alt="Dr Sabine Kapasi" />
             <div class="image-fallback">Dr Sabine Kapasi • Global Strategy Lead</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Global Strategy Lead</p>
+            <div class="card-topline">
+              <p class="eyebrow">Global Strategy Lead</p>
+              <span class="meta-pill">12 yrs 3 mos</span>
+            </div>
             <h2>Dr Sabine Kapasi</h2>
             <p class="clinic">United Nations Platform for Space-based Information for Disaster Management and Emergency Response</p>
             <p class="location">Mumbai, Maharashtra, India</p>
-            <p class="meta">12 yrs 3 mos experience</p>
             <p class="copy">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
-            <a href="./dr-sabine-kapasi.html">View Profile Website</a>
+            <a href="./dr-sabine-kapasi.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/chunky-shah.jpg" alt="Chunky Shah" />
             <div class="image-fallback">Chunky Shah • Co-Founder</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Co-Founder</p>
+            <div class="card-topline">
+              <p class="eyebrow">Co-Founder</p>
+              <span class="meta-pill">13 yrs 3 mos</span>
+            </div>
             <h2>Chunky Shah</h2>
             <p class="clinic">Credence Diagnostics</p>
             <p class="location">Delhi, India</p>
-            <p class="meta">13 yrs 3 mos experience</p>
             <p class="copy">Experienced healthcare leader helping clinics improve operations, access, and patient trust.</p>
-            <a href="./chunky-shah.html">View Profile Website</a>
+            <a href="./chunky-shah.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/zulfiqar-gadhiya.jpg" alt="Zulfiqar Gadhiya" />
             <div class="image-fallback">Zulfiqar Gadhiya • Director</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Director</p>
+            <div class="card-topline">
+              <p class="eyebrow">Director</p>
+              <span class="meta-pill">14 yrs 3 mos</span>
+            </div>
             <h2>Zulfiqar Gadhiya</h2>
             <p class="clinic">Eco Nidhi</p>
             <p class="location">Bengaluru, Karnataka</p>
-            <p class="meta">14 yrs 3 mos experience</p>
             <p class="copy">Long-term cardiac care with a focus on clear communication and practical treatment plans.</p>
-            <a href="./zulfiqar-gadhiya.html">View Profile Website</a>
+            <a href="./zulfiqar-gadhiya.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/dr.-kanan-khatau-chikhal.jpg" alt="Dr. Kanan Khatau Chikhal" />
             <div class="image-fallback">Dr. Kanan Khatau Chikhal • Chief Executive Officer</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Chief Executive Officer</p>
+            <div class="card-topline">
+              <p class="eyebrow">Chief Executive Officer</p>
+              <span class="meta-pill">15 yrs 3 mos</span>
+            </div>
             <h2>Dr. Kanan Khatau Chikhal</h2>
             <p class="clinic">Mind Celebrations</p>
             <p class="location">Mumbai, Maharashtra, India</p>
-            <p class="meta">15 yrs 3 mos experience</p>
             <p class="copy">Healthcare founder focused on digital health, patient engagement, and scalable care delivery.</p>
-            <a href="./dr.-kanan-khatau-chikhal.html">View Profile Website</a>
+            <a href="./dr.-kanan-khatau-chikhal.html">View Premium Profile</a>
           </div>
         </article>
 
         <article class="card" data-reveal data-tilt style="--accent:#0f766e;--accent2:#2563eb;--surface:#eff6ff;">
-          <div class="image-shell js-image-frame">
+          <div class="card-media js-image-frame">
             <img src="./assets/images/dr.-sachitra-chakravorty.jpg" alt="Dr. Sachitra Chakravorty" />
             <div class="image-fallback">Dr. Sachitra Chakravorty • Founder &amp; CEO</div>
           </div>
           <div class="content">
-            <p class="eyebrow">Founder &amp; CEO</p>
+            <div class="card-topline">
+              <p class="eyebrow">Founder &amp; CEO</p>
+              <span class="meta-pill">16 yrs 3 mos</span>
+            </div>
             <h2>Dr. Sachitra Chakravorty</h2>
             <p class="clinic">TransilienZ</p>
             <p class="location">Bengaluru, Karnataka</p>
-            <p class="meta">16 yrs 3 mos experience</p>
             <p class="copy">Experienced healthcare leader helping clinics improve operations, access, and patient trust.</p>
-            <a href="./dr.-sachitra-chakravorty.html">View Profile Website</a>
+            <a href="./dr.-sachitra-chakravorty.html">View Premium Profile</a>
           </div>
         </article></section>
+    <section class="cta" data-reveal data-tilt>
+      <div>
+        <h2>Build a premium healthcare web presence without adding a framework</h2>
+        <p>The project remains static and generator-driven, but the UI now lands closer to a high-end clinic or concierge healthcare brand experience.</p>
+      </div>
+      <a href="#doctors">Review Profiles</a>
+    </section>
     <footer data-reveal>
-      This is a concept demo showcase for healthcare profile and hospital websites. All pages are generated from static project files.
+      <div>
+        <span class="footer-title">Premium static healthcare website system</span>
+        This is a concept demo showcase for healthcare profile and hospital websites. All pages are generated from static project files and remain GitHub Pages compatible.
+      </div>
+      <a class="footer-link" href="./apollo-inspired/">View Hospital Demo</a>
     </footer>
   </main>
   <script>
