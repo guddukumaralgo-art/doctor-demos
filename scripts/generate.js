@@ -130,23 +130,23 @@ function readDoctorsFromCsv() {
   });
 
   if (records.length === 0) {
-    throw new Error("data/website_data.csv must contain at least one doctor record.");
+    throw new Error("data/website_data.csv must contain at least one profile record.");
   }
 
   return records;
 }
 
 function getDoctorLabel(doctor, index) {
-  return doctor.doctor_name || doctor.name || doctor.slug || `record ${index + 1}`;
+  return doctor.profile_name || doctor.doctor_name || doctor.name || doctor.slug || `record ${index + 1}`;
 }
 
 function validateDoctors(doctors) {
   const seenSlugs = new Set();
   const requiredFields = [
     "slug",
-    "doctor_name",
-    "clinic_name",
-    "specialty",
+    "profile_name",
+    "company_name",
+    "role",
     "location",
     "image",
   ];
@@ -158,7 +158,7 @@ function validateDoctors(doctors) {
     requiredFields.forEach((field) => {
       if (!doctor[field] || !String(doctor[field]).trim()) {
         throw new Error(
-          `Validation failed for doctor "${label}" at record ${index + 1}: missing required field "${field}".`
+          `Validation failed for profile "${label}" at record ${index + 1}: missing required field "${field}".`
         );
       }
     });
@@ -166,7 +166,7 @@ function validateDoctors(doctors) {
     const slug = String(doctor.slug).trim();
     if (seenSlugs.has(slug)) {
       throw new Error(
-        `Validation failed for doctor "${label}" at record ${index + 1}: duplicate slug "${slug}" is not allowed.`
+        `Validation failed for profile "${label}" at record ${index + 1}: duplicate slug "${slug}" is not allowed.`
       );
     }
     seenSlugs.add(slug);
@@ -174,23 +174,24 @@ function validateDoctors(doctors) {
     const imageFile = path.join(sourceImagesDir, path.basename(doctor.image));
     if (!fs.existsSync(imageFile)) {
       throw new Error(
-        `Validation failed for doctor "${label}" at record ${index + 1}: image file "${doctor.image}" was not found in data/images.`
+        `Validation failed for profile "${label}" at record ${index + 1}: image file "${doctor.image}" was not found in data/images.`
       );
     }
 
     if (doctor.theme && !supportedThemes.includes(doctor.theme)) {
       throw new Error(
-        `Validation failed for doctor "${label}" at record ${index + 1}: theme "${doctor.theme}" is not supported. Use blue, premium, or modern.`
+        `Validation failed for profile "${label}" at record ${index + 1}: theme "${doctor.theme}" is not supported. Use blue, premium, or modern.`
       );
     }
   });
 }
 
 function normalizeDoctor(doctor, index) {
-  const name = doctor.doctor_name || doctor.name;
-  const clinic = doctor.clinic_name || doctor.clinic;
+  const name = doctor.profile_name || doctor.doctor_name || doctor.name;
+  const company = doctor.company_name || doctor.clinic_name || doctor.company || doctor.clinic;
+  const role = doctor.role || doctor.specialty || "Healthcare Professional";
   const city = doctor.location || doctor.city;
-  const slug = doctor.slug || slugify(name || clinic);
+  const slug = doctor.slug || slugify(name || company);
   const imageFileName = doctor.image ? path.basename(doctor.image) : "";
   const services = Array.isArray(doctor.services)
     ? doctor.services
@@ -198,8 +199,8 @@ function normalizeDoctor(doctor, index) {
         (service) => String(service ?? "").trim() !== ""
       );
 
-  if (!name || !clinic || !city || !slug) {
-    throw new Error("Each doctor needs doctor_name or name, clinic_name or clinic, location or city, and a valid slug.");
+  if (!name || !company || !role || !city || !slug) {
+    throw new Error("Each profile needs profile_name, company_name, role, location, and a valid slug.");
   }
 
   return {
@@ -207,7 +208,10 @@ function normalizeDoctor(doctor, index) {
     index,
     slug,
     name,
-    clinic,
+    company,
+    clinic: company,
+    role,
+    specialty: role,
     city,
     address: doctor.address || city,
     image: imageFileName,
@@ -216,7 +220,7 @@ function normalizeDoctor(doctor, index) {
     accent2: doctor.accent2 || "#2563eb",
     surface: doctor.surface || "#eff6ff",
     theme: doctor.theme || "blue",
-    bio: doctor.bio || `${name} is a trusted ${doctor.specialty || "specialist"} serving patients through ${clinic}.`,
+    bio: doctor.bio || `${name} is a trusted ${role.toLowerCase()} working with ${company}.`,
     experience: doctor.experience || "10+ years",
     availability: doctor.availability || "By appointment",
     service1: services[0] || "Personalized consultation",
@@ -254,7 +258,7 @@ function servicesList(doctor, className = "services") {
 
 function detailRows(doctor, className = "detail-list") {
   const details = [
-    ["Clinic", doctor.clinic],
+    ["Company", doctor.company],
     ["Address", doctor.address],
     ["Phone", doctor.phone],
     ["Email", doctor.email],
@@ -279,8 +283,8 @@ function getWhatsAppHref(phone) {
 }
 
 function getImageFallbackLabel(doctor) {
-  const specialty = doctor.specialty || "Doctor";
-  return `${doctor.name} • ${specialty}`;
+  const role = doctor.role || doctor.specialty || "Healthcare Professional";
+  return `${doctor.name} • ${role}`;
 }
 
 function renderImageFallbackScript() {
@@ -319,8 +323,8 @@ ${content}
 }
 
 function getDoctorSeo(doctor) {
-  const title = `${doctor.name} | ${doctor.specialty} in ${doctor.city}`;
-  const description = `${doctor.name} at ${doctor.clinic} offers ${doctor.specialty} care in ${doctor.city}.`;
+  const title = `${doctor.name} | ${doctor.role} at ${doctor.company}`;
+  const description = `${doctor.name} is a ${doctor.role} at ${doctor.company} based in ${doctor.city}.`;
   const canonicalUrl = `${siteBaseUrl}/${doctor.slug}.html`;
   const ogImage = doctor.image ? `${siteBaseUrl}/assets/images/${doctor.image}` : "";
 
@@ -794,7 +798,7 @@ function renderDoctorPage(doctor, variant) {
     </style>
     <main class="page">
       <div class="nav">
-        <strong>Premium Clinic Demo</strong>
+        <strong>Healthcare Profile Demo</strong>
         <a href="./index.html">Back to Homepage</a>
       </div>
 
@@ -806,9 +810,9 @@ function renderDoctorPage(doctor, variant) {
           </div>
         </div>
         <div>
-          <span class="eyebrow">${escapeHtml(doctor.specialty)}</span>
+          <span class="eyebrow">${escapeHtml(doctor.role)}</span>
           <h1>${escapeHtml(doctor.name)}</h1>
-          <div class="clinic">${escapeHtml(doctor.clinic)}</div>
+          <div class="clinic">${escapeHtml(doctor.company)}</div>
           <p class="lede">${escapeHtml(doctor.bio)}</p>
 
           <div class="hero-meta">
@@ -818,9 +822,9 @@ function renderDoctorPage(doctor, variant) {
           </div>
 
           <div class="hero-actions">
-            <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Call Clinic</a>
+            <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Call Now</a>
             <a class="btn btn-secondary" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">WhatsApp Now</a>
-            <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Book Appointment</a>
+            <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Email Profile</a>
           </div>
         </div>
       </section>
@@ -828,28 +832,28 @@ function renderDoctorPage(doctor, variant) {
       <section class="content-grid">
         <div class="stack">
           <article class="card">
-            <h2>About Doctor</h2>
+            <h2>About This Profile</h2>
             <p class="copy">${escapeHtml(doctor.bio)}</p>
           </article>
 
           <article class="card">
             <h2>Trust Highlights</h2>
             <div class="trust-strip">
-              <div class="trust-badge"><strong>${escapeHtml(doctor.experience)}</strong><span>Years of experience in patient care</span></div>
-              <div class="trust-badge"><strong>Patient-First Care</strong><span>Clear communication and respectful follow-up</span></div>
-              <div class="trust-badge"><strong>Modern Clinic</strong><span>Clean, reassuring, and professional experience</span></div>
-              <div class="trust-badge"><strong>Easy Appointments</strong><span>Fast contact by phone, email, and WhatsApp</span></div>
+              <div class="trust-badge"><strong>${escapeHtml(doctor.experience)}</strong><span>Experience across healthcare leadership and delivery</span></div>
+              <div class="trust-badge"><strong>Trusted Presence</strong><span>Clear communication and professional follow-up</span></div>
+              <div class="trust-badge"><strong>Healthcare Focus</strong><span>Built to showcase leaders, founders, and clinic teams</span></div>
+              <div class="trust-badge"><strong>Easy Contact</strong><span>Fast connection by phone, email, and WhatsApp</span></div>
             </div>
           </article>
 
           <article class="card">
-            <h2>Services</h2>
+            <h2>Offerings</h2>
             ${servicesList(doctor)}
           </article>
 
           <article class="card">
-            <h2>Patient Testimonials</h2>
-            <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how patient feedback could appear on a premium clinic page.</p>
+            <h2>Testimonials</h2>
+            <p class="copy" style="margin-bottom:16px">The following testimonial cards are demo placeholders to show how feedback could appear on a premium healthcare profile page.</p>
             <div class="testimonial-grid">
               <div class="testimonial">
                 <p>“The consultation felt calm, professional, and very easy to understand from the first visit onward.”</p>
@@ -857,8 +861,8 @@ function renderDoctorPage(doctor, variant) {
                 <span>Demo Content</span>
               </div>
               <div class="testimonial">
-                <p>“Booking was simple, the clinic felt modern and clean, and every step was explained clearly.”</p>
-                <strong>Demo Patient B</strong>
+                <p>“Connecting was simple, the profile felt modern and trustworthy, and every next step was explained clearly.”</p>
+                <strong>Demo Contact B</strong>
                 <span>Demo Content</span>
               </div>
               <div class="testimonial">
@@ -871,18 +875,18 @@ function renderDoctorPage(doctor, variant) {
 
           <article class="card">
             <h2>Strong Call To Action</h2>
-            <p class="copy">Patients looking for trusted ${escapeHtml(doctor.specialty.toLowerCase())} care can connect quickly with ${escapeHtml(doctor.name)} for consultation, treatment planning, and follow-up support.</p>
+            <p class="copy">People looking to connect with a trusted ${escapeHtml(String(doctor.role).toLowerCase())} can reach ${escapeHtml(doctor.name)} for healthcare collaboration, leadership conversations, and professional inquiries.</p>
             <div class="hero-actions" style="margin-top:18px">
-              <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Talk To Clinic</a>
+              <a class="btn btn-primary" href="${escapeHtml(getPhoneHref(doctor.phone))}">Talk Now</a>
               <a class="btn btn-secondary" href="${escapeHtml(getWhatsAppHref(doctor.phone))}" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
-              <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Request Appointment</a>
+              <a class="btn btn-secondary" href="mailto:${escapeHtml(doctor.email)}">Send Email</a>
             </div>
           </article>
         </div>
 
         <div class="stack">
           <aside class="card">
-            <h2>Clinic Information</h2>
+            <h2>Profile Information</h2>
             ${detailRows(doctor)}
           </aside>
 
@@ -891,7 +895,7 @@ function renderDoctorPage(doctor, variant) {
             <div class="availability">
               <div class="availability-box">
                 <strong>${escapeHtml(doctor.availability)}</strong>
-                <p>Appointment windows can be positioned here clearly for mobile and desktop visitors with strong readability.</p>
+                <p>Availability details can be shown clearly here for visitors on both mobile and desktop.</p>
               </div>
               <div class="availability-box">
                 <strong>${escapeHtml(doctor.city)}</strong>
@@ -904,14 +908,14 @@ function renderDoctorPage(doctor, variant) {
 
       <section class="cta">
         <div>
-          <h2>Book a premium consultation experience</h2>
-          <p>Designed for trustworthy medical brands, this concept highlights specialist care, smooth appointment intent, and clean patient-first communication.</p>
+          <h2>Build a premium healthcare profile presence</h2>
+          <p>Designed for healthcare professionals, founders, clinic owners, and leaders, this concept highlights credibility, strong positioning, and fast contact intent.</p>
         </div>
         <a class="btn" href="mailto:${escapeHtml(doctor.email)}">Schedule Now</a>
       </section>
 
       <footer>
-        This is a concept demo website created for showcase purposes only. It is not an official clinic website.
+        This is a concept demo website created for showcase purposes only. It is not an official healthcare organization website.
       </footer>
 
       <div class="floating-actions">
@@ -971,13 +975,13 @@ function renderIndex(doctors) {
             <div class="image-fallback">${escapeHtml(getImageFallbackLabel(doctor))}</div>
           </div>
           <div class="content">
-            <p class="eyebrow">${escapeHtml(doctor.specialty || "")}</p>
+            <p class="eyebrow">${escapeHtml(doctor.role || "")}</p>
             <h2>${escapeHtml(doctor.name)}</h2>
-            <p class="clinic">${escapeHtml(doctor.clinic)}</p>
+            <p class="clinic">${escapeHtml(doctor.company)}</p>
             <p class="location">${escapeHtml(doctor.city)}</p>
             <p class="meta">${escapeHtml(doctor.experience)} experience</p>
             <p class="copy">${escapeHtml(doctor.bio)}</p>
-            <a href="./${escapeHtml(doctor.slug)}.html">View Doctor Website</a>
+            <a href="./${escapeHtml(doctor.slug)}.html">View Profile Website</a>
           </div>
         </article>`;
     })
@@ -988,7 +992,7 @@ function renderIndex(doctors) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Doctor Demo Websites</title>
+  <title>Healthcare Profile Demo Websites</title>
   <style>
     :root{--ink:#112033;--muted:#617287;--line:rgba(17,32,51,.08)}
     *{box-sizing:border-box}
@@ -1259,28 +1263,28 @@ function renderIndex(doctors) {
       <div class="brand">
         <div class="brand-mark">M</div>
         <div class="brand-copy">
-          <strong>Medical Demo Showcase</strong>
-          <span>Premium static doctor and clinic website concepts</span>
+          <strong>Healthcare Profile Showcase</strong>
+          <span>Premium static healthcare profile website concepts</span>
         </div>
       </div>
       <a class="nav-link" href="./apollo-inspired/">Hospital Network Demo</a>
     </div>
     <section class="hero">
       <div class="hero-copy">
-        <span class="eyebrow-top">Premium Clinic Showcase</span>
-        <h1>Modern medical websites that feel clean, credible, and high-trust</h1>
-        <p class="sub">This homepage showcases premium static doctor website concepts built from your generator. Each profile keeps the same data structure, but the presentation now feels more polished, spacious, trustworthy, and suitable for modern clinics.</p>
+        <span class="eyebrow-top">Premium Profile Showcase</span>
+        <h1>Modern healthcare profile websites that feel clean, credible, and high-trust</h1>
+        <p class="sub">This homepage showcases premium static profile website concepts for healthcare professionals, founders, clinic owners, and healthcare leaders. Each page is generated from the same CSV data structure and stays fast, simple, and GitHub Pages-friendly.</p>
         <div class="hero-actions">
-          <a class="primary" href="#doctors">Explore Doctor Pages</a>
+          <a class="primary" href="#doctors">Explore Profile Pages</a>
           <a class="secondary" href="./apollo-inspired/">Open Hospital Demo</a>
         </div>
       </div>
       <aside class="hero-panel">
         <h2>What this generator now supports</h2>
-        <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished doctor profile sections generated from the same JSON data.</p>
+        <p>Premium hero sections, cleaner typography, better spacing, improved card rhythm, stronger calls to action, mobile-friendly layouts, and polished healthcare profile sections generated from CSV data.</p>
         <div class="mini-grid">
-          <div class="mini-card"><strong>Hero-First</strong><span>Clear specialist identity, clinic branding, and immediate appointment intent.</span></div>
-          <div class="mini-card"><strong>Trust Signals</strong><span>Experience, availability, location, and clinic information are surfaced clearly.</span></div>
+          <div class="mini-card"><strong>Hero-First</strong><span>Clear professional identity, company branding, and immediate contact intent.</span></div>
+          <div class="mini-card"><strong>Trust Signals</strong><span>Experience, availability, location, and company information are surfaced clearly.</span></div>
           <div class="mini-card"><strong>Static & Fast</strong><span>No framework, no backend, just static HTML, CSS, and vanilla JavaScript output.</span></div>
         </div>
       </aside>
@@ -1294,7 +1298,7 @@ function renderIndex(doctors) {
     </section>
     <section class="grid" id="doctors">${cards}</section>
     <footer>
-      This is a concept demo showcase for doctor and hospital websites. All pages are generated from static project files.
+      This is a concept demo showcase for healthcare profile and hospital websites. All pages are generated from static project files.
     </footer>
   </main>
   ${renderImageFallbackScript()}
