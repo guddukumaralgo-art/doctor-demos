@@ -1036,7 +1036,7 @@ function renderDoctorPage(doctor, variant) {
             <span>Premium healthcare profile concept</span>
           </div>
         </div>
-        <a href="${escapeHtml(doctor.linkedin_url || "#")}" target="_blank" rel="noreferrer">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/guddu-kumar-indianiit/" target="_blank" rel="noreferrer">LinkedIn</a>
       </div>
 
       <section class="hero" data-reveal data-tilt>
